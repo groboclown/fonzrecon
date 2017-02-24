@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  fonzrecon:
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    links:
+      - dynamodb
+  dynamodb:
+    build:
+      context: docker-dependencies/DynamoDb
+    volumes:
+      - ./.tmp/dynamodb:/var/dynamodb
