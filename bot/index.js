@@ -57,7 +57,7 @@ bot.dialog('/givethanks',function(session){
   var data = getMessageData(session);
   var names = [];
   data.mentions.forEach(function(mention){
-    names.push(formatName(mention.name));
+    names.push(mention.text);
   });
 
   var last = names.pop()
@@ -82,7 +82,7 @@ function getMessageData(session){
   output.mentions = [];
   msg.entities.forEach(function(e){
     if(e.type === 'mention' && e.mentioned.name !== BOT_NAME){
-      output.mentions.push(e.mentioned);
+      output.mentions.push(e);
     }
   });
   if(msg.sourceEvent.teamsChannelId){
