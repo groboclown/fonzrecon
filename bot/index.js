@@ -57,7 +57,7 @@ bot.dialog('/givethanks',function(session){
   var data = getMessageData(session);
   var names = [];
   data.mentions.forEach(function(mention){
-    names.push(mention.text);
+    names.push(formatName(mention.mentioned.name));
   });
 
   var last = names.pop()
