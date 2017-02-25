@@ -25,26 +25,41 @@ var bot = new builder.UniversalBot(connector);
 app.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
-  console.log(JSON.stringify(session.message,null,2));
-  console.log(session.message.textFormat);
-  console.log(session.message.text);
-  var mentions = [];
-  for(var e in session.message.entities){
+
+  var msgData = getMessageData(session);
+  for(var key in msgData){
+    console.log(key,msgData[key]);
+  }
+
+  session.send("Aaaay");
+});
+
+
+function getMessageData(session){
+  var output = {};
+  var msg = session.message;
+
+  output.textFormat = msg.textFormat;
+  output.text = msg.text;
+  output.mentions = [];
+  for(var e in msg.entities){
     if(e.type === 'mention'){
       mentions.push(e.mentioned);
     }
   }
-  console.log(mentions);
-  console.log(session.message.sourceEvent.teamsChannelId);
-  console.log(session.message.sourceEvent.teamsTeamId);
-  console.log(session.message.sourceEvent.tenant.id);
-  console.log(session.message.address.id);
-  console.log(session.message.address.channelId);
-  console.log(session.message.address.conversation.isGroup);
-  console.log(session.message.address.conversation.id);
-  console.log(session.message.user.id);
-  console.log(session.message.user.name);
+  if(msg.sourceEvent.teamsChannelId){
+    output.teamsChannelId = msg.sourceEvent.teamsChannelId;
+  }
+  if(msg.sourceEvent.teamsTeamId){
+    output.teamsTeamId = msg.sourceEvent.teamsTeamId;
+  }
+  output.tenantId = msg.sourceEvent.tenant.id;
+  output.addressId = msg.address.id;
+  output.channelId = msg.address.channelId;
+  output.isGroup = (msg.address.conversation.isGroup) ? true : false;
+  output.conversationId = msg.address.conversaiont.id;
+  output.userId = msg.user.id;
+  output.userName = msg.user.name;
 
-
-  session.send("Aaaay");
-});
+  return output;
+}
