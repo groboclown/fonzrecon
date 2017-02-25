@@ -40,7 +40,7 @@ bot.dialog('/', function (session) {
     return;
   }
 
-  if(data.isGroup && data.mentions && new RegExp(KEYWORDS_REGEX).test(data.text)){
+  if(data.isGroup && data.mentions && new RegExp(KEYWORDS_REGEX, 'i').test(data.text)){
     session.beginDialog('/givethanks');
   }
   else{
