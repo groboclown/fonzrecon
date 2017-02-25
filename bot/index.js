@@ -4,6 +4,8 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 
+var approvedTenantId = process.env.TENANT_ID;
+
 var port = (process.env.PORT) ? process.env.PORT : 3978;
 app.listen(port,function(){
     console.log('port ' + port + ' open.');
@@ -22,19 +24,22 @@ var connector = new builder.ChatConnector({
 
 var bot = new builder.UniversalBot(connector);
 
-app.post('/api/messages', function(req,res){
-  console.log(JSON.stringify(req.headers,null,2));
-  connector.listen()(req,res);
-});
+//note: the connector checks a bearer token to ensure the
+//request is coming from the source with the above ID and PW.
+app.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
-
   var msgData = getMessageData(session);
   for(var key in msgData){
     console.log(key,msgData[key]);
   }
+  if(msgData.tenantId != approvedTenantId){
+    session.send('Unsupported tenant');
+    return;
+  }
 
   session.send("Aaaay");
+  session.send("Thanks for the mention, " + formatName(msgData.userName));
 });
 
 
@@ -65,4 +70,9 @@ function getMessageData(session){
   output.userName = msg.user.name;
 
   return output;
+}
+
+function formatName(name){
+  var names = name.split(', ');
+  return names[1] + ' ' + names[0];
 }
