@@ -29,7 +29,7 @@ bot.dialog('/', function (session) {
   console.log(session.message.text);
   var mentions = [];
   for(var e in session.message.entities){
-    if(type === 'mention'){
+    if(e.type === 'mention'){
       mentions.push(e.mentioned);
     }
   }
