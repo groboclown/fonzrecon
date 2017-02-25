@@ -4,7 +4,9 @@ var bodyParser = require('body-parser');
 var app = express();
 app.use(bodyParser.json());
 
-var approvedTenantId = process.env.TENANT_ID;
+const TENANT_ID = process.env.TENANT_ID;
+const BOT_NAME = process.env.BOT_NAME;
+const KEYWORDS_REGEX = process.env.KEYWORDS_REGEX;
 
 var port = (process.env.PORT) ? process.env.PORT : 3978;
 app.listen(port,function(){
@@ -29,17 +31,44 @@ var bot = new builder.UniversalBot(connector);
 app.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
-  var msgData = getMessageData(session);
-  for(var key in msgData){
-    console.log(key,msgData[key]);
+  var data = getMessageData(session);
+  for(var key in data){
+    console.log(key,data[key]);
   }
-  if(msgData.tenantId != approvedTenantId){
+  if(data.tenantId != TENANT_ID){
     session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
     return;
   }
 
-  session.send("Aaaay");
-  session.send("Thanks for the mention " + formatName(msgData.userName) + '!');
+  if(data.isGroup && data.mentions && new RegExp(KEYWORDS_REGEX).test(data.text)){
+    session.beginDialog('/givethanks');
+  }
+  else{
+    session.send("Aaaaaay!");
+  }
+
+});
+
+bot.dialog('/givethanks',function(session){
+  //We've been tagged in a Chat
+  //We have single or multiple user mentions
+  //And the chat has a keyword in it.
+  var data = getMessageData(session);
+  var names = [];
+  data.mentions.forEach(function(mention){
+    names.push(formatName(mention.mentioned.name));
+  });
+
+  var last = names.pop()
+  if(names.length === 0){
+    names = last;
+  }
+  else{
+    names = names.join(', ') + ' and ' + last;
+  }
+
+  session.send("Aaaay! Great job " + names + "!");
+  session.endDialog(formatName(data.userName) + ' sent you recognition!');
 });
 
 
@@ -51,7 +80,7 @@ function getMessageData(session){
   output.text = msg.text;
   output.mentions = [];
   for(var e in msg.entities){
-    if(e.type === 'mention'){
+    if(e.type === 'mention' && e.mentioned.name !== BOT_NAME){
       mentions.push(e.mentioned);
     }
   }
