@@ -25,6 +25,7 @@ var bot = new builder.UniversalBot(connector);
 app.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
+  console.log(JSON.stringify(session.message,null,2));
   console.log(session.message.textFormat);
   console.log(session.message.text);
   var mentions = [];
