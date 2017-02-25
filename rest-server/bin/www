@@ -6,56 +6,35 @@ const debug = require('debug')('fonzrecon:rest');
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
+const config = require('../config');
 
 
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(
-  process.env.PORT ||
-  process.env['fonzrecon_config_port'] || '3000');
-app.set('port', port);
+app.set('port', config.port);
 
 /**
  * Create HTTP server.
  */
 var server;
 if (!!process.env.SSL_KEY && !!process.env.SSL_CERT) {
-  console.log(`HTTPS Listening on port ${port}`);
+  console.log(`HTTPS Listening on port ${config.port}`);
   server = https.createServer({
     key: fs.readFileSync(process.env.SSL_KEY),
     cert: fs.readFileSync(process.env.SSL_CERT),
   }, app);
 } else {
-    console.log(`HTTP Listening on port ${port}`);
+    console.log(`HTTP Listening on port ${config.port}`);
     server = http.createServer(app);
 }
 
 /**
  * Listen on provided port, on all network interfaces.
  */
-server.listen(port);
+server.listen(config.port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // Use a named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // Use a port number
-    return port;
-  }
-
-  return false;
-}
 
 /**
  * Event listener for HTTP server "error" event.

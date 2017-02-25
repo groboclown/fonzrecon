@@ -2,7 +2,6 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const logger = require('morgan');
 
 var app = express();
@@ -10,23 +9,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(logger('dev'));
-app.use(require('./lib/passport').setup(passport));
-
-app.all('/*', function(req, res, next) {
-  // Restrict to CORS headers
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-  } else {
-    next();
-  }
-});
+// app.use(require('./lib/access').setup());
 
 // Require authorization for all '/api' URIs.
 app.all('/api/*', [
-  require('./lib/passport').authenticate(passport)
+//  require('./lib/access').authenticate()
 ]);
 
 // Route Definition

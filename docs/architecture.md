@@ -10,8 +10,11 @@ currently hard-coded.
 
 The REST service stores:
 
-    * List of User - people who have access to the system.
+    * List of Login - authorization keys for the users.
         * Role Assignments
+        * Authorization Email address
+        * Reference to User
+    * List of User - people who have access to the system.
         * Contact IDs (email, Twitter, etc.)
         * Points To Award
         * Received Points Spent - number of points received that the
