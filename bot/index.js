@@ -26,5 +26,5 @@ app.post('/api/messages', connector.listen());
 
 bot.dialog('/', function (session) {
   console.log(JSON.stringify(session.message,null,2));
-  session.send("Hello World");
+  session.send("Aaaay");
 });
