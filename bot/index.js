@@ -40,7 +40,7 @@ bot.dialog('/', function (session) {
     return;
   }
 
-  if(data.isGroup && data.mentions && new RegExp(KEYWORDS_REGEX, 'i').test(data.text)){
+  if(data.isGroup && data.mentions.length > 0 && new RegExp(KEYWORDS_REGEX, 'i').test(data.text)){
     session.beginDialog('/givethanks');
   }
   else{
@@ -81,7 +81,7 @@ function getMessageData(session){
   output.mentions = [];
   msg.entities.forEach(function(e){
     if(e.type === 'mention' && e.mentioned.name !== BOT_NAME){
-      mentions.push(e.mentioned);
+      output.mentions.push(e.mentioned);
     }
   });
   if(msg.sourceEvent.teamsChannelId){
