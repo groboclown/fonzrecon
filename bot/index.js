@@ -9,6 +9,7 @@ const BOT_NAME = process.env.BOT_NAME;
 const KEYWORDS_REGEX = process.env.KEYWORDS_REGEX;
 
 var port = (process.env.PORT) ? process.env.PORT : 3978;
+
 app.listen(port,function(){
     console.log('port ' + port + ' open.');
 });
@@ -56,7 +57,7 @@ bot.dialog('/givethanks',function(session){
   var data = getMessageData(session);
   var names = [];
   data.mentions.forEach(function(mention){
-    names.push(formatName(mention.mentioned.name));
+    names.push(formatName(mention.name));
   });
 
   var last = names.pop()
