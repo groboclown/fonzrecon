@@ -39,7 +39,7 @@ bot.dialog('/', function (session) {
   }
 
   session.send("Aaaay");
-  session.send("Thanks for the mention, " + formatName(msgData.userName));
+  session.send("I agree with this, " + formatName(msgData.userName));
 });
 
 
