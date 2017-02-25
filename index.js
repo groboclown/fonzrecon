@@ -33,7 +33,7 @@ app.post('/api/messages', connector.listen());
 bot.dialog('/', function (session) {
   var data = getMessageData(session);
   for(var key in data){
-    console.log(key,data[key]);
+    console.log(key,JSON.stringify(data[key]));
   }
   if(data.tenantId != TENANT_ID){
     session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
