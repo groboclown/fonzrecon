@@ -3,9 +3,12 @@
 const express = require('express');
 const router = express.Router();
 
+const userApi = require('../lib/model/user');
+
+// Get all users
 router.get('/', function(req, res) {
-  res.status(404);
-  res.send({ErrorMessage: ''});
+  
 });
+
 
 module.exports = router;
