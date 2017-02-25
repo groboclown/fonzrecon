@@ -1,7 +1,7 @@
 var builder = require('botbuilder');
 var express = require('express');
 var bodyParser = require('body-parser');
-var botDialogs = require('bot-dialogs');
+var botDialogs = require('./bot-dialogs');
 var app = express();
 app.use(bodyParser.json());
 
