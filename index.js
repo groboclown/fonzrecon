@@ -57,7 +57,7 @@ function getMessageData(session){
   output.addressId = msg.address.id;
   output.channelId = msg.address.channelId;
   output.isGroup = (msg.address.conversation.isGroup) ? true : false;
-  output.conversationId = msg.address.conversaiont.id;
+  output.conversationId = msg.address.conversation.id;
   output.userId = msg.user.id;
   output.userName = msg.user.name;
 
