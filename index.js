@@ -34,12 +34,12 @@ bot.dialog('/', function (session) {
     console.log(key,msgData[key]);
   }
   if(msgData.tenantId != approvedTenantId){
-    session.send('Unsupported tenant');
+    session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
     return;
   }
 
   session.send("Aaaay");
-  session.send("I agree with this, " + formatName(msgData.userName));
+  session.send("Thanks for the mention " + formatName(msgData.userName) + '!');
 });
 
 
