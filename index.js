@@ -18,7 +18,7 @@ var bot = new builder.UniversalBot(connector);
 
 app.post('/api/messages', connector.listen());
 
-app.get('/test', function(req,res){
+app.get('/test/', function(req,res){
   res.setHeader('Content-Type', 'application/json');
   res.send(JSON.stringify({message:"Success"}));
   req.next();
