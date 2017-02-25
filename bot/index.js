@@ -79,11 +79,11 @@ function getMessageData(session){
   output.textFormat = msg.textFormat;
   output.text = msg.text;
   output.mentions = [];
-  for(var e in msg.entities){
+  msg.entities.forEach(function(e){
     if(e.type === 'mention' && e.mentioned.name !== BOT_NAME){
       mentions.push(e.mentioned);
     }
-  }
+  });
   if(msg.sourceEvent.teamsChannelId){
     output.teamsChannelId = msg.sourceEvent.teamsChannelId;
   }
