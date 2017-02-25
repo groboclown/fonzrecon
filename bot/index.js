@@ -22,7 +22,10 @@ var connector = new builder.ChatConnector({
 
 var bot = new builder.UniversalBot(connector);
 
-app.post('/api/messages', connector.listen());
+app.post('/api/messages', function(req,res){
+  console.log(JSON.stringify(req,null,2));
+  connector.listen()(req,res);
+});
 
 bot.dialog('/', function (session) {
 
