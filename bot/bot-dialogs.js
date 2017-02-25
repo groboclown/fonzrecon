@@ -16,6 +16,7 @@
       for(var key in data){
         console.log(key,JSON.stringify(data[key]));
       }
+      console.log('-----');
 
       if(data.tenantId != TENANT_ID){
         session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
