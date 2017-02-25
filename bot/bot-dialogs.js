@@ -1,5 +1,7 @@
 (function(){
 
+  var builder = require('botbuilder');
+
   const TENANT_ID = process.env.TENANT_ID;
   const BOT_NAME = process.env.BOT_NAME;
   const KEYWORDS_REGEX = process.env.KEYWORDS_REGEX;
@@ -10,7 +12,7 @@
 
     bot.dialog('/', function (session) {
       var data = getMessageData(session);
-      
+
       for(var key in data){
         console.log(key,JSON.stringify(data[key]));
       }
