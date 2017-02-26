@@ -16,14 +16,16 @@ const USER_LIST = [
       }
     ],
     'pointsToAward': 100,
-    'receivedPointsSpent': 30
+    'receivedPointsSpent': 30,
+    'organization': 'Engineering'
   },
   {
     'username': 'admin1',
     'names': ['Admin One'],
     'contact': [],
     'pointsToAward': 0,
-    'receivedPointsSpent': 0
+    'receivedPointsSpent': 0,
+    'organization' 'HR'
   }
 ];
 
