@@ -80,16 +80,8 @@ LoginSchema.pre('save', function(next) {
   });
 })
 
-LoginSchema.methods.compareAuthentication = function(candidateAuthentication) {
-  bcrypt.compare(candidateAuthentication, this.authentication, function(err, isMatch) {
-    return new Promize(function(resolve, reject) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(isMatch);
-      }
-    });
-  });
+LoginSchema.methods.compareAuthentication = function(candidateAuthentication, cb) {
+  bcrypt.compare(candidateAuthentication, this.authentication, cb);
 };
 
 module.exports = mongoose.model('Login', LoginSchema);

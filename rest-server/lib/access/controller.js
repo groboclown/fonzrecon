@@ -1,5 +1,14 @@
 'use strict';
 
+/**
+ * API handlers for logging in (getting a JWT token) and
+ * registering a new user.
+ *
+ * TODO the actual REST API around the registration must be done
+ * in the route.  This particular file should handle the generation of
+ * the tickets.
+ */
+
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Login = require('../model/login');
@@ -24,27 +33,37 @@ exports.register = function(req, res, next) {
   const auth = req.body.password;
 
   if (! validateEmail(email)) {
-    return res.status(422).send({ error: 'You must enter a valid email address.' });
+    var err = new Error('You must enter a valid email address.');
+    err.status = 422;
+    return next(err);
   }
   if (! validateUsername(username)) {
-    return res.status(422).send({ error: 'You must enter a valid username.' });
+    var err = new Error('You must enter a valid username.');
+    err.status = 422;
+    return next(err);
   }
   if (! validateAuth(auth)) {
-    return res.status(422).send({ error: 'You must enter a valid password.' })
+    var err = new Error('You must enter a valid password.');
+    err.status = 422;
+    return next(err);
   }
   Login.findOne({ username: username }, function(err, existingUser1) {
     if (err) {
       return next(err);
     }
     if (existingUser1) {
-      return res.status(422).send({ error: 'That username is already in use.' });
+      var err = new Error('Username already in use.');
+      err.status = 422;
+      return next(err);
     }
     Login.findOne({ email: email }, function(err, existingUser2) {
       if (err) {
         return next(err);
       }
       if (existingUser2) {
-        return res.status(422).send({ error: 'That email is already in use.' });
+        var err = new Error('Email is already in use.');
+        err.status = 422;
+        return next(err);
       }
       let login = new Login({
         email: email,
@@ -65,40 +84,6 @@ exports.register = function(req, res, next) {
     });
   });
 };
-
-
-// ===================================================
-// Role Check Middleware
-
-exports.roleAuthorization = function(permission) {
-  if (! permissions[permission]) {
-    throw new Error('unknown permission ' + permission);
-  }
-  return function(req, res, next) {
-    const login = req.user;
-    const bequest = req.bequest;
-
-    Login.findById(login._id, function(err, foundLogin) {
-      if (err) {
-        res.status(422).json({ err: 'Authentication required' });
-        return next(err);
-      }
-      let role = roles[foundLogin.role];
-      if (! role) {
-        console.error('Login ' + foundLogin.username + ' with invalid role ' +
-          foundLogin.role)
-        res.status(500).json({ err: 'Invalid role' });
-        return next(err);
-      }
-      if (!! bequest) {
-        Login.findById(bequest._id, )
-      } else {
-
-      }
-    });
-  };
-}
-
 
 
 // =============================================

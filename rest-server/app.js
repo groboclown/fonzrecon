@@ -3,18 +3,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
+const access = require('./lib/access');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(logger('dev'));
-// app.use(require('./lib/access').setup());
+access.setupApp(app);
 
 // Require authorization for all '/api' URIs.
-app.all('/api/*', [
-//  require('./lib/access').authenticate()
-]);
+app.all('/api/*', access.authenticate());
 
 // Route Definition
 app.use('/', require('./routes'))
