@@ -7,7 +7,7 @@ const permissions = access.permissions;
 
 const USER_BRIEF_VIEW = access.withPermission(permissions.USER_BRIEF_VIEW, auth_affected_users_none);
 
-const userApi = require('../lib/model').User;
+const User = require('../models').User;
 
 // Get all users
 // brief view should either be all or nothing; we don't collect
