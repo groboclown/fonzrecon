@@ -42,16 +42,20 @@ const UserSchema = new Schema({
 
   // Access Role.  What the user is allowed to do.
   pointsToAward: {
-    // Positive integer type
+    // Non-negative integer type
     type: Number,
     get: v => Math.round(v),
     set: v => Math.round(v),
     min: 0
   },
 
+  receivedPointsToSpend: {
+    // Remaining number of points to spend
+  },
+
   // Password reset notices
   receivedPointsSpent: {
-    // Positive integer type
+    // Non-negative integer type
     type: Number,
     get: v => Math.round(v),
     set: v => Math.round(v),

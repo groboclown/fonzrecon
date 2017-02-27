@@ -15,10 +15,8 @@ const environments = {
   test: extend(require('./test'), defaults),
 };
 
-module.exports = function() {
-  var env = environments[require('../settings').envName];
-  if (! env) {
-    env = environments['production'];
-  }
-  return env;
-};
+var envName = require('../settings').envName;
+if (! envName || ! environments[envName]) {
+  envName = 'production';
+}
+module.exports = environments[envName];

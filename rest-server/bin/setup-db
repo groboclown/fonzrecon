@@ -1,2 +1,84 @@
 #!/usr/bin/env node
 'use strict';
+
+// Setup the database
+require('../config/db').setup();
+const models = require('../models');
+const roles = require('../config/access/roles');
+const Login = models.Login;
+const User = models.User;
+const Award = models.Award;
+
+// Create some simple data
+new Login({
+    username: 'user1',
+    email: 'user1@fonzrecon.github',
+    authentication: '1234',
+    role: roles.USER.name,
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
+    userRef: 'user1',
+  }).save()
+  .then(function(user1) {
+    console.log("created login user1");
+    return new User({
+        // primary key, but referenced in the login table
+        'username': 'user1',
+        'names': ['User1', 'User One'],
+        'contact': [
+          {
+            'type': 'email',
+            'server': null,
+            'address': 'eat@fonzrecon.email.server'
+          }
+        ],
+        'pointsToAward': 100,
+        'receivedPointsSpent': 30,
+        'organization': 'Engineering'
+      }).save();
+  })
+  .then(function(user1) {
+    console.log('created user user1')
+  });
+
+new Login({
+    username: 'bot1',
+    email: 'bot1@fonzrecon.github',
+    authentication: 'bot!',
+    role: roles.BOT.name,
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
+
+    // cannot act as a user, meaning no one
+    // can assign it stuff or send it stuff,
+    // so it has no user.
+    userRef: null,
+  }).save()
+  // No User for bot; it only acts on behalf of real users.
+  .then(function(bot1) {
+    console.log('created login bot1')
+  });
+
+new Login({
+    username: 'admin1',
+    email: 'admin1@fonzrecon.github',
+    authentication: 'sekret',
+    role: roles.ADMIN.name,
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
+    userRef: 'admin1',
+  }).save()
+  .then(function(admin1) {
+    console.log('created login admin1');
+    new User({
+        'username': 'admin1',
+        'names': ['Admin One'],
+        'contact': [],
+        'pointsToAward': 0,
+        'receivedPointsSpent': 0,
+        'organization': 'HR',
+      }).save();
+  })
+  .then(function(admin1) {
+    console.log('created user admin1');
+  });

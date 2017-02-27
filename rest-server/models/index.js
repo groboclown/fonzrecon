@@ -18,9 +18,8 @@
 
 module.exports = {
   Login: require('./login'),
-  // Login: require('./login_mock'),
   User: require('./user'),
-  // User: require('./user_mock'),
-  // Award: require('./award'),
-  Award: require('./award_mock'),
+  Acknowledge: require('./acknowledge'),
+  ClaimedPrize: require('./claimed_prize'),
+  PrizeChoice: require('./prize_choice'),
 };
