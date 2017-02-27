@@ -6,7 +6,7 @@ const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
 const models = require('../../models');
 const Login = models.Login;
-const findUserAndBehalf = require('./findUserAndBehalf');
+const findUserAndBehalf = require('./find-user-and-behalf');
 
 module.exports = function(username, password) {
   return Login.findOne({ _id: username })

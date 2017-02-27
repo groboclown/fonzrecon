@@ -7,7 +7,7 @@
 
 const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
-const findUserAndBehalf = require('./findUserAndBehalf');
+const findUserAndBehalf = require('./find-user-and-behalf');
 const log = require('../../config/log');
 
 module.exports = function(passport) {

@@ -4,6 +4,6 @@ module.exports = {
   secret: require('./secret'),
   database: require('./database'),
   port: require('./port'),
-  envName: require('./envName'),
+  envName: require('./env-name'),
   ssl: require('./ssl'),
 };
