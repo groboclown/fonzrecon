@@ -73,9 +73,9 @@ UserSchema.statics.findOneByName = function(name) {
 
 const BRIEF_SELECTION = 'username names organization';
 
-UserSchema.statics.findOneBrief = function(name) {
+UserSchema.statics.findOneBrief = function(condition) {
   return this
-    .findOne({ names: name })
+    .findOne(condition)
     .lean()
     .select(BRIEF_SELECTION);
 }

@@ -7,3 +7,16 @@ exports.listBrief = function(userLike, pagination) {
     .listBrief(userLike)
     .paginate(pagination);
 };
+
+exports.findByIdBrief = function(username) {
+  return User
+    .findOneBrief({ username: username })
+    .exec();
+}
+
+exports.findByIdDetailsReadOnly = function(username) {
+  return User
+    .findOne({ username: username })
+    .lean()
+    .exec();
+};

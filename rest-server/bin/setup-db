@@ -9,8 +9,8 @@ const Login = models.Login;
 const User = models.User;
 const Award = models.Award;
 
-// Create some simple data
-new Login({
+const SAMPLE_LOGINS = [
+  {
     username: 'user1',
     email: 'user1@fonzrecon.github',
     authentication: '1234',
@@ -18,30 +18,7 @@ new Login({
     resetAuthenticationToken: null,
     resetAuthenticationExpires: null,
     userRef: 'user1',
-  }).save()
-  .then(function(user1) {
-    console.log("created login user1");
-    return new User({
-        // primary key, but referenced in the login table
-        'username': 'user1',
-        'names': ['User1', 'User One'],
-        'contact': [
-          {
-            'type': 'email',
-            'server': null,
-            'address': 'eat@fonzrecon.email.server'
-          }
-        ],
-        'pointsToAward': 100,
-        'receivedPointsSpent': 30,
-        'organization': 'Engineering'
-      }).save();
-  })
-  .then(function(user1) {
-    console.log('created user user1')
-  });
-
-new Login({
+  }, {
     username: 'bot1',
     email: 'bot1@fonzrecon.github',
     authentication: 'bot!',
@@ -53,13 +30,7 @@ new Login({
     // can assign it stuff or send it stuff,
     // so it has no user.
     userRef: null,
-  }).save()
-  // No User for bot; it only acts on behalf of real users.
-  .then(function(bot1) {
-    console.log('created login bot1')
-  });
-
-new Login({
+  }, {
     username: 'admin1',
     email: 'admin1@fonzrecon.github',
     authentication: 'sekret',
@@ -67,18 +38,66 @@ new Login({
     resetAuthenticationToken: null,
     resetAuthenticationExpires: null,
     userRef: 'admin1',
-  }).save()
-  .then(function(admin1) {
-    console.log('created login admin1');
-    new User({
-        'username': 'admin1',
-        'names': ['Admin One'],
-        'contact': [],
-        'pointsToAward': 0,
-        'receivedPointsSpent': 0,
-        'organization': 'HR',
-      }).save();
-  })
-  .then(function(admin1) {
-    console.log('created user admin1');
-  });
+  }
+];
+
+const SAMPLE_USERS = [
+  {
+    'username': 'user1',
+    'names': ['User1', 'User One'],
+    'contact': [
+      {
+        'type': 'email',
+        'server': null,
+        'address': 'eat@fonzrecon.email.server'
+      }
+    ],
+    'pointsToAward': 100,
+    'receivedPointsSpent': 30,
+    'organization': 'Engineering'
+  },
+  // bot1 does not have a user
+  {
+    'username': 'admin1',
+    'names': ['Admin One'],
+    'contact': [],
+    'pointsToAward': 0,
+    'receivedPointsSpent': 0,
+    'organization': 'HR',
+  }
+];
+
+
+function saveLogin(loginObj) {
+  return function(login) {
+    if (! login) {
+      return new Login(loginObj).save();
+    }
+    return login;
+  }
+}
+for (var i = 0; i < SAMPLE_LOGINS.length; i++) {
+  Login.findOne({ username: SAMPLE_LOGINS[i].username })
+    .then(saveLogin(SAMPLE_LOGINS[i]))
+    .then(function(login) {
+      console.log('Created login ' + login.username);
+    });
+}
+
+
+
+function saveUser(userObj) {
+  return function(user) {
+    if (! user) {
+      return new User(userObj).save();
+    }
+    return user;
+  }
+}
+for (var i = 0; i < SAMPLE_USERS.length; i++) {
+  User.findOne({ username: SAMPLE_USERS[i].username })
+    .then(saveUser(SAMPLE_USERS[i]))
+    .then(function(user) {
+      console.log('Created user ' + user.username);
+    });
+}
