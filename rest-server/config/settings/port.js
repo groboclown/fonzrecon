@@ -1,10 +1,9 @@
 'use strict';
 
-module.exports = function() {
-  return normalizePort(
+
+module.exports = normalizePort(
     process.env.PORT ||
     process.env['fonzrecon_config_port'] || '3000');
-};
 
 
 
