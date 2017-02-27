@@ -16,23 +16,22 @@ The REST service stores:
         * Reference to User
     * List of User - people who have access to the system.
         * Contact IDs (email, Twitter, etc.)
-        * Points To Award
-        * Received Points Spent - number of points received that the
-          user has spent on other things.
-    * List of Aaaay Awards
+        * Points Available To give in Aaay Awards.
+        * Points Available To Spend on prizes.
+    * List of Aaay Awards (acknowledgements)
         * Reference User who gave award
         * Reference list of Users who were awarded points
         * Text description
         * Points Awarded
+        * Tags
         * Who can view (user or role).
+        * List of "thumbs up" - additional points from others
+          who approve of this message.
+    * List of prizes one can claim.
+    * List of claimed prizes.
 
 Users with the Administrator role can create users, assign users
 to roles, and change Points To Spend for users.
 
-Synthetic values:
-  - User Awarded Points: gathered by summing up the list of Aaaay Awards
-    received by the user.
-  - User Points Given: gathered by summing up the list of Aaaay Awards
-    given by the user.
 
 ## Bot Interface

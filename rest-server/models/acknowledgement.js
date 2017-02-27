@@ -22,7 +22,7 @@ const ThumbsUp = new Schema({
   }
 });
 
-const AcknowledgeSchema = new Schema({
+const AcknowledgementSchema = new Schema({
   givenByUsername: {
     type: Schema.ObjectId,
     ref: 'User',
@@ -52,8 +52,8 @@ const AcknowledgeSchema = new Schema({
 }, {
   timestamps: true
 });
-AcknowledgeSchema.set('toJSON', { virtuals: true });
-AcknowledgeSchema.virtual('givenBy')
+AcknowledgementSchema.set('toJSON', { virtuals: true });
+AcknowledgementSchema.virtual('givenBy')
   .get(function() {
     if (typeof(this.givenByUsername) === 'string') {
       return {
@@ -70,7 +70,7 @@ AcknowledgeSchema.virtual('givenBy')
     }
   });
 
-AcknowledgeSchema.methods.pointsGivenBy = function(username) {
+AcknowledgementSchema.methods.pointsGivenBy = function(username) {
   // In case we're passed a User object instead.
   if (username.username) {
     username = username.username;
@@ -87,7 +87,7 @@ AcknowledgeSchema.methods.pointsGivenBy = function(username) {
   return sum;
 };
 
-AcknowledgeSchema.methods.pointsGivenTo = function(username) {
+AcknowledgementSchema.methods.pointsGivenTo = function(username) {
   // In case we're passed a User object instead.
   if (username.username) {
     username = username.username;
@@ -104,7 +104,7 @@ AcknowledgeSchema.methods.pointsGivenTo = function(username) {
   return 0;
 };
 
-AcknowledgeSchema.statics.findBriefPublic = function(conditions) {
+AcknowledgementSchema.statics.findBriefPublic = function(conditions) {
   conditions.public = true;
   return this.find(conditions)
     .select('givenBy awardedTo thumbsUp createdAt updatedAt')
@@ -133,7 +133,7 @@ AcknowledgeSchema.statics.findBriefPublic = function(conditions) {
     .lean();
 };
 
-AcknowledgeSchema.statics.findOneBrief = function(conditions) {
+AcknowledgementSchema.statics.findOneBrief = function(conditions) {
   return this.findOne(conditions)
   .select('givenByUsername awardedTo thumbsUp createdAt updatedAt')
   .populate('givenByUsername', 'username names organization')
@@ -156,7 +156,7 @@ AcknowledgeSchema.statics.findOneBrief = function(conditions) {
   .lean();
 };
 
-AcknowledgeSchema.statics.findOneDetails = function(conditions) {
+AcknowledgementSchema.statics.findOneDetails = function(conditions) {
   return this.findOne(conditions)
     .populate('givenByUsername', 'username names organization')
     .populate({
@@ -177,4 +177,4 @@ AcknowledgeSchema.statics.findOneDetails = function(conditions) {
     .lean();
 }
 
-module.exports = mongoose.model('Acknowledge', AcknowledgeSchema);
+module.exports = mongoose.model('Acknowledgement', AcknowledgementSchema);

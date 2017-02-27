@@ -1,6 +1,6 @@
 'use strict';
 
-const Acknowledge = require('../models').Acknowledge;
+const Acknowledgement = require('../models').Acknowledgement;
 const User = require('../models').User;
 const paging = require('./util').paging.extract;
 
@@ -10,11 +10,11 @@ exports.getAllBrief = function(req, res, next) {
   // TODO allow for query parameters.
 
   var pagination = paging(req, { page: 1, limit: 100 });
-  return Acknowledge
+  return Acknowledgement
     .findBriefPublic({})
     .paginate(pagination)
     .then(function (results) {
-      results.type = 'Acknowledge';
+      results.type = 'Acknowledgement';
       res.status(200).json(results);
     })
     .catch(function (err) {
@@ -25,7 +25,7 @@ exports.getAllBrief = function(req, res, next) {
 
 
 exports.getOneBrief = function(req, res, next) {
-  return Acknowledge
+  return Acknowledgement
     .findOneBrief({ _id: req.params.id })
     .then(function (ack) {
       res.status(200).json(ack);
@@ -38,10 +38,10 @@ exports.getOneBrief = function(req, res, next) {
 
 
 exports.getOneDetails = function(req, res, next) {
-  return Acknowledge
+  return Acknowledgement
     .findOneDetails({ _id: req.params.id })
     .then(function (ack) {
-      res.status(200).json({ Acknowledge: ack });
+      res.status(200).json({ Acknowledgement: ack });
     })
     .catch(function (err) {
       next(err);
@@ -57,7 +57,7 @@ exports.create = function(req, res, next) {
   } else if (!!req.userLogin && !!req.userLogin.user) {
     user = req.userLogin.user;
   } else {
-    // those with just a login are not allowed to create acknowledges.
+    // those with just a login are not allowed to create acknowledgements.
     var err = new Error('Forbidden');
     err.status = 403;
     return next(err);
@@ -166,7 +166,7 @@ exports.create = function(req, res, next) {
     .then(function (args) {
       var toUsers = args[0];
       var fromUser = args[1];
-      return new Acknowledge({
+      return new Acknowledgement({
         givenByUsername: fromUser,
         awardedTo: toUsers,
         pointsToEachUser: req.body.points,
@@ -201,10 +201,10 @@ exports.create = function(req, res, next) {
 
 
 
-exports.getUsersInAcknowledge = function(req) {
+exports.getUsersInAcknowledgement = function(req) {
   const ackId = req.params.id;
 
-  return Acknowledge
+  return Acknowledgement
     .findOneBrief({ _id: ackId })
     .then(function(ack) {
       var ret = [ ack.givenByUsername.username ];

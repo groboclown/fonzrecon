@@ -19,7 +19,7 @@
 module.exports = {
   Login: require('./login'),
   User: require('./user'),
-  Acknowledge: require('./acknowledge'),
+  Acknowledgement: require('./acknowledgement'),
   ClaimedPrize: require('./redeemed_prize'),
   PrizeChoice: require('./prize_choice'),
 };
