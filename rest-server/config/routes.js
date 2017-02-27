@@ -1,7 +1,7 @@
 'use strict';
 
 const settings = require('./settings');
-const access = require('../lib/access');
+const access = require('../controllers/access');
 
 exports.setup = function(app, passport) {
   const pauth = passport.authenticate.bind(passport);

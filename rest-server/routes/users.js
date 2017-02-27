@@ -2,8 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const access = require('../lib/access');
-const permissions = access.permissions;
+const access = require('../controllers/access');
+const permissions = require('../config/access').permissions;
 
 const USER_BRIEF_VIEW = access.withPermission(permissions.USER_BRIEF_VIEW, auth_affected_users_none);
 

@@ -1,7 +1,8 @@
 'use strict';
 
 const MockODM = require('./mock_api');
-const roles = require('../lib/access/roles');
+// Note: due to load order, can't use `require('./config').access
+const roles = require('../config/access').roles;
 
 // For now, uses hard-coded values
 const LOGIN_LIST = [
@@ -40,8 +41,13 @@ const LOGIN_LIST = [
 
 const LoginDb = new MockODM(LOGIN_LIST);
 
-LoginDb.compareAuthentication = function(candidateAuthentication, cb) {
-  return cb(null, this.authentication === candidateAuthentication);
+LoginDb.extractData = function(d) {
+  if (! d.compareAuthentication) {
+    d.compareAuthentication = function(candidateAuthentication, cb) {
+      return cb(null, this.authentication === candidateAuthentication);
+    };
+  }
+  return d;
 };
 
 module.exports = LoginDb;

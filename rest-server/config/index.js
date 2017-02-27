@@ -2,6 +2,7 @@
 
 module.exports = {
   settings: require('./settings'),
+  access: require('./access'),
   express: require('./express'),
   passport: require('./passport'),
   db: require('./db'),
