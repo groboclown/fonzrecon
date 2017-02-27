@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 
@@ -55,7 +54,6 @@ const AcknowledgeSchema = new Schema({
 }, {
   timestamps: true
 });
-AcknowledgeSchema.plugin(mongoosePaginate);
 
 
 AcknowledgeSchema.methods.pointsGivenBy = function(username) {

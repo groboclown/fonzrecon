@@ -1,6 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+require('../lib/db').initialize();
+
 const env = require('./env');
 
 // Initialize models.

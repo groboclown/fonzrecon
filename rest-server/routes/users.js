@@ -5,7 +5,7 @@ const router = express.Router();
 const access = require('../controllers/access');
 const permissions = require('../config/access/permissions');
 const controller = require('../controllers/user');
-const paging = require('./util').paging;
+const paging = require('./util').paging.extract;
 
 const USER_BRIEF_VIEW = access.authorize(permissions.USER_BRIEF_VIEW, auth_affected_users_none);
 

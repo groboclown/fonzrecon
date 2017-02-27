@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 
 
@@ -65,11 +64,28 @@ const UserSchema = new Schema({
 }, {
   timestamps: true
 });
-UserSchema.plugin(mongoosePaginate);
 
-UserSchema.statics.findOneByName = function(name, cb) {
-  return this.findOne({ names: name })
+UserSchema.statics.findOneByName = function(name) {
+  return this
+    .findOne({ names: name })
     .lean();
 };
+
+const BRIEF_SELECTION = 'username names organization';
+
+UserSchema.statics.findOneBrief = function(name) {
+  return this
+    .findOne({ names: name })
+    .lean()
+    .select(BRIEF_SELECTION);
+}
+
+UserSchema.statics.listBrief = function(userLike) {
+  return this
+    .find({ username: { $regex: new RegExp(userLike, 'i') } })
+    .lean()
+    .select(BRIEF_SELECTION);
+};
+
 
 module.exports = mongoose.model('User', UserSchema);

@@ -1,7 +1,6 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 const roles = require('../config/access/roles');
@@ -57,7 +56,6 @@ const LoginSchema = new Schema({
 }, {
   timestamps: true
 });
-LoginSchema.plugin(mongoosePaginate);
 
 
 LoginSchema.pre('save', function(next) {
