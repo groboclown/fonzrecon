@@ -64,8 +64,6 @@ exports.create = function(req, res, next) {
   }
 
   req.checkBody({
-    /*
-    FIXME
     to: {
       // list of "names" for the user, not usernames!
       isArrayOfString: {
@@ -78,13 +76,13 @@ exports.create = function(req, res, next) {
         options: {
           gt: 0
         },
-        errorMessage: 'Missing positive "points"'
+        errorMessage: 'must be present and positive.'
       }
     },
     public: {
       optional: true,
       isBoolean: {
-        errorMessage: '"public" must be true or false'
+        errorMessage: 'must be true or false'
       }
     },
     comment: {
@@ -93,17 +91,16 @@ exports.create = function(req, res, next) {
           gt: 4,
           lt: 4000
         },
-        errorMessage: 'comment must be more than 4 characters, and less than 4000'
+        errorMessage: 'must be more than 4 characters, and less than 4000'
       }
     },
     tags: {
       isArrayOfString: {
         options: 0,
-        errorMessage: '"tags" must a list of strings'
+        errorMessage: 'must a list of strings'
       },
       optional: true
     }
-    */
   });
 
   var fromUserPromise = User
@@ -121,7 +118,8 @@ exports.create = function(req, res, next) {
     .then(function (results) {
       if (! results.isEmpty()) {
         var err = new Error();
-        err.message = results.array();
+        err.message = 'ValidationError',
+        err.details = results.array();
         err.status = 400;
         throw err;
       }
@@ -142,14 +140,40 @@ exports.create = function(req, res, next) {
       var toUsers = args[1];
       if (toUsers.length !== req.body.to.length) {
         // Did not find all the users
-        var err = new Error('At least one of the given "to" users does not exist, or there was a duplicate name.');
+        var err = new Error('ValidationError');
+        err.details = {
+          param: 'to',
+          msg: 'At least one of the given users does not exist, or there was a duplicate name.',
+          value: req.body.to
+        };
         err.status = 400;
         throw err;
+      }
+      for (var nindex = 0; nindex < fromUser.names.length; nindex++) {
+        for (var tindex = 0; tindex < toUsers.length; tindex++) {
+          if (toUsers[tindex].names.includes(fromUser.names[nindex])) {
+            var err = new Error('ValidationError');
+            err.details = {
+              param: 'to',
+              msg: 'Cannot send award to yourself',
+              value: req.body.to
+            };
+            err.status = 400;
+            throw err;
+          }
+        }
       }
       // Check if the user has enough points to give out.
       var totalGivenPoints = req.body.points * toUsers.length;
       if (fromUser.pointsToAward < totalGivenPoints) {
-        var err = new Error(`User does not have ${totalGivenPoints} points`);
+        var err = new Error('ValidationError');
+        err.details = {
+          param: 'points',
+          msg: 'insufficient points',
+          value: req.body.points,
+          quantity: toUsers.length,
+          total: totalGivenPoints
+        };
         err.status = 400;
         throw err;
       }

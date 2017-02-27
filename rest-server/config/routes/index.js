@@ -38,7 +38,7 @@ exports.setup = function(app, passport) {
       payload.stack = err.stack;
     }
     if (err.details) {
-      payload.details = details;
+      payload.details = err.details;
     }
 
     if (err.status) {

@@ -20,21 +20,22 @@ exports.setup = function(app, passport) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(validator({
-    // Custom validators
-    isArrayOfString: function(param, minCount) {
-            if (! Array.isArray(param)) {
-              return false;
-            }
-            if (param.length < minCount) {
-              return false;
-            }
-            for (var i = 0; i < param.length; i++) {
-              if (typeof(param[i]) !== 'string') {
-                return false;
-              }
-            }
-            return true;
-        },
+    customValidators: {
+      isArrayOfString: function(param, minCount) {
+        if (! Array.isArray(param)) {
+          return false;
+        }
+        if (param.length < minCount) {
+          return false;
+        }
+        for (var i = 0; i < param.length; i++) {
+          if (typeof(param[i]) !== 'string') {
+            return false;
+          }
+        }
+        return true;
+      },
+    },
   }));
 
 
