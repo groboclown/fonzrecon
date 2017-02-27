@@ -3,6 +3,7 @@
 const Acknowledgement = require('../models').Acknowledgement;
 const User = require('../models').User;
 const paging = require('./util').paging.extract;
+const jsonConvert = require('./util').jsonConvert;
 
 
 
@@ -15,7 +16,7 @@ exports.getAllBrief = function(req, res, next) {
     .paginate(pagination)
     .then(function (results) {
       results.type = 'Acknowledgement';
-      res.status(200).json(results);
+      res.status(200).json(jsonConvert.pagedResults(results, jsonConvert.briefAcknowledgement));
     })
     .catch(function (err) {
       next(err);
@@ -28,7 +29,7 @@ exports.getOneBrief = function(req, res, next) {
   return Acknowledgement
     .findOneBrief({ _id: req.params.id })
     .then(function (ack) {
-      res.status(200).json(ack);
+      res.status(200).json({ Acknowledgement: jsonConvert.briefAcknowledgement(ack) });
     })
     .catch(function (err) {
       next(err);
@@ -41,7 +42,7 @@ exports.getOneDetails = function(req, res, next) {
   return Acknowledgement
     .findOneDetails({ _id: req.params.id })
     .then(function (ack) {
-      res.status(200).json({ Acknowledgement: ack });
+      res.status(200).json({ Acknowledgement: jsonConvert.detailedAcknowledgement(ack) });
     })
     .catch(function (err) {
       next(err);
@@ -192,7 +193,7 @@ exports.create = function(req, res, next) {
       var fromUser = args[1];
       return new Acknowledgement({
         givenByUsername: fromUser,
-        awardedTo: toUsers,
+        awardedToUsernames: toUsers,
         pointsToEachUser: req.body.points,
         comment: req.body.comment,
         public: req.body.public || false,
@@ -232,8 +233,8 @@ exports.getUsersInAcknowledgement = function(req) {
     .findOneBrief({ _id: ackId })
     .then(function(ack) {
       var ret = [ ack.givenByUsername.username ];
-      for (var i = 0; i < ack.awardedTo.length; i++) {
-        ret.push(ack.awardedTo[i].username);
+      for (var i = 0; i < ack.awardedToUsernames.length; i++) {
+        ret.push(ack.awardedToUsernames[i].username);
       }
       return ret;
     });

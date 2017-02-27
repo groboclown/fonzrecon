@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 // =====================================
 // Schema Definition
 
-const ThumbsUp = new Schema({
+const ThumbsUpSchema = new Schema({
   givenByUsername: {
     type: Schema.ObjectId,
     ref: 'User',
@@ -21,6 +21,8 @@ const ThumbsUp = new Schema({
     min: 1
   }
 });
+ThumbsUpSchema.set('toJSON', { virtuals: true });
+ThumbsUpSchema.set('toObject', { virtuals: true });
 
 const AcknowledgementSchema = new Schema({
   givenByUsername: {
@@ -29,7 +31,7 @@ const AcknowledgementSchema = new Schema({
     required: true
   },
 
-  awardedTo: [{
+  awardedToUsernames: [{
     type: Schema.ObjectId,
     ref: 'User'
   }],
@@ -48,26 +50,45 @@ const AcknowledgementSchema = new Schema({
 
   tags: [String],
 
-  thumbsUp: [ThumbsUp]
+  thumbsUp: [ThumbsUpSchema]
 }, {
   timestamps: true
 });
 AcknowledgementSchema.set('toJSON', { virtuals: true });
+AcknowledgementSchema.set('toObject', { virtuals: true });
+
+function toLinkedSimpleUser(user) {
+  if (typeof(user) === 'string') {
+    return {
+      username: user,
+      url: '/api/v1/users/' + user
+    };
+  } else {
+    return {
+      username: user.username,
+      url: '/api/v1/users/' + user.username,
+      names: user.names,
+      organization: user.organization
+    };
+  }
+}
+
+ThumbsUpSchema.virtual('givenBy')
+  .get(function() {
+    return toLinkedSimpleUser(this.givenByUsername);
+  });
+
 AcknowledgementSchema.virtual('givenBy')
   .get(function() {
-    if (typeof(this.givenByUsername) === 'string') {
-      return {
-        username: this.givenByUsername,
-        url: '/api/v1/users/' + this.givenByUsername
-      };
-    } else {
-      return {
-        username: this.givenByUsername.username,
-        url: '/api/v1/users/' + this.givenByUsername.username,
-        names: this.givenByUsername.names,
-        organization: this.givenByUsername.organization
-      };
+    return toLinkedSimpleUser(this.givenByUsername);
+  });
+AcknowledgementSchema.virtual('awardedTo')
+  .get(function() {
+    var ret = [];
+    for (var i = 0; i < this.awardedToUsernames.length; i++) {
+      ret.push(toLinkedSimpleUser(this.awardedToUsernames[i]));
     }
+    return ret;
   });
 
 AcknowledgementSchema.methods.pointsGivenBy = function(username) {
@@ -107,73 +128,28 @@ AcknowledgementSchema.methods.pointsGivenTo = function(username) {
 AcknowledgementSchema.statics.findBriefPublic = function(conditions) {
   conditions.public = true;
   return this.find(conditions)
-    .select('givenBy awardedTo thumbsUp createdAt updatedAt')
+    .select('givenByUsername awardedToUsernames thumbsUp createdAt updatedAt givenBy awardedTo comment tags')
     .sort('-createdAt')
     .populate('givenByUsername', 'username names organization')
-    .populate('awardedTo', 'username names organization')
+    .populate('awardedToUsernames', 'username names organization')
     .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
-    /*
-    .populate({
-      path: 'awardedTo',
-      // populate the users in the array of awardedTo
-      populate: {
-        path: 'awardedTo',
-        select: 'username names organization'
-      },
-    })
-    .populate({
-      path: 'thumbsUp',
-      select: 'givenByUsername createdAt',
-      populate: {
-        path: 'thumbsUp.givenByUsername',
-        select: 'username names organization'
-      }
-    })
-    */
     .lean();
 };
 
 AcknowledgementSchema.statics.findOneBrief = function(conditions) {
   return this.findOne(conditions)
-  .select('givenByUsername awardedTo thumbsUp createdAt updatedAt')
+  .select('givenByUsername awardedToUsernames thumbsUp createdAt updatedAt givenBy awardedTo comment tags public')
   .populate('givenByUsername', 'username names organization')
-  .populate({
-    path: 'awardedTo',
-    // populate the users in the array of awardedTo
-    populate: {
-      path: 'awardedTo',
-      select: 'username names organization'
-    },
-  })
-  .populate({
-    path: 'thumbsUp',
-    select: 'givenByUsername createdAt',
-    populate: {
-      path: 'thumbsUp.givenByUsername',
-      select: 'username names organization'
-    }
-  })
+  .populate('awardedToUsernames', 'username names organization')
+  .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
   .lean();
 };
 
 AcknowledgementSchema.statics.findOneDetails = function(conditions) {
   return this.findOne(conditions)
     .populate('givenByUsername', 'username names organization')
-    .populate({
-      path: 'awardedTo',
-      // populate the users in the array of awardedTo
-      populate: {
-        path: 'awardedTo',
-        select: 'username names organization'
-      },
-    })
-    .populate({
-      path: 'thumbsUp',
-      populate: {
-        path: 'thumbsUp.givenByUsername',
-        select: 'username names organization'
-      }
-    })
+    .populate('awardedToUsernames', 'username names organization')
+    .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
     .lean();
 }
 

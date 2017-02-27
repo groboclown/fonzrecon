@@ -2,6 +2,7 @@
 
 const User = require('../models').User;
 const paging = require('./util').paging.extract;
+const jsonConvert = require('./util').jsonConvert;
 
 // Get all users
 // brief view should either be all or nothing; we don't collect
@@ -13,8 +14,8 @@ exports.getAllBrief = function(req, res, next) {
     .listBrief(userLike)
     .paginate(pagination)
     .then(function(users) {
-      users.type = 'User';
-      res.status(200).json(users);
+      users.type = 'User'
+      res.status(200).json(jsonConvert.pagedResults(users, jsonConvert.briefUser));
     })
     .catch(function(err) {
       next(err);
@@ -33,7 +34,7 @@ exports.getOneBrief = function(req, res, next) {
         err.status = 404;
         return next(err);
       }
-      res.status(200).json({ User: user });
+      res.status(200).json({ User: jsonConvert.briefUser(user) });
     })
     .catch(function(err) {
       next(err);
