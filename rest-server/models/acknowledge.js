@@ -23,12 +23,6 @@ const ThumbsUp = new Schema({
 });
 
 const AcknowledgeSchema = new Schema({
-  _id: {
-    type: Number,
-    unique: true,
-    required: true
-  },
-
   givenByUsername: {
     type: Schema.ObjectId,
     ref: 'User',
@@ -52,11 +46,29 @@ const AcknowledgeSchema = new Schema({
 
   public: Boolean,
 
+  tags: [String],
+
   thumbsUp: [ThumbsUp]
 }, {
   timestamps: true
 });
-
+AcknowledgeSchema.set('toJSON', { virtuals: true });
+AcknowledgeSchema.virtual('givenBy')
+  .get(function() {
+    if (typeof(this.givenByUsername) === 'string') {
+      return {
+        username: this.givenByUsername,
+        url: '/api/v1/users/' + this.givenByUsername
+      };
+    } else {
+      return {
+        username: this.givenByUsername.username,
+        url: '/api/v1/users/' + this.givenByUsername.username,
+        names: this.givenByUsername.names,
+        organization: this.givenByUsername.organization
+      };
+    }
+  });
 
 AcknowledgeSchema.methods.pointsGivenBy = function(username) {
   // In case we're passed a User object instead.
@@ -95,9 +107,12 @@ AcknowledgeSchema.methods.pointsGivenTo = function(username) {
 AcknowledgeSchema.statics.findBriefPublic = function(conditions) {
   conditions.public = true;
   return this.find(conditions)
-    .select('givenByUsername awardedTo thumbsUp createdAt updatedAt')
+    .select('givenBy awardedTo thumbsUp createdAt updatedAt')
     .sort('-createdAt')
     .populate('givenByUsername', 'username names organization')
+    .populate('awardedTo', 'username names organization')
+    .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
+    /*
     .populate({
       path: 'awardedTo',
       // populate the users in the array of awardedTo
@@ -114,6 +129,7 @@ AcknowledgeSchema.statics.findBriefPublic = function(conditions) {
         select: 'username names organization'
       }
     })
+    */
     .lean();
 };
 

@@ -48,7 +48,7 @@ const UserSchema = new Schema({
   // Ways to contact the user.
   contact: [ContactSchema],
 
-  // Access Role.  What the user is allowed to do.
+  // Points the user can spend.
   pointsToAward: {
     // Non-negative integer type
     type: Number,
@@ -57,18 +57,17 @@ const UserSchema = new Schema({
     min: 0
   },
 
+  // Remaining number of points to spend
   receivedPointsToSpend: {
-    // Remaining number of points to spend
-  },
-
-  // Password reset notices
-  receivedPointsSpent: {
     // Non-negative integer type
     type: Number,
     get: v => Math.round(v),
     set: v => Math.round(v),
-    min: 0
+    min: 0,
+    required: true,
+    default: 0
   },
+
   organization: String,
 }, {
   timestamps: true
@@ -78,6 +77,9 @@ UserSchema.pre('save', function(next) {
   if (this._id !== this.username) {
     var err = new Error('_id and username must match');
     return next(err);
+  }
+  if (! this.names.includes(this.username)) {
+    this.names.push(this.username);
   }
   return next();
 });

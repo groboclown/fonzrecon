@@ -5,6 +5,7 @@ const logger = require('morgan');
 const compression = require('compression');
 const cors = require('cors');
 const csrf = require('csurf');
+const validator = require('express-validator');
 const settings = require('./settings');
 
 exports.setup = function(app, passport) {
@@ -18,6 +19,23 @@ exports.setup = function(app, passport) {
   app.use(logger('dev'));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
+  app.use(validator({
+    // Custom validators
+    isArrayOfString: function(param, minCount) {
+            if (! Array.isArray(param)) {
+              return false;
+            }
+            if (param.length < minCount) {
+              return false;
+            }
+            for (var i = 0; i < param.length; i++) {
+              if (typeof(param[i]) !== 'string') {
+                return false;
+              }
+            }
+            return true;
+        },
+  }));
 
 
   // use passport session

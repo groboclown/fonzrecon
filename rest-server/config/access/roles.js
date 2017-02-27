@@ -30,8 +30,14 @@ module.exports = {
       USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
       ACKNOWLEDGE_BRIEF_VIEW_PUBLIC: ALLOW_ANY,
       ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ON_BEHALF_OF,
-      ACKNOWLEDGE_CREATE: ALLOW_ON_BEHALF_OF,
       ACKNOWLEDGE_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
+
+      // This is a bit weird: the API will use the "behalf-of"
+      // user first (user will be null).  So, because any user can
+      // create an acknowledgement, but acknowledgments will only
+      // be created based on the currently logged-in user, the
+      // bot should always be allowed to create.
+      ACKNOWLEDGE_CREATE: ALLOW_ANY,
     }
   },
 
@@ -49,7 +55,11 @@ module.exports = {
       ACKNOWLEDGE_DETAILS_VIEW: ALLOW_SELF,
       ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
       ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_SELF,
-      ACKNOWLEDGE_CREATE: ALLOW_SELF,
+
+      // This, too is a bit weird.  The API will create an ack
+      // only for the requesting user.  Because the requesting user
+      // is a user, they will be allowed to create it for themselves.
+      ACKNOWLEDGE_CREATE: ALLOW_ANY,
     }
   },
 
@@ -67,8 +77,9 @@ module.exports = {
       ACKNOWLEDGE_DETAILS_VIEW: ALLOW_ANY,
       ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
       ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
-      // Can only create acknowledgements for self.
-      ACKNOWLEDGE_CREATE: ALLOW_SELF,
+
+      // Again, acks will only be created for the requesting user.
+      ACKNOWLEDGE_CREATE: ALLOW_ANY,
     }
   },
 };
