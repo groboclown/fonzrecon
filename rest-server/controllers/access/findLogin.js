@@ -8,6 +8,7 @@
 const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
 const findUserAndBehalf = require('./findUserAndBehalf');
+const log = require('../../config/log');
 
 module.exports = function(passport) {
   return [
@@ -33,10 +34,8 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
   // req.user is populated by passport to contain
   // the login object.
   if (! req.user) {
-    console.log("No user; forbidden.");
-    var err = new Error('Forbidden');
-    err.status = 401;
-    return next(err);
+    log("No user; forbidden.");
+    return next(forbidden());
   }
   req.userLogin = null;
   var onBehalfOf = lookup(req.body, 'behalf') || lookup(req.query, 'behalf');
@@ -65,7 +64,7 @@ function discoverUserMiddleware(req, res, next) {
   // really, shouldn't be checking the query for the password.
   var password = lookup(req.body, 'password') || lookup(req.query, 'password');
   if (!! username) {
-    console.log("getting login for " + username);
+    log("getting login for " + username);
     Login.findOne({ username: username }, function(err, login) {
       if (err) {
         return next(err);
@@ -77,9 +76,7 @@ function discoverUserMiddleware(req, res, next) {
             return next(err);
           }
           if (! isMatch) {
-            var err = new Error('Forbidden');
-            err.status = 401;
-            return next(err);
+            return next(forbidden());
           }
           req.user = login;
           next();
@@ -89,7 +86,7 @@ function discoverUserMiddleware(req, res, next) {
       }
     });
   } else {
-    console.log("no login given");
+    log("no login given");
     next();
   }
 }
@@ -107,4 +104,11 @@ function lookup(obj, field) {
     obj = prop;
   }
   return null;
+}
+
+
+function forbidden() {
+  var err = new Error('Forbidden');
+  err.status = 403;
+  return err;
 }

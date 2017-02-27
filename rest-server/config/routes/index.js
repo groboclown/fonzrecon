@@ -1,14 +1,24 @@
 'use strict';
 
-const settings = require('./settings');
-const access = require('../controllers/access');
+const settings = require('../settings');
+const access = require('../../controllers/access');
 
 exports.setup = function(app, passport) {
   // Require authorization for all '/api' URIs.
   app.all('/api/*', access.findLogin(passport));
 
-  // Route Definitions
-  app.use('/', require('../routes'))
+
+
+
+  // Public Routes
+  app.use('/auth', require('./authentication'));
+
+  // Authenticated Routes
+  app.use('/api/v1/users', require('./users'));
+  app.use('/api/v1/awards', require('./awards'));
+
+
+
 
   // Generic error handler
   app.use(function(err, req, res, next) {

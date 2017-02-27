@@ -5,7 +5,6 @@
 const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
 
-
 /**
  * Checks that a specific request is against a user (or on-behalf-of user)
  * which has authentication.  The permission must be one of those listed
@@ -32,9 +31,7 @@ module.exports = function(permission, affected_user_list_func) {
     // user.
     if (! req.userLogin) {
       console.error('Noone logged in.');
-      var err = new Error('Forbidden');
-      err.status = 401;
-      return next(err);
+      return next(forbidden());
     }
     var login = req.userLogin.login;
     var username = null;
@@ -50,10 +47,8 @@ module.exports = function(permission, affected_user_list_func) {
       var role = roles[login.role];
       if (! role.permissions[permission.key]) {
         // Permission not set, so not available to perform (default permission).
-        console.log(`No permission (${permission.key}) defined in role ${role.name}`)
-        var err = new Error('Forbidden');
-        err.status = 401;
-        return next(err);
+        console.log(`No permission (${permission.key}) defined in role ${role.name}`);
+        return next(forbidden());
       }
       role_permission_func = role.permissions[permission.key];
       var behalf = req.userLogin.behalf;
@@ -65,14 +60,18 @@ module.exports = function(permission, affected_user_list_func) {
       if (!! affeted_users && role_permission_func(username, behalf_username, affeted_users)) {
         return next();
       } else {
-        var err = new Error('Forbidden');
-        err.status = 401;
-        return next(err);
+        return next(forbidden());
       }
     } else {
-      var err = new Error('Forbidden');
-      err.status = 401;
-      return next(err);
+      return next(forbidden());
     }
   }
 };
+
+
+
+function forbidden() {
+  var err = new Error('Forbidden');
+  err.status = 403;
+  return err;
+}
