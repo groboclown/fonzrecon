@@ -37,6 +37,9 @@ exports.setup = function(app, passport) {
     if (settings.envName !== 'production') {
       payload.stack = err.stack;
     }
+    if (err.details) {
+      payload.details = details;
+    }
 
     if (err.status) {
       status = err.status;
