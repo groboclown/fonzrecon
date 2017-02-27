@@ -50,6 +50,8 @@ const AcknowledgeSchema = new Schema({
 
   comment: String,
 
+  public: Boolean,
+
   thumbsUp: [ThumbsUp]
 }, {
   timestamps: true
@@ -81,10 +83,82 @@ AcknowledgeSchema.methods.pointsGivenTo = function(username) {
   for (var i = 0; i < this.awardedTo.length; i++) {
     if (this.awardedTo[i] === username) {
       var sum = this.pointsToEachUser;
-
+      for (var j = 0; j < this.thumbsUp.length; j++) {
+        sum += this.thumbsUp[j].pointsToEachUser;
+      }
+      return sum;
     }
   }
   return 0;
 };
+
+AcknowledgeSchema.statics.findBriefPublic = function(conditions) {
+  conditions.public = true;
+  return this.find(conditions)
+    .select('givenByUsername awardedTo thumbsUp createdAt updatedAt')
+    .sort('-createdAt')
+    .populate('givenByUsername', 'username names organization')
+    .populate({
+      path: 'awardedTo',
+      // populate the users in the array of awardedTo
+      populate: {
+        path: 'awardedTo',
+        select: 'username names organization'
+      },
+    })
+    .populate({
+      path: 'thumbsUp',
+      select: 'givenByUsername createdAt',
+      populate: {
+        path: 'thumbsUp.givenByUsername',
+        select: 'username names organization'
+      }
+    })
+    .lean();
+};
+
+AcknowledgeSchema.statics.findOneBrief = function(conditions) {
+  return this.findOne(conditions)
+  .select('givenByUsername awardedTo thumbsUp createdAt updatedAt')
+  .populate('givenByUsername', 'username names organization')
+  .populate({
+    path: 'awardedTo',
+    // populate the users in the array of awardedTo
+    populate: {
+      path: 'awardedTo',
+      select: 'username names organization'
+    },
+  })
+  .populate({
+    path: 'thumbsUp',
+    select: 'givenByUsername createdAt',
+    populate: {
+      path: 'thumbsUp.givenByUsername',
+      select: 'username names organization'
+    }
+  })
+  .lean();
+};
+
+AcknowledgeSchema.statics.findOneDetails = function(conditions) {
+  return this.findOne(conditions)
+    .populate('givenByUsername', 'username names organization')
+    .populate({
+      path: 'awardedTo',
+      // populate the users in the array of awardedTo
+      populate: {
+        path: 'awardedTo',
+        select: 'username names organization'
+      },
+    })
+    .populate({
+      path: 'thumbsUp',
+      populate: {
+        path: 'thumbsUp.givenByUsername',
+        select: 'username names organization'
+      }
+    })
+    .lean();
+}
 
 module.exports = mongoose.model('Acknowledge', AcknowledgeSchema);

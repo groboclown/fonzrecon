@@ -25,12 +25,14 @@ module.exports = function(permission, affected_user_list_func) {
     // Programming bug; will be thrown at program startup.
     throw new Error('Unknown permission ' + permission.key);
   }
+  if (! affected_user_list_func) {
+    throw new Error('no affected_user_list_func passed in');
+  }
 
   return function(req, res, next) {
     // Look at the user object in the request, and the on-behalf-of
     // user.
     if (! req.userLogin) {
-      console.error('Noone logged in.');
       return next(forbidden());
     }
     var login = req.userLogin.login;
@@ -56,8 +58,26 @@ module.exports = function(permission, affected_user_list_func) {
       if (!! behalf && behalf.username) {
         behalf_username = behalf.username;
       }
-      var affeted_users = affected_user_list_func(req);
-      if (!! affeted_users && role_permission_func(username, behalf_username, affeted_users)) {
+      var affected_users = affected_user_list_func(req);
+      if (! affected_users) {
+        return next(forbidden());
+      }
+      if (affected_users.then && typeof(affected_users.then) === 'function') {
+        // Returned a promise.
+        return affected_users
+          .then(function(aff_users) {
+            if (!! aff_users && role_permission_func(username, behalf_username, aff_users)) {
+              // Authenticated!!!
+              next();
+            } else {
+              next(forbidden());
+            }
+          })
+          .catch(function(err) {
+            next(err);
+          });
+      } else if (role_permission_func(username, behalf_username, affected_users)) {
+        // Authenticated!!!
         return next();
       } else {
         return next(forbidden());

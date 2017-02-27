@@ -19,7 +19,7 @@ function ALLOW_NONE(self_user, on_behalf_of, affected_users) {
 
 
 module.exports = {
-  names: ['BOT', 'USER', 'ADMIN', 'SYSOP'],
+  names: ['BOT', 'USER', 'ADMIN'],
 
   // Can view basic user info, can award on users' behalf, can view
   // basic public award info
@@ -27,9 +27,11 @@ module.exports = {
     name: 'BOT',
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
-      AWARD_BRIEF_VIEW_PUBLIC: ALLOW_ANY,
-      AWARD_BRIEF_VIEW_PRIVATE: ALLOW_ON_BEHALF_OF,
-      AWARD_CREATE: ALLOW_ON_BEHALF_OF,
+      USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
+      ACKNOWLEDGE_BRIEF_VIEW_PUBLIC: ALLOW_ANY,
+      ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ON_BEHALF_OF,
+      ACKNOWLEDGE_CREATE: ALLOW_ON_BEHALF_OF,
+      ACKNOWLEDGE_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
     }
   },
 
@@ -42,26 +44,31 @@ module.exports = {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
       USER_DETAILS_EDIT: ALLOW_SELF,
-      AWARD_DETAILS_VIEW: ALLOW_SELF,
-      AWARD_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
-      AWARD_BRIEF_VIEW_PRIVATE: ALLOW_SELF,
-      AWARD_CREATE: ALLOW_SELF,
+      LOGIN_VIEW: ALLOW_SELF,
+      LOGIN_EDIT: ALLOW_SELF,
+      ACKNOWLEDGE_DETAILS_VIEW: ALLOW_SELF,
+      ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
+      ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_SELF,
+      ACKNOWLEDGE_CREATE: ALLOW_SELF,
     }
   },
 
   // Admin access + User rights.
+  // To restrict the user to not receive or give awards,
+  // then don't assign the admin login a user.
   ADMIN: {
     name: 'ADMIN',
     permissions: {
-
+      USER_BRIEF_VIEW: ALLOW_ANY,
+      USER_DETAILS_VIEW: ALLOW_ANY,
+      USER_DETAILS_EDIT: ALLOW_ANY,
+      LOGIN_VIEW: ALLOW_ANY,
+      LOGIN_EDIT: ALLOW_ANY,
+      ACKNOWLEDGE_DETAILS_VIEW: ALLOW_ANY,
+      ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
+      ACKNOWLEDGE_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
+      // Can only create acknowledgements for self.
+      ACKNOWLEDGE_CREATE: ALLOW_SELF,
     }
   },
-
-  // Admin user who cannot use the point stuff.
-  SYSOP: {
-    name: 'SYSOP',
-    permissions: {
-
-    }
-  }
 };

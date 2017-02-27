@@ -19,8 +19,8 @@ router.get('/:id/details', USER_DETAILS_VIEW, controller.getOneDetails);
 // Authentication functions
 
 function auth_affected_users_id(req) {
-  if (req.id) {
-    return [ req.id ];
+  if (req.params.id) {
+    return [ req.params.id ];
   } else {
     return [];
   }
