@@ -7,9 +7,9 @@ services:
     ports:
       - 3000:3000
     links:
-      - dynamodb
-  dynamodb:
-    build:
-      context: docker-dependencies/DynamoDb
+      - mongodb
+  mongodb:
+    tag: mongo:3
     volumes:
-      - ./.tmp/dynamodb:/var/dynamodb
+      - ./.tmp/mongodb/db:/data/db
+      - ./.tmp/mongodb/config:/data/configdb

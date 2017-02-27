@@ -17,10 +17,10 @@
 // The approach below allows for mocking out the database, though.
 
 module.exports = {
-  // Login: require('./login'),
-  Login: require('./login_mock'),
-  // User: require('./user'),
-  User: require('./user_mock'),
+  Login: require('./login'),
+  // Login: require('./login_mock'),
+  User: require('./user'),
+  // User: require('./user_mock'),
   // Award: require('./award'),
   Award: require('./award_mock'),
 };

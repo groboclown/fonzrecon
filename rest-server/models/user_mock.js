@@ -32,18 +32,16 @@ const USER_LIST = [
 const UserDb = new MockODM(USER_LIST);
 
 
-UserDb.findOneByName = function(name, cb) {
-  this.find({}, function(err, users) {
-    if (err) {
-      return cb(err);
-    }
-    for (var i = 0; i < users.length; i++) {
-      if (users[i].names.includes(name)) {
-        return cb(null, users[i]);
+UserDb.findOneByName = function(name) {
+  return this.find({})
+    .then(function(users) {
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].names.includes(name)) {
+          return users[i];
+        }
       }
-    }
-    return cb(null, null);
-  });
+      return null;
+    });
 };
 
 

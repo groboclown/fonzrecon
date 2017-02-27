@@ -1,0 +1,34 @@
+'use strict';
+
+exports.extract = function(req, defaults) {
+  var ret = {
+    page: defaults.page,
+    limit: defaults.limit,
+    offset: defaults.offset,
+  };
+
+  setIfInt(req.query.page, ret, 'page');
+  setIfInt(req.query.limit, ret, 'limit');
+  setIfInt(req.query.offset, ret, 'offset');
+  if (req.body.page) {
+    setIfInt(req.body.page.page, ret, 'page');
+    setIfInt(req.body.page.limit, ret, 'limit');
+    setIfInt(req.body.page.offset, ret, 'offset');
+  }
+  return ret;
+};
+
+
+
+function setIfInt(value, obj, key) {
+  var x;
+  if (isNaN(value)) {
+    // do not set
+    return;
+  }
+  x = parseFloat(value);
+  if ((x | 0) === x) {
+    // it's an integer
+    obj[key] = parseInt(value);
+  }
+}

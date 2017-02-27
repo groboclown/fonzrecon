@@ -5,7 +5,6 @@ const logger = require('morgan');
 const compression = require('compression');
 const cors = require('cors');
 const csrf = require('csurf');
-
 const settings = require('./settings');
 
 exports.setup = function(app, passport) {

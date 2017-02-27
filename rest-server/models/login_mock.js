@@ -44,7 +44,13 @@ const LoginDb = new MockODM(LOGIN_LIST);
 LoginDb.extractData = function(d) {
   if (! d.compareAuthentication) {
     d.compareAuthentication = function(candidateAuthentication, cb) {
-      return cb(null, this.authentication === candidateAuthentication);
+      var isMatch = this.authentication === candidateAuthentication;
+      if (cb) {
+        return cb(null, isMatch);
+      }
+      return new Promise(function(resolve, reject) {
+        resolve(isMatch);
+      });
     };
   }
   return d;

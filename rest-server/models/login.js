@@ -1,9 +1,10 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
-const roles = require('../access/roles');
+const roles = require('../config/access/roles');
 
 
 // =====================================
@@ -56,6 +57,7 @@ const LoginSchema = new Schema({
 }, {
   timestamps: true
 });
+LoginSchema.plugin(mongoosePaginate);
 
 
 LoginSchema.pre('save', function(next) {
@@ -81,7 +83,19 @@ LoginSchema.pre('save', function(next) {
 })
 
 LoginSchema.methods.compareAuthentication = function(candidateAuthentication, cb) {
-  bcrypt.compare(candidateAuthentication, this.authentication, cb);
+  if (cb) {
+    bcrypt.compare(candidateAuthentication, this.authentication, cb);
+  } else {
+    return new Promise(function(resolve, reject) {
+      bcrypt.compare(candidateAuthentication, this.authentication, function(err, isMatch) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(isMatch);
+        }
+      });
+    });
+  }
 };
 
 module.exports = mongoose.model('Login', LoginSchema);

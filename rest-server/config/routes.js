@@ -4,10 +4,8 @@ const settings = require('./settings');
 const access = require('../controllers/access');
 
 exports.setup = function(app, passport) {
-  const pauth = passport.authenticate.bind(passport);
-
   // Require authorization for all '/api' URIs.
-  app.all('/api/*', access.findLogin());
+  app.all('/api/*', access.findLogin(passport));
 
   // Route Definitions
   app.use('/', require('../routes'))
@@ -23,20 +21,23 @@ exports.setup = function(app, passport) {
 
     console.error(err.stack);
 
-    if (err.stack.includes('ValidationError')) {
-      res.status(422).render('422', { error: err.stack });
-      return;
-    }
-
+    var status = 500;
     // Only send stacktrace back if not in production mode.
     var payload = { message: err.message };
     if (settings.envName !== 'production') {
       payload.stack = err.stack;
     }
-    if  (req.accepts('json')) {
-      return res.status(500).json(payload);
+
+    if (err.status) {
+      status = err.status;
+    } else if (err.stack.includes('ValidationError')) {
+      status = 422;
     }
-    res.status(500).render('500', payload);
+
+    if (req.accepts('json')) {
+      return res.status(status).json(payload);
+    }
+    res.status(status).render("" + status, payload);
   });
 
   // Assume 404 because no route or middleware responded.

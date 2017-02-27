@@ -16,25 +16,37 @@ function matches(entry, mapper) {
   return true;
 }
 
+function mkpromise(err, res) {
+  return new Promise(function(resolve, reject) {
+    if (err) {
+      reject(err);
+    } else {
+      resolve(res);
+    }
+  });
+}
+
 MockODM.prototype.findOne = function(mapper, cb) {
   mapper = mapper || {};
+  cb = cb || mkpromise;
   for (var i = 0; i < this._data.length; i++) {
     if (matches(this._data[i], mapper)) {
       return cb(null, this.extractData(this._data[i]));
     }
   }
-  cb(null, null);
+  return cb(null, null);
 };
 
 MockODM.prototype.find = function(mapper, cb) {
   var found = [];
   mapper = mapper || {};
+  cb = cb || mkpromise;
   for (var i = 0; i < this._data.length; i++) {
     if (matches(this._data[i], mapper)) {
       found.push(this.extractData(this._data[i]));
     }
   }
-  cb(null, found);
+  return cb(null, found);
 };
 
 MockODM.prototype.extractData = function(orig) {

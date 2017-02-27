@@ -1,6 +1,7 @@
 'use strict';
 
 const LocalStrategy = require('passport-local');
+const accessController = require('../../controllers/access');
 const Login = require('../../models').Login;
 
 // Sets up the authentication strategies - how
@@ -16,23 +17,15 @@ module.exports = new LocalStrategy({
   usernameField: 'username',
   passwordField: 'password',
 }, function(username, password, done) {
-  Login.findOne({ username: username }, function(err, login) {
-    if (err) {
-      return done(err);
-    }
-    if (! login) {
-      // TODO perform the encrypt function to wait the same
-      // amount of time as a found user call.
-      return done(null, false, { error: BAD_LOGIN_TEXT });
-    }
-    login.compareAuthentication(password, function(err, isMatch) {
-      if (err) {
-        return done(err);
+  accessController.userForUsernamePassword(username, password)
+    .then(function(res) {
+      done(null, res);
+    })
+    .catch(function(err) {
+      if (err.isDone) {
+        done(null, false, err.message);
+      } else {
+        done(err);
       }
-      if (! isMatch) {
-        return done(null, false, { error: BAD_LOGIN_TEXT });
-      }
-      return done(null, login)
     });
-  });
 });
