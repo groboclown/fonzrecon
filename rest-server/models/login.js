@@ -11,7 +11,7 @@ const roles = require('../config/access/roles');
 
 const LoginSchema = new Schema({
   // identifier
-  username: {
+  _id: {
     type: String,
     lowercase: true,
     unique: true,
@@ -50,6 +50,9 @@ const LoginSchema = new Schema({
   // Reference to the linked user account details
   // Some accounts do not have a user account, so this is
   // not required.
+  // Note that this is not a 'ref' self-populating object.
+  // Probably would make some parts of the code cleaner if
+  // this was kept as a populating object, though.
   userRef: {
     type: String
   }
@@ -78,7 +81,7 @@ LoginSchema.pre('save', function(next) {
       next();
     });
   });
-})
+});
 
 LoginSchema.methods.compareAuthentication = function(candidateAuthentication, cb) {
   if (cb) {

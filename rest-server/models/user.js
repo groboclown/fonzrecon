@@ -21,7 +21,16 @@ const ContactSchema = new Schema({
 
 
 const UserSchema = new Schema({
-  // identifier
+  // To avoid the headache of virtual fields,
+  // we clone the username -> _id
+  _id: {
+    type: String,
+    lowercase: true,
+    unique: true,
+    required: true,
+    index: true
+  },
+
   username: {
     type: String,
     lowercase: true,
@@ -63,6 +72,14 @@ const UserSchema = new Schema({
   organization: String,
 }, {
   timestamps: true
+});
+
+UserSchema.pre('save', function(next) {
+  if (this._id !== this.username) {
+    var err = new Error('_id and username must match');
+    return next(err);
+  }
+  return next();
 });
 
 UserSchema.statics.findOneByName = function(name) {

@@ -11,7 +11,7 @@ const Award = models.Award;
 
 const SAMPLE_LOGINS = [
   {
-    username: 'user1',
+    _id: 'user1',
     email: 'user1@fonzrecon.github',
     authentication: '1234',
     role: roles.USER.name,
@@ -19,7 +19,7 @@ const SAMPLE_LOGINS = [
     resetAuthenticationExpires: null,
     userRef: 'user1',
   }, {
-    username: 'bot1',
+    _id: 'bot1',
     email: 'bot1@fonzrecon.github',
     authentication: 'bot!',
     role: roles.BOT.name,
@@ -31,7 +31,7 @@ const SAMPLE_LOGINS = [
     // so it has no user.
     userRef: null,
   }, {
-    username: 'admin1',
+    _id: 'admin1',
     email: 'admin1@fonzrecon.github',
     authentication: 'sekret',
     role: roles.ADMIN.name,
@@ -43,7 +43,7 @@ const SAMPLE_LOGINS = [
 
 const SAMPLE_USERS = [
   {
-    'username': 'user1',
+    '_id': 'user1', 'username': 'user1',
     'names': ['User1', 'User One'],
     'contact': [
       {
@@ -58,7 +58,7 @@ const SAMPLE_USERS = [
   },
   // bot1 does not have a user
   {
-    'username': 'admin1',
+    '_id': 'admin1', 'username': 'admin1',
     'names': ['Admin One'],
     'contact': [],
     'pointsToAward': 0,
@@ -77,10 +77,10 @@ function saveLogin(loginObj) {
   }
 }
 for (var i = 0; i < SAMPLE_LOGINS.length; i++) {
-  Login.findOne({ username: SAMPLE_LOGINS[i].username })
+  Login.findOne({ username: SAMPLE_LOGINS[i]._id })
     .then(saveLogin(SAMPLE_LOGINS[i]))
     .then(function(login) {
-      console.log('Created login ' + login.username);
+      console.log('Created login ' + login._id);
     });
 }
 

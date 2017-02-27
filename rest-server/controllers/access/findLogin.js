@@ -34,7 +34,7 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
   // req.user is populated by passport to contain
   // the login object.
   if (! req.user) {
-    log("No user; forbidden.");
+    // console.log("No user; forbidden.");
     return next(forbidden());
   }
   req.userLogin = null;
@@ -65,7 +65,7 @@ function discoverUserMiddleware(req, res, next) {
   var password = lookup(req.body, 'password') || lookup(req.query, 'password');
   if (!! username) {
     log("getting login for " + username);
-    Login.findOne({ username: username }, function(err, login) {
+    Login.findOne({ _id: username }, function(err, login) {
       if (err) {
         return next(err);
       }
