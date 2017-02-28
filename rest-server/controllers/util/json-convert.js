@@ -19,7 +19,7 @@ function briefUser(user) {
     organization: user.organization,
     names: user.names,
     uri: '/api/v1/users/' + user.username,
-    type: 'User'
+    type: 'UserBrief'
   }
 };
 
@@ -33,12 +33,14 @@ function briefAcknowledgement(ack) {
   if (typeof(ack) === 'string') {
     return {
       id: ack,
-      uri: '/api/vi/aaays/' + ack,
-      type: 'Aaay'
+      uri: '/api/v1/aaays/' + ack,
+      type: 'AaayBrief'
     };
   }
   return {
     id: ack._id,
+    uri: '/api/v1/aaays/' + ack._id,
+    type: 'AaayBrief',
     updatedAt: ack.updatedAt,
     createdAt: ack.createdAt,
     givenBy: briefUser(ack.givenByUsername),
@@ -51,7 +53,8 @@ function briefAcknowledgement(ack) {
         id: tu.id,
         updatedAt: tu.updatedAt,
         createdAt: tu.createdAt,
-        givenBy: briefUser(tu.givenByUsername)
+        givenBy: briefUser(tu.givenByUsername),
+        type: 'ThumbsUpBrief'
       };
     })
   };
@@ -61,8 +64,11 @@ function briefAcknowledgement(ack) {
 function detailedAcknowledgement(ack) {
   var ret = briefAcknowledgement(ack);
   ret.pointsToEachUser = ack.pointsToEachUser;
+  ret.uri = ret.uri + '/details';
+  ret.type = 'Aaay'
   for (var i = 0; i < ack.thumbsUp.length; i++) {
     ret.thumbsUp[i].pointsToEachUser = ack.thumbsUp[i].pointsToEachUser;
+    ret.thumbsUp[i].type = 'ThumbsUp';
   }
   return ret;
 }

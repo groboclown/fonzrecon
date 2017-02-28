@@ -4,7 +4,7 @@
 // Install pagination Query extension.
 // Taken from https://github.com/lowol/mongoose-query-paginate
 // (MIT license)
-// However, it doesn't properly support promises.  This version here
+// However, that one doesn't properly support promises.  This version here
 // supports *only* promises (not callbacks)
 // Note that this replaces the `exec` call.
 

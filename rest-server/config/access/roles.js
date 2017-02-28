@@ -21,6 +21,12 @@ function ALLOW_NONE(self_user, on_behalf_of, affected_users) {
 module.exports = {
   names: ['BOT', 'USER', 'ADMIN'],
 
+  // Roles that can use the "behalf" parameter.  It will be ignored
+  // for all other users.  This allows for simplified logic in the
+  // controllers, so that they just check for the "on behalf of"
+  // then "user" to see who the requestor is.
+  canRunOnBehalfOf: ['BOT'],
+
   // Can view basic user info, can award on users' behalf, can view
   // basic public award info
   BOT: {

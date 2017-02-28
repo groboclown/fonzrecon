@@ -38,7 +38,10 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
     return next(forbidden());
   }
   req.userLogin = null;
-  var onBehalfOf = lookup(req.body, 'behalf') || lookup(req.query, 'behalf');
+  var onBehalfOf = null;
+  if (roles.canRunOnBehalfOf.includes(req.user.role)) {
+    onBehalfOf = lookup(req.body, 'behalf') || lookup(req.query, 'behalf');
+  }
 
   findUserAndBehalf(req.user, onBehalfOf)
     .then(function(userLogin) {

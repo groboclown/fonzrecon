@@ -10,12 +10,12 @@ const jsonConvert = require('./util').jsonConvert;
 exports.getAllBrief = function(req, res, next) {
   // TODO allow for query parameters.
 
-  var pagination = paging(req, { page: 1, limit: 100 });
+  var pagination = paging(req);
   return Acknowledgement
     .findBriefPublic({})
     .paginate(pagination)
     .then(function (results) {
-      results.type = 'Acknowledgement';
+      results.type = 'AaayBrief';
       res.status(200).json(jsonConvert.pagedResults(results, jsonConvert.briefAcknowledgement));
     })
     .catch(function (err) {
@@ -29,7 +29,10 @@ exports.getOneBrief = function(req, res, next) {
   return Acknowledgement
     .findOneBrief({ _id: req.params.id })
     .then(function (ack) {
-      res.status(200).json({ Acknowledgement: jsonConvert.briefAcknowledgement(ack) });
+      if (! ack) {
+        return next(resourceNotFound());
+      }
+      res.status(200).json({ AaayBrief: jsonConvert.briefAcknowledgement(ack) });
     })
     .catch(function (err) {
       next(err);
@@ -42,7 +45,11 @@ exports.getOneDetails = function(req, res, next) {
   return Acknowledgement
     .findOneDetails({ _id: req.params.id })
     .then(function (ack) {
-      res.status(200).json({ Acknowledgement: jsonConvert.detailedAcknowledgement(ack) });
+      if (! ack) {
+        return next(resourceNotFound());
+      }
+      ack.type = 'Aaay';
+      res.status(200).json({ Aaay: jsonConvert.detailedAcknowledgement(ack) });
     })
     .catch(function (err) {
       next(err);
@@ -232,10 +239,20 @@ exports.getUsersInAcknowledgement = function(req) {
   return Acknowledgement
     .findOneBrief({ _id: ackId })
     .then(function(ack) {
+      if (! ack) {
+        return [];
+      }
       var ret = [ ack.givenByUsername.username ];
       for (var i = 0; i < ack.awardedToUsernames.length; i++) {
         ret.push(ack.awardedToUsernames[i].username);
       }
       return ret;
     });
+}
+
+
+function resourceNotFound() {
+  var err = new Error('Resource not found');
+  err.status = 404;
+  return err;
 }

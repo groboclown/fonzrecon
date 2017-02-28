@@ -5,17 +5,19 @@
 * rest-server:
   * Permissions
     * Correctly wire in passport authentication.
-    * Enable full validation of acknowledgement POST.
     * Allow for user and login creation.
     * Allow for ticket-based session login.
+  * Bugs:
+    * Issue with the brief acknowledgements list.  Right now, it only
+      returns public acks.  However, it should return public *and*
+      the private acks that the user can see.  This will require a more
+      complex where clause.
+    * Rename the "login" files and db schema to "account".
+  * Features:
     * Allow for up-thumbing acknowledgements.
     * Implement prize schema and API.
     * Add query parameters for listing users and listing acknowledgements.
-    * Response of user information should include the relative URL of the
-      returned user.
-      * Get a list of users; each user needs the link.
-      * Get an acknowledgement with references to users.
-    * Document REST API.
+  * Document REST API.
 * bot:
   * MS Teams:
     * access through MS Teams
