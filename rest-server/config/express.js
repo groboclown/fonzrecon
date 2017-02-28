@@ -6,6 +6,8 @@ const compression = require('compression');
 const cors = require('cors');
 const csrf = require('csurf');
 const validator = require('express-validator');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const settings = require('./settings');
 
 exports.setup = function(app, passport) {
@@ -17,6 +19,7 @@ exports.setup = function(app, passport) {
   app.use(cors());
 
   app.use(logger('dev'));
+  app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(validator({
@@ -41,6 +44,7 @@ exports.setup = function(app, passport) {
 
   // use passport session
   app.use(passport.initialize());
+  app.use(session({ secret: settings.secret }));
   app.use(passport.session());
 
   if (settings.envName !== 'test') {
