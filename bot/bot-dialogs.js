@@ -21,7 +21,7 @@
     },
     {
       name: 'help',
-      condition: (data) => {return data.text.includes('help')}
+      condition: (data) => {return data.text.includes('help')},
       action: dialogHelp
     }
     {
