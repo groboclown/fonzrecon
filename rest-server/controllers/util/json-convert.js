@@ -11,7 +11,7 @@ function briefUser(user) {
     return {
       username: user,
       uri: '/api/v1/users/' + user,
-      type: 'User'
+      type: 'UserBriefRef'
     };
   }
   return {
@@ -20,7 +20,25 @@ function briefUser(user) {
     names: user.names,
     uri: '/api/v1/users/' + user.username,
     type: 'UserBrief'
-  }
+  };
+};
+
+function user(_user) {
+  var ret = briefUser(_user);
+  ret.uri += '/details';
+  ret.type = 'User';
+  ret.createdAt = _user.createdAt;
+  ret.updatedAt = _user.updatedAt;
+  ret.pointsToAward = _user.pointsToAward;
+  ret.receivedPointsToSpend = _user.receivedPointsToSpend;
+  ret.contact = _user.contact.map(function (c) {
+    return {
+      type: c.type,
+      server: c.server,
+      address: c.address
+    };
+  });
+  return ret;
 };
 
 
@@ -34,7 +52,7 @@ function briefAcknowledgement(ack) {
     return {
       id: ack,
       uri: '/api/v1/aaays/' + ack,
-      type: 'AaayBrief'
+      type: 'AaayBriefRef'
     };
   }
   return {
@@ -93,4 +111,5 @@ module.exports = {
   briefAcknowledgementList: briefAcknowledgementList,
   detailedAcknowledgement: detailedAcknowledgement,
   pagedResults: pagedResults,
+  user: user,
 }

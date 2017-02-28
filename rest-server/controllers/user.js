@@ -48,7 +48,7 @@ exports.getOneDetails = function(req, res, next) {
         return next(resourceNotFound());
       }
       user.type = 'User';
-      res.status(200).json({ User: user });
+      res.status(200).json({ User: jsonConvert.user(user) });
     })
     .catch(function(err) {
       next(err);

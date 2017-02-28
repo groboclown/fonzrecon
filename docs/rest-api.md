@@ -35,7 +35,6 @@ query parameters and response formats.
   * **`delta`** - for UIs that use a page selection display, this returns
     the page numbers *delta* before and *delta* after this returned page.
     Defaults to 5.
-* *TODO this API needs ways to search the list of users.*
 
 **Returns:**
 
@@ -305,6 +304,39 @@ Aaay.  It does not have a URI to reference it.*
 
 
 ### `User`
+
+```json
+{
+  "updatedAt": "2017-02-28T19:13:41.853Z",
+  "createdAt": "2017-02-28T18:50:34.115Z",
+  "username": "username1",
+  "pointsToAward": 40,
+  "organization": "Engineering",
+  "receivedPointsToSpend": 30,
+  "contact": [
+    {
+      "type": "email",
+      "server": null,
+      "address": "username1@fonzrecon.email.server"
+    }
+  ],
+  "names": [
+    "username1",
+    "Name1, User"
+  ],
+  "type": "User"
+}
+```
+
+* `updatedAt` - timestamp when the User was last edited.
+* `createdAt` - timestamp when the User was first created.
+* `username` - user's simple name.
+* `pointsToAward` - integer; the number of points that this user has left
+  to give out in Aaay and Thumbs Up awards.
+* `organization` - string describing the general role of the user.
+* `names` - alternative names that the user can be found as.
+* `type` - constant `"User"` string.
+
 
 
 ### `UserBrief`
