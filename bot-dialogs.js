@@ -21,7 +21,7 @@
     },
     {
       name: 'setInfo',
-      condition: (data) => {return !data.isGroup && new Regexp('set\\s*up').test(data.text)},
+      condition: (data) => {return !data.isGroup && new RegExp('set\\s*up').test(data.text)},
       action: dialogSetInfo
     },
     {
