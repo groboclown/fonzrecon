@@ -20,8 +20,13 @@
       action: dialogGiveThanks
     },
     {
+      name: 'setInfo',
+      condition: (data) => {return !data.isGroup && new Regexp('set\\s*up').test(data.text)},
+      action: dialogSetInfo
+    },
+    {
       name: 'help',
-      condition: (data) => {return data.text.includes('help')},
+      condition: (data) => {return new RegExp('help','i').test(data.text)},
       action: dialogHelp
     },
     {
