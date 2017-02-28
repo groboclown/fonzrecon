@@ -115,7 +115,7 @@
     else{
       session.send('Aaaaay!');
       session.send('*Hits Jukebox*');
-      session.send('Ask me how many points you have recieved or how many you have left to give!');
+      session.endDialog('Ask me how many points you have recieved or how many you have left to give!');
     }
   }
 
