@@ -60,12 +60,12 @@ exports.getOneDetails = function(req, res, next) {
 
 exports.create = function(req, res, next) {
   var user;
-  if (!!req.userLogin && !!req.userLogin.behalf) {
-    user = req.userLogin.behalf;
-  } else if (!!req.userLogin && !!req.userLogin.user) {
-    user = req.userLogin.user;
+  if (!!req.userAccount && !!req.userAccount.behalf) {
+    user = req.userAccount.behalf;
+  } else if (!!req.userAccount && !!req.userAccount.user) {
+    user = req.userAccount.user;
   } else {
-    // those with just a login are not allowed to create acknowledgements.
+    // those with just an account are not allowed to create acknowledgements.
     var err = new Error('Forbidden');
     err.status = 403;
     return next(err);

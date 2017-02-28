@@ -2,7 +2,7 @@
 
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const Login = require('../../models').Login;
+const Account = require('../../models').Account;
 const settings = require('../settings');
 
 function getPayloadId(payload) {
@@ -36,12 +36,12 @@ module.exports = new JwtStrategy(jwtOptions, function(payload, done) {
   const criteria = {
     username: getPayloadId(payload),
   }
-  Login.findOne(criteria, function(err, login) {
+  Account.findOne(criteria, function(err, account) {
     if (err) {
       return done(err);
     }
-    if (login) {
-      done(null, login);
+    if (account) {
+      done(null, account);
     } else {
       done(null, false);
     }

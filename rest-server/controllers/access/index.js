@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  findLogin: require('./find-login'),
+  findAccount: require('./find-account'),
   userForUsernamePassword: require('./user-for-username-password'),
   authorize: require('./authorize'),
 

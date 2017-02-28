@@ -32,28 +32,28 @@ module.exports = function(permission, affected_user_list_func) {
   return function(req, res, next) {
     // Look at the user object in the request, and the on-behalf-of
     // user.
-    if (! req.userLogin) {
+    if (! req.userAccount) {
       return next(forbidden());
     }
-    var login = req.userLogin.login;
+    var account = req.userAccount.account;
     var username = null;
     var role_permission_func = null;
-    if (!! login) {
-      username = login.username || null;
-      if (! login.role || ! roles[login.role]) {
-        console.error(`Login user ${username} has invalid role id ${login.role}`);
-        var err = new Error('Invalid login role for ' + username);
+    if (!! account) {
+      username = account.username || null;
+      if (! account.role || ! roles[account.role]) {
+        console.error(`Account ${username} has invalid role id ${account.role}`);
+        var err = new Error('Invalid account role for ' + username);
         err.status = 500;
         return next(err);
       }
-      var role = roles[login.role];
+      var role = roles[account.role];
       if (! role.permissions[permission.key]) {
         // Permission not set, so not available to perform (default permission).
         console.log(`No permission (${permission.key}) defined in role ${role.name}`);
         return next(forbidden());
       }
       role_permission_func = role.permissions[permission.key];
-      var behalf = req.userLogin.behalf;
+      var behalf = req.userAccount.behalf;
       var behalf_username = null;
       if (!! behalf && behalf.username) {
         behalf_username = behalf.username;

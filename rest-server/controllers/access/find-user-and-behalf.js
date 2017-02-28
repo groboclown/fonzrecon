@@ -4,19 +4,19 @@ const roles = require('../../config/access/roles');
 const models = require('../../models');
 const User = models.User;
 
-module.exports = function(login, behalfOfName) {
-  if (! roles.canRunOnBehalfOf.includes(login.role)) {
-    // Ensure that, if the login can't run on behalf of
+module.exports = function(account, behalfOfName) {
+  if (! roles.canRunOnBehalfOf.includes(account.role)) {
+    // Ensure that, if the account can't run on behalf of
     // another user, that we don't load up the behalf-of
     // user object.
     behalfOfName = null;
   }
-  return User.findOne({ username: login.userRef })
+  return User.findOne({ username: account.userRef })
     .then(function(user) {
       // User might be null, and that's fine.
       if (! behalfOfName || behalfOfName.length <= 0) {
         return {
-          login: login,
+          account: account,
           user: user,
           behalf: null,
         }
@@ -31,7 +31,7 @@ module.exports = function(login, behalfOfName) {
             return null;
           }
           return {
-            login: login,
+            account: account,
             user: user,
             behalf: behalfUser,
           }

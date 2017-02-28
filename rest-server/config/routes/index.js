@@ -5,7 +5,7 @@ const access = require('../../controllers/access');
 
 exports.setup = function(app, passport) {
   // Require authorization for all '/api' URIs.
-  app.all('/api/*', access.findLogin(passport));
+  app.all('/api/*', access.findAccount(passport));
 
 
 

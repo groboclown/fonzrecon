@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * Middleware controller to load the user, login, and on-behalf-of
- * objects into the `res.userlogin` object.
+ * Middleware controller to load the user, account, and on-behalf-of
+ * objects into the `res.userAccount` object.
  */
 
 const permissions = require('../../config/access/permissions');
@@ -28,24 +28,24 @@ module.exports = function(passport) {
 
 /**
  * Load the User and on-behalf-of objects into the final
- * userLogin object.
+ * userAccount object.
  */
 function discoverOnBehalfOfMiddleware(req, res, next) {
   // req.user is populated by passport to contain
-  // the login object.
+  // the account object.
   if (! req.user) {
     // console.log("No user; forbidden.");
     return next(forbidden());
   }
-  req.userLogin = null;
+  req.userAccount = null;
   var onBehalfOf = null;
   if (roles.canRunOnBehalfOf.includes(req.user.role)) {
     onBehalfOf = lookup(req.body, 'behalf') || lookup(req.query, 'behalf');
   }
 
   findUserAndBehalf(req.user, onBehalfOf)
-    .then(function(userLogin) {
-      req.userLogin = userLogin;
+    .then(function(userAccount) {
+      req.userAccount = userAccount;
       next();
     })
     .catch(function(err) {
@@ -61,27 +61,26 @@ function discoverUserMiddleware(req, res, next) {
   if (req.user) {
     return next();
   }
-  const Login = require('../../models').Login;
+  const Account = require('../../models').Account;
   req.user = null;
   var username = lookup(req.body, 'username') || lookup(req.query, 'username');
   // really, shouldn't be checking the query for the password.
   var password = lookup(req.body, 'password') || lookup(req.query, 'password');
   if (!! username) {
-    log("getting login for " + username);
-    Login.findOne({ _id: username }, function(err, login) {
+    log("getting account for " + username);
+    Account.findOne({ _id: username }, function(err, account) {
       if (err) {
         return next(err);
       }
-      req.login = login;
-      if (!! login) {
-        login.compareAuthentication(password, function(err, isMatch) {
+      if (!! account) {
+        account.compareAuthentication(password, function(err, isMatch) {
           if (err) {
             return next(err);
           }
           if (! isMatch) {
             return next(forbidden());
           }
-          req.user = login;
+          req.user = account;
           next();
         });
       } else {
@@ -89,7 +88,7 @@ function discoverUserMiddleware(req, res, next) {
       }
     });
   } else {
-    log("no login given");
+    log("no account given");
     next();
   }
 }

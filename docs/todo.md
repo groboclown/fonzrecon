@@ -5,15 +5,15 @@
 * rest-server:
   * Permissions
     * Correctly wire in passport authentication.
-    * Allow for login creation.
-      * login must have unique email and username.
-      * logins can only be created by admins.
+    * Allow for account creation.
+      * account must have unique email and username.
+      * accounts can only be created by admins.
     * Allow for user creation.
       * username and each entry in the names must be globally
         unique.
       * users can only be created by admins.
     * Allow for users to update their user and limited rights
-      to update their login.
+      to update their account.
     * Allow for ticket-based session login.
     * Allow for users to have an associated picture.
   * Bugs:
@@ -21,7 +21,6 @@
       returns public acks.  However, it should return public *and*
       the private acks that the user can see.  This will require a more
       complex where clause.
-    * Rename the "login" files and db schema to "account".
   * Features:
     * Allow for up-thumbing acknowledgements with optional comments.
     * Implement prize schema and API.

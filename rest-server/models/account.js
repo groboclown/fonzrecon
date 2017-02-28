@@ -9,7 +9,7 @@ const roles = require('../config/access/roles');
 // =====================================
 // Schema Definition
 
-const LoginSchema = new Schema({
+const AccountSchema = new Schema({
   // identifier
   _id: {
     type: String,
@@ -61,7 +61,7 @@ const LoginSchema = new Schema({
 });
 
 
-LoginSchema.pre('save', function(next) {
+AccountSchema.pre('save', function(next) {
   const user = this;
   const SALT_FACTOR = 10;
 
@@ -83,7 +83,7 @@ LoginSchema.pre('save', function(next) {
   });
 });
 
-LoginSchema.methods.compareAuthentication = function(candidateAuthentication, cb) {
+AccountSchema.methods.compareAuthentication = function(candidateAuthentication, cb) {
   if (cb) {
     bcrypt.compare(candidateAuthentication, this.authentication, cb);
   } else {
@@ -99,4 +99,4 @@ LoginSchema.methods.compareAuthentication = function(candidateAuthentication, cb
   }
 };
 
-module.exports = mongoose.model('Login', LoginSchema);
+module.exports = mongoose.model('Account', AccountSchema);

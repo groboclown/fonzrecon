@@ -2,7 +2,6 @@
 
 const LocalStrategy = require('passport-local');
 const accessController = require('../../controllers/access');
-const Login = require('../../models').Login;
 
 // Sets up the authentication strategies - how
 // passport maps the request input parameters to an authentication

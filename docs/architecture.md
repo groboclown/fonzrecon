@@ -10,7 +10,7 @@ currently hard-coded.
 
 The REST service stores:
 
-    * List of Login - authorization keys for the users.
+    * List of Account - authorization keys for the users.
         * Role Assignments
         * Authorization Email address
         * Reference to User

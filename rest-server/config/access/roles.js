@@ -56,8 +56,8 @@ module.exports = {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
       USER_DETAILS_EDIT: ALLOW_SELF,
-      LOGIN_VIEW: ALLOW_SELF,
-      LOGIN_EDIT: ALLOW_SELF,
+      ACCOUNT_VIEW: ALLOW_SELF,
+      ACCOUNT_EDIT: ALLOW_SELF,
       ACKNOWLEDGEMENT_DETAILS_VIEW: ALLOW_SELF,
       ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
       ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_SELF,
@@ -71,15 +71,16 @@ module.exports = {
 
   // Admin access + User rights.
   // To restrict the user to not receive or give awards,
-  // then don't assign the admin login a user.
+  // then don't assign the admin account a user.
   ADMIN: {
     name: 'ADMIN',
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ANY,
       USER_DETAILS_EDIT: ALLOW_ANY,
-      LOGIN_VIEW: ALLOW_ANY,
-      LOGIN_EDIT: ALLOW_ANY,
+      ACCOUNT_VIEW: ALLOW_ANY,
+      ACCOUNT_EDIT: ALLOW_ANY,
+      ACCOUNT_CREATE: ALLOW_ANY,
       ACKNOWLEDGEMENT_DETAILS_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
       ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,

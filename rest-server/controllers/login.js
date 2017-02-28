@@ -1,17 +1,16 @@
 'use strict';
 
 /**
- * API handlers for logging in (getting a JWT token) and
- * registering a new user.
+ * API handlers for logging in (getting a JWT token).
  *
  * TODO the actual REST API around the registration must be done
  * in the route.  This particular file should handle the generation of
- * the tickets.
+ * the tickets.  Much of this needs to be rewritten.
  */
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const Login = require('../model/login');
+const Account = require('../model/account');
 const config = require('../../config');
 const permissions = require('./permissions');
 const roles = require('./roles');
@@ -47,7 +46,7 @@ exports.register = function(req, res, next) {
     err.status = 422;
     return next(err);
   }
-  Login.findOne({ username: username }, function(err, existingUser1) {
+  Account.findOne({ username: username }, function(err, existingUser1) {
     if (err) {
       return next(err);
     }
@@ -56,7 +55,7 @@ exports.register = function(req, res, next) {
       err.status = 422;
       return next(err);
     }
-    Login.findOne({ email: email }, function(err, existingUser2) {
+    Account.findOne({ email: email }, function(err, existingUser2) {
       if (err) {
         return next(err);
       }
@@ -65,17 +64,17 @@ exports.register = function(req, res, next) {
         err.status = 422;
         return next(err);
       }
-      let login = new Login({
+      let account = new Account({
         email: email,
         username: username,
         authentication: auth
       });
-      login.save(function(err, login) {
+      account.save(function(err, _account) {
         if (err) {
           return next(err);
         }
 
-        let userInfo = setUserInfo(login);
+        let userInfo = setUserInfo(_account);
         res.status(201).json({
           token: 'JWT ' + generateToken(userInfo);
           user: userInfo

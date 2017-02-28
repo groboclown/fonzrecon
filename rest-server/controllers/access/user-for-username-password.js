@@ -5,23 +5,24 @@
 const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
 const models = require('../../models');
-const Login = models.Login;
+const Account = models.Account;
 const findUserAndBehalf = require('./find-user-and-behalf');
+const BAD_LOGIN_TEXT = 'Authentication required';
 
 module.exports = function(username, password) {
-  return Login.findOne({ _id: username })
-    .then(function(login) {
-      if (! login) {
+  return Account.findOne({ _id: username })
+    .then(function(account) {
+      if (! account) {
         // TODO perform the encrypt function to wait the same
         // amount of time as a found user call.
-        // console.log('No login found named ' + username);
+        // console.log('No account found named ' + username);
         return new Promise(function(resolve, reject) {
           var err = new Error(BAD_LOGIN_TEXT);
           err.isDone = true;
           reject(err);
         });
       } else {
-        return login.compareAuthentication(password)
+        return account.compareAuthentication(password)
           .then(function(isMatch) {
             if (! isMatch) {
               // console.log('No auth match for ' + username);
@@ -31,7 +32,7 @@ module.exports = function(username, password) {
                 reject(err);
               });
             }
-            return { login: login };
+            return { account: account };
           });
       }
     })

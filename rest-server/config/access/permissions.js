@@ -3,8 +3,9 @@
 
 module.exports = {
   // Permission levels
-  LOGIN_EDIT: { key: 'LOGIN_EDIT' },
-  LOGIN_VIEW: { key: 'LOGIN_VIEW' },
+  ACCOUNT_EDIT: { key: 'ACCOUNT_EDIT' },
+  ACCOUNT_VIEW: { key: 'ACCOUNT_VIEW' },
+  ACCOUNT_CREATE: { key: 'ACCOUNT_CREATE' },
   USER_DETAILS_EDIT: { key: 'USER_DETAILS_EDIT'},
   USER_BRIEF_VIEW: { key: 'USER_BRIEF_VIEW' },
   USER_DETAILS_VIEW: { key: 'USER_DETAILS_VIEW' },

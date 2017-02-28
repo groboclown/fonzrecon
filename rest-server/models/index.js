@@ -17,7 +17,7 @@
 // The approach below allows for mocking out the database, though.
 
 module.exports = {
-  Login: require('./login'),
+  Account: require('./account'),
   User: require('./user'),
   Acknowledgement: require('./acknowledgement'),
   ClaimedPrize: require('./redeemed-prize'),
