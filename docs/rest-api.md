@@ -133,6 +133,7 @@ query parameters and response formats.
         "type": "UserBrief"
       },
       "pointsToEachUser": 1,
+      "comment": "additional comment",
       "type": "ThumbsUp"
     }
   ],
@@ -210,6 +211,7 @@ query parameters and response formats.
         "uri": "/api/v1/users/username3",
         "type": "UserBrief"
       },
+      "comment": "additional comment",
       "type": "ThumbsUpBrief"
     }
   ]
@@ -250,6 +252,7 @@ query parameters and response formats.
     "type": "UserBrief"
   },
   "pointsToEachUser": 1,
+  "comment": "additional comment",
   "type": "ThumbsUp"
 }
 ```
@@ -263,6 +266,7 @@ Aaay.  It does not have a URI to reference it.*
 * `givenBy` - a [UserBrief](#userbrief) for the user who gave the Thumbs Up.
 * `pointsToEachUser` - number of points assigned to each user in the
   parent Aaay.
+* `comment` - optional string describing the reason for the Thumbs Up.
 * `type` - constant `"ThumbsUp"` string.
 
 
@@ -284,6 +288,7 @@ Aaay.  It does not have a URI to reference it.*
     "uri": "/api/v1/users/username3",
     "type": "UserBrief"
   },
+  "comment": "additional comment",
   "type": "ThumbsUpBrief"
 }
 ```
@@ -295,6 +300,7 @@ Aaay.  It does not have a URI to reference it.*
 * `updatedAt` - timestamp when the Thumbs Up was last edited.
 * `createdAt` - timestamp when the Thumbs Up was first created.
 * `givenBy` - a [UserBrief](#userbrief) for the user who gave the Thumbs Up.
+* `comment` - optional string describing the reason for the Thumbs Up.
 * `type` - constant `"ThumbsUpBrief"` string.
 
 

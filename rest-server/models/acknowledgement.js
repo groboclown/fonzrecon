@@ -19,7 +19,8 @@ const ThumbsUpSchema = new Schema({
     get: v => Math.round(v),
     set: v => Math.round(v),
     min: 1
-  }
+  },
+  comment: String
 });
 ThumbsUpSchema.set('toJSON', { virtuals: true });
 ThumbsUpSchema.set('toObject', { virtuals: true });

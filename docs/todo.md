@@ -14,7 +14,7 @@
       complex where clause.
     * Rename the "login" files and db schema to "account".
   * Features:
-    * Allow for up-thumbing acknowledgements.
+    * Allow for up-thumbing acknowledgements with optional comments.
     * Implement prize schema and API.
     * Add query parameters for listing users and listing acknowledgements.
   * Document REST API.

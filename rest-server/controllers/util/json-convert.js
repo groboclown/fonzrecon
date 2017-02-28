@@ -54,6 +54,7 @@ function briefAcknowledgement(ack) {
         updatedAt: tu.updatedAt,
         createdAt: tu.createdAt,
         givenBy: briefUser(tu.givenByUsername),
+        comment: tu.comment,
         type: 'ThumbsUpBrief'
       };
     })
