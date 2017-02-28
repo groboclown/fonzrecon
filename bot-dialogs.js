@@ -23,7 +23,7 @@
       name: 'help',
       condition: (data) => {return data.text.includes('help')},
       action: dialogHelp
-    }
+    },
     {
       name: 'getInfo',
       condition: (data) => {return !data.isGroup},
