@@ -5,8 +5,17 @@
 * rest-server:
   * Permissions
     * Correctly wire in passport authentication.
-    * Allow for user and login creation.
+    * Allow for login creation.
+      * login must have unique email and username.
+      * logins can only be created by admins.
+    * Allow for user creation.
+      * username and each entry in the names must be globally
+        unique.
+      * users can only be created by admins.
+    * Allow for users to update their user and limited rights
+      to update their login.
     * Allow for ticket-based session login.
+    * Allow for users to have an associated picture.
   * Bugs:
     * Issue with the brief acknowledgements list.  Right now, it only
       returns public acks.  However, it should return public *and*
@@ -17,7 +26,6 @@
     * Allow for up-thumbing acknowledgements with optional comments.
     * Implement prize schema and API.
     * Add query parameters for listing users and listing acknowledgements.
-  * Document REST API.
 * bot:
   * MS Teams:
     * access through MS Teams
