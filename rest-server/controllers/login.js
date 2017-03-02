@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * API handlers for logging in (getting a JWT token).
+ * REST API handlers around the account login.
+ *
  *
  * TODO the actual REST API around the registration must be done
  * in the route.  This particular file should handle the generation of

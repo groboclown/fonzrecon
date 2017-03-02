@@ -22,6 +22,7 @@ module.exports = function(username, password) {
           reject(err);
         });
       } else {
+        // Get the local account, if there is one.
         return account.compareAuthentication(password)
           .then(function(isMatch) {
             if (! isMatch) {

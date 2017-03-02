@@ -8,6 +8,7 @@ const csrf = require('csurf');
 const validator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const fingerprint = require('express-fingerprint');
 const settings = require('./settings');
 
 exports.setup = function(app, passport) {
@@ -17,6 +18,7 @@ exports.setup = function(app, passport) {
   }));
 
   app.use(cors());
+  app.use(fingerprint());
 
   app.use(logger('dev'));
   app.use(cookieParser());

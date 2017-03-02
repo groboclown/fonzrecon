@@ -34,6 +34,9 @@ exports.setup = function(app, passport) {
     var status = 500;
     // Only send stacktrace back if not in production mode.
     var payload = { message: err.message };
+    if (typeof(err) === 'string') {
+      payload.message = err;
+    }
     if (settings.envName !== 'production') {
       payload.stack = err.stack;
     }
@@ -43,7 +46,7 @@ exports.setup = function(app, passport) {
 
     if (err.status) {
       status = err.status;
-    } else if (err.stack.includes('ValidationError')) {
+    } else if (!! err.stack && err.stack.includes('ValidationError')) {
       status = 422;
     }
 

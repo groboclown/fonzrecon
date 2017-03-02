@@ -68,25 +68,36 @@ function discoverUserMiddleware(req, res, next) {
   var password = lookup(req.body, 'password') || lookup(req.query, 'password');
   if (!! username) {
     log("getting account for " + username);
-    Account.findOne({ _id: username }, function(err, account) {
-      if (err) {
-        return next(err);
-      }
-      if (!! account) {
-        account.compareAuthentication(password, function(err, isMatch) {
-          if (err) {
-            return next(err);
-          }
-          if (! isMatch) {
-            return next(forbidden());
-          }
-          req.user = account;
-          next();
-        });
-      } else {
+    var accountPromise = Account.findOne({ _id: username });
+    var loginMatchPromise = accountPromise
+      .then(function(account) {
+        if (! account) {
+          return null;
+        }
+        return account.getAuthenticationNamed('local');
+      })
+      .then(function(auth) {
+        if (! auth) {
+          return false;
+        }
+        return auth.onLogin({ password: password });
+      });
+    Promise.all([accountPromise, loginMatchPromise])
+      .then(function(args) {
+        let account = args[0];
+        let isMatch = args[1];
+        if (! account) {
+          return next();
+        }
+        if (! isMatch) {
+          return next(forbidden());
+        }
+        req.user = account;
         next();
-      }
-    });
+      })
+      .catch(function(err) {
+        return next(err);
+      });
   } else {
     log("no account given");
     next();
