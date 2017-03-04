@@ -23,7 +23,7 @@
       json: true,
       body: aaay
     },
-    function(error, response, body){
+    function(err, response, body){
       callback(err, response);
     });
   }
