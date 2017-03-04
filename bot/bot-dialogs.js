@@ -9,15 +9,6 @@
   const TENANT_ID = process.env.TENANT_ID;
   const BOT_NAME = process.env.BOT_NAME;
 
-  const DIALOG_ROUTES = [
-    {
-      name: 'giveThanks',
-      condition: (data) => {return data.isGroup && data.mentions.length > 0 && new RegExp(KEYWORDS_REGEX, 'i').test(data.text)},
-      action: dialogGiveThanks
-    }
-  ];
-
-
   const INTENTS = {
     giveThanks: {
       respond: dialogGiveThanks
