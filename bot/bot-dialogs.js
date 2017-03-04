@@ -167,8 +167,9 @@
     console.log(mentions);
     console.log(text);
     mentions.forEach(function(mention){
-      text = text.replace('<at>' + mention.name + '</at>', formatName(mention.name));
+      text = text.replace(mention.text, formatName(mention.mentioned.name));
     });
+    text = text.replace('<at>' + BOT_NAME + '</at>', '');
     text = text.replace('<at>','');
     text = text.replace('</at>','');
     return text;
