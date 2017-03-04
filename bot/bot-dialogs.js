@@ -2,9 +2,28 @@
 
   var builder = require('botbuilder');
 
+  var apiai = require('apiai');
+
+  var app = apiai(process.env.API_AI_TOKEN);
+
+  var request = app.textRequest('To be or not to be that is the question', {
+    sessionId: 'UserId'
+  });
+
+  request.on('response', function(response) {
+    console.log(response);
+  });
+
+  request.on('error', function(error) {
+    console.log(error);
+  });
+
+  request.end();
+
   const TENANT_ID = process.env.TENANT_ID;
   const BOT_NAME = process.env.BOT_NAME;
   const KEYWORDS_REGEX = process.env.KEYWORDS_REGEX;
+
 
   //routes are executed in order. Sessions matching earlier dialogs will not execute
   //later dialogs.
@@ -56,7 +75,6 @@
           return;
         }
       }
-
     });
 
     DIALOG_ROUTES.forEach(function(dialog){
