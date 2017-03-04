@@ -56,8 +56,9 @@
 
       request.on('response', function(response) {
         var intentName = get(response,'result.metadata.intentName');
+        var sessionId = get(response,'sessionId');
         var resolvedQuery = get(response,'result.resolvedQuery');
-        console.log(resolvedQuery,'=>',intentName);
+        console.log(sessionId + ':',resolvedQuery,'=>',intentName);
         if(intentName && INTENTS[intentName]){
           INTENTS[intentName].respond(session, response);
         }
