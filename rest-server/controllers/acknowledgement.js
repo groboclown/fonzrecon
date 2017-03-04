@@ -214,13 +214,13 @@ exports.create = function(req, res, next) {
       var toUsers = args[0];
       var fromUser = args[1];
       return new Acknowledgement({
-        givenByUsername: fromUser,
-        awardedToUsernames: toUsers,
+        givenByUser: fromUser,
+        awardedToUsers: toUsers,
         pointsToEachUser: req.body.points,
         comment: req.body.comment,
         public: req.body.public || false,
         tags: req.body.tags || [],
-        thumbsUp: []
+        thumbsUps: []
       }).save();
     })
     .then(function (ack) {
@@ -293,9 +293,9 @@ exports.getUsersInAcknowledgement = function(req) {
       if (! ack) {
         return [];
       }
-      var ret = [ ack.givenByUsername.username ];
-      for (var i = 0; i < ack.awardedToUsernames.length; i++) {
-        ret.push(ack.awardedToUsernames[i].username);
+      var ret = [ ack.givenByUser.username ];
+      for (var i = 0; i < ack.awardedToUsers.length; i++) {
+        ret.push(ack.awardedToUsers[i].username);
       }
       return ret;
     });

@@ -61,17 +61,17 @@ function briefAcknowledgement(ack) {
     type: 'AaayBrief',
     updatedAt: ack.updatedAt,
     createdAt: ack.createdAt,
-    givenBy: briefUser(ack.givenByUsername),
-    awardedTo: briefUserList(ack.awardedToUsernames),
+    givenBy: briefUser(ack.givenByUser),
+    awardedTo: briefUserList(ack.awardedToUsers),
     comment: ack.comment,
     tags: ack.tags,
     public: (ack.public === undefined ? true : ack.public),
-    thumbsUp: ack.thumbsUp.map(function (tu) {
+    thumbsUps: ack.thumbsUps.map(function (tu) {
       return {
         id: tu.id,
         updatedAt: tu.updatedAt,
         createdAt: tu.createdAt,
-        givenBy: briefUser(tu.givenByUsername),
+        givenBy: briefUser(tu.givenByUser),
         comment: tu.comment,
         type: 'ThumbsUpBrief'
       };
@@ -85,9 +85,9 @@ function detailedAcknowledgement(ack) {
   ret.pointsToEachUser = ack.pointsToEachUser;
   ret.uri = ret.uri + '/details';
   ret.type = 'Aaay'
-  for (var i = 0; i < ack.thumbsUp.length; i++) {
-    ret.thumbsUp[i].pointsToEachUser = ack.thumbsUp[i].pointsToEachUser;
-    ret.thumbsUp[i].type = 'ThumbsUp';
+  for (var i = 0; i < ack.thumbsUps.length; i++) {
+    ret.thumbsUps[i].pointsToEachUser = ack.thumbsUps[i].pointsToEachUser;
+    ret.thumbsUps[i].type = 'ThumbsUp';
   }
   return ret;
 }

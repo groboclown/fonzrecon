@@ -116,7 +116,7 @@ query parameters and response formats.
     "tag 2"
   ],
   "public": true,
-  "thumbsUp": [
+  "thumbsUps": [
     {
       "id": "58b5cbd4e2d1441418238274",
       "updatedAt": "2017-02-28T19:13:24.737Z",
@@ -152,7 +152,7 @@ query parameters and response formats.
 * `public` - boolean indicating whether the Aaay is publicly viewable.
 * `uri` - the relative path to the Aaay.
 * `type` - constant `"Aaay"` string.
-* `thumbsUp` - a list of [ThumbsUp](#thumbsup) added to the
+* `thumbsUps` - a list of [ThumbsUp](#thumbsup) added to the
   Aaay by other users to add their support of the Aaay.
 * `pointsToEachUser` - number of points assigned to each user in the
   `awardedTo` list.
@@ -195,7 +195,7 @@ query parameters and response formats.
   "public": true,
   "uri": "/api/v1/aaay/58b5cbd4d8d1441418238274",
   "type": "AaayBrief",
-  "thumbsUp": [
+  "thumbsUps": [
     {
       "id": "58b5cbd4e2d1441418238274",
       "updatedAt": "2017-02-28T19:13:24.737Z",
@@ -229,7 +229,7 @@ query parameters and response formats.
 * `public` - boolean indicating whether the Aaay is publicly viewable.
 * `uri` - the relative path to the AaayBrief.
 * `type` - constant `"AaayBrief"` string.
-* `thumbsUp` - a list of [ThumbsUpBrief](#thumbsupbrief) added to the
+* `thumbsUps` - a list of [ThumbsUpBrief](#thumbsupbrief) added to the
   Aaay by other users to add their support of the Aaay.
 
 

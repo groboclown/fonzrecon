@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 // Schema Definition
 
 const ThumbsUpSchema = new Schema({
-  givenByUsername: {
+  givenByUser: {
     type: Schema.ObjectId,
     ref: 'User',
     required: true
@@ -24,15 +24,13 @@ const ThumbsUpSchema = new Schema({
 });
 
 const AcknowledgementSchema = new Schema({
-  // FIXME this is now a user ref, so the name should be 'givenByUser'
-  givenByUsername: {
+  givenByUser: {
     type: Schema.ObjectId,
     ref: 'User',
     required: true
   },
 
-  // FIXME this is now a user ref, so the name should be 'awardedToUsers'
-  awardedToUsernames: [{
+  awardedToUsers: [{
     type: Schema.ObjectId,
     ref: 'User'
   }],
@@ -51,8 +49,7 @@ const AcknowledgementSchema = new Schema({
 
   tags: [String],
 
-  // FIXME this is a list, so the name should be plural (thumbsUps)
-  thumbsUp: [ThumbsUpSchema]
+  thumbsUps: [ThumbsUpSchema]
 }, {
   timestamps: true
 });
@@ -63,12 +60,12 @@ AcknowledgementSchema.methods.pointsGivenBy = function(username) {
     username = username.username;
   }
   var sum = 0;
-  if (this.givenByUsername.username === username) {
+  if (this.givenByUser.username === username) {
     sum += this.pointsToEachUser * this.awardedTo.length;
   }
-  for (var i = 0; i < this.thumbsUp.length; i++) {
-    if (this.thumbsUp[i].givenByUsername.username === username) {
-      sum += this.thumbsUp[i].pointsToEachUser * this.awardedTo.length;
+  for (var i = 0; i < this.thumbsUps.length; i++) {
+    if (this.thumbsUps[i].givenByUser.username === username) {
+      sum += this.thumbsUps[i].pointsToEachUser * this.awardedTo.length;
     }
   }
   return sum;
@@ -82,8 +79,8 @@ AcknowledgementSchema.methods.pointsGivenTo = function(username) {
   for (var i = 0; i < this.awardedTo.length; i++) {
     if (this.awardedTo[i] === username) {
       var sum = this.pointsToEachUser;
-      for (var j = 0; j < this.thumbsUp.length; j++) {
-        sum += this.thumbsUp[j].pointsToEachUser;
+      for (var j = 0; j < this.thumbsUps.length; j++) {
+        sum += this.thumbsUps[j].pointsToEachUser;
       }
       return sum;
     }
@@ -96,11 +93,11 @@ AcknowledgementSchema.methods.pointsGivenTo = function(username) {
  */
 AcknowledgementSchema.statics.findBrief = function(conditions) {
   return this.find(conditions)
-    .select('givenByUsername awardedToUsernames thumbsUp createdAt updatedAt givenBy awardedTo comment tags')
+    .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags')
     .sort('-createdAt')
-    .populate('givenByUsername', 'username names organization')
-    .populate('awardedToUsernames', 'username names organization')
-    .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
+    .populate('givenByUser', 'username names organization')
+    .populate('awardedToUsers', 'username names organization')
+    .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
     .lean();
 };
 
@@ -114,10 +111,10 @@ function conditionForVisibleToUser(username) {
         public: true
       },
       {
-        'givenByUsername.username': username
+        'givenByUser.username': username
       },
       {
-        'awardedToUsernames.username': username
+        'awardedToUsers.username': username
       }
     ]
   };
@@ -134,10 +131,10 @@ AcknowledgementSchema.statics.findBriefForUser = function(username) {
 
 AcknowledgementSchema.statics.findOneBrief = function(conditions) {
   return this.findOne(conditions)
-  .select('givenByUsername awardedToUsernames thumbsUp createdAt updatedAt givenBy awardedTo comment tags public')
-  .populate('givenByUsername', 'username names organization')
-  .populate('awardedToUsernames', 'username names organization')
-  .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
+  .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags public')
+  .populate('givenByUser', 'username names organization')
+  .populate('awardedToUsers', 'username names organization')
+  .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
   .lean();
 };
 
@@ -155,9 +152,9 @@ AcknowledgementSchema.statics.findOneBriefForUser = function(ackId, username) {
 
 AcknowledgementSchema.statics.findOneDetails = function(conditions) {
   return this.findOne(conditions)
-    .populate('givenByUsername', 'username names organization')
-    .populate('awardedToUsernames', 'username names organization')
-    .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
+    .populate('givenByUser', 'username names organization')
+    .populate('awardedToUsers', 'username names organization')
+    .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
     .lean();
 };
 
@@ -175,9 +172,9 @@ AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, usernam
         }
       ]
     })
-    .populate('givenByUsername')
-    .populate('awardedToUsernames')
-    .populate('thumbsUp')
+    .populate('givenByUser')
+    .populate('awardedToUsers')
+    .populate('thumbsUps')
 };
 
 
@@ -187,10 +184,10 @@ AcknowledgementSchema.statics.findOneDetailsForUser = function(ackId, username) 
       $or: [
         // Note: public is not part of this condition.
         {
-          'givenByUsername.username': username
+          'givenByUser.username': username
         },
         {
-          'awardedToUsernames.username': username
+          'awardedToUsers.username': username
         }
       ],
       _id: ackId
