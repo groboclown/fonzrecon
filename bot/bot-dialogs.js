@@ -26,8 +26,6 @@
 
   module.exports.setupBot = function(connector){
 
-
-
     var bot = new builder.UniversalBot(connector);
 
     bot.dialog('/', function (session) {
@@ -44,6 +42,8 @@
         session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
         return;
       }
+
+      session.sendTyping();
 
       var request = nlp.textRequest(data.text, {
         sessionId: data.userName,
@@ -94,14 +94,20 @@
   }
 
   function dialogGiveThanks(session){
-    //We've been tagged in a Chat
-    //We have single or multiple user mentions
-    //And the chat has a keyword in it.
     var data = getMessageData(session);
     var names = [];
     data.mentions.forEach(function(mention){
       names.push(formatName(mention.mentioned.name));
     });
+
+    if(names.length === 0){
+      session.send("Aaaay! It looks like you want me to thank someone!");
+      session.send("You should tag each of them!");
+      session.endDialog("*Hits Jukebox*");
+      return;
+    }
+
+    //call service for aaays here
 
     var last = names.pop()
     if(names.length === 0){
@@ -117,6 +123,7 @@
 
 
 
+  //todo: Reduce this later. We don't need all this data.
   function getMessageData(session){
     var output = {};
     var msg = session.message;
