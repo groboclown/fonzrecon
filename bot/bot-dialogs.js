@@ -45,7 +45,7 @@
   const INTENTS = {
     default: {
       respond: passthrough
-    }
+    },
     getHelp: {
       respond: passthrough
     },
