@@ -49,10 +49,7 @@
     getHelp: {
       respond: passthrough
     },
-    getThanksAbout: {
-      respond: passthrough
-    },
-    getThanksCount: {
+    getThanks: {
       respond: passthrough
     },
     giveThanks: {
