@@ -117,7 +117,7 @@
   }
 
   function passthrough(session,response){
-    var speech = get(response,"response.result.fulfillment.speech");
+    var speech = get(response,"result.fulfillment.speech");
     console.log(response, speech);
     if(speech){
       session.send(speech);
