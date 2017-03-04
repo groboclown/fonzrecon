@@ -19,7 +19,7 @@
 
 
   const INTENTS = {
-    getThanks: {
+    giveThanks: {
       respond: dialogGiveThanks
     }
   };
