@@ -34,10 +34,10 @@
       var data = getMessageData(session);
 
       try{
-        console.log(JSON.stringify(session.entities,null,2));
+        console.log(JSON.stringify(session.message.entities,null,2));
       }
       catch(err){
-        console.log(session.entities);
+        console.log(session.message.entities);
       }
 
       if(!data.tenantId || data.tenantId != TENANT_ID){
