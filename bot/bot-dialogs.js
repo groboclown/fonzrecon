@@ -20,7 +20,7 @@
 
   const INTENTS = {
     getThanks: {
-      respond: passthrough
+      respond: dialogGiveThanks
     }
   };
 
@@ -32,13 +32,6 @@
 
     bot.dialog('/', function (session) {
       var data = getMessageData(session);
-
-      /*
-      console.log('-----');
-      for(var key in data){
-        console.log(key,JSON.stringify(data[key]));
-      }
-      */
 
       if(!data.tenantId || data.tenantId != TENANT_ID){
         session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
@@ -55,10 +48,12 @@
       });
 
       request.on('response', function(response) {
+
         var intentName = get(response,'result.metadata.intentName');
         var sessionId = get(response,'sessionId');
         var resolvedQuery = get(response,'result.resolvedQuery');
         console.log(sessionId + ':',resolvedQuery,'=>',intentName);
+
         if(intentName && INTENTS[intentName]){
           INTENTS[intentName].respond(session, response);
         }
