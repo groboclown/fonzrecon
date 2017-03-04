@@ -120,7 +120,7 @@
     var speech = get(response,"result.fulfillment.speech");
     console.log(response, speech);
     if(speech){
-      session.send(speech);
+      session.endDialog(speech);
     }
     else{
       session.send('*Hits Jukebox*');
