@@ -42,20 +42,20 @@
   ];
 
 
-  const INTENTS = [
-    {
-      name: 'getHelp'
+  const INTENTS = {
+    getHelp: {
+      respond: passthrough
     },
-    {
-      name: 'getThanksAbout'
+    getThanksAbout: {
+      respond: passthrough
     },
-    {
-      name: 'getThanksCount'
+    getThanksCount: {
+      respond: passthrough
     },
-    {
-      name: 'giveThanks'
+    giveThanks: {
+      respond: passthrough
     }
-  ]
+  };
 
   module.exports.setupBot = function(connector){
 
@@ -77,7 +77,12 @@
       }
 
       var request = nlp.textRequest(data.text, {
-        sessionId: data.userName
+        sessionId: data.userName,
+        contexts: [
+          {
+            name: (data.isGroup ? 'group' : 'notGroup')
+          }
+        ]
       });
 
       request.on('response', function(response) {
