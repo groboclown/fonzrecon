@@ -77,17 +77,19 @@
       }
 
       var request = nlp.textRequest(data.text, {
-        sessionId: data
+        sessionId: data.userId
       });
 
       request.on('response', function(response) {
         console.log(response);
-        session.send(JSON.stringify(response,null,2));
+        if(response){
+          session.send(JSON.stringify(response,null,2));
+        }
       });
 
       request.on('error', function(error) {
         console.log(error);
-        session.send(JSON.stringify(response,null,2));
+        session.send(JSON.stringify(error,null,2));
       });
 
       request.end();
