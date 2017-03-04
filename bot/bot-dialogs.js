@@ -33,6 +33,13 @@
     bot.dialog('/', function (session) {
       var data = getMessageData(session);
 
+      try{
+        console.log(JSON.stringify(session.entities,null,2));
+      }
+      catch(err){
+        console.log(session.entities);
+      }
+
       if(!data.tenantId || data.tenantId != TENANT_ID){
         session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
         return;
@@ -103,8 +110,6 @@
     else{
       names = names.join(', ') + ' and ' + last;
     }
-
-    console.log(JSON.stringify(session,null,2));
 
     session.send("Aaaay! Great job " + names + "!");
     session.endDialog(formatName(data.userName) + ' sent you recognition!');
