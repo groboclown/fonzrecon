@@ -11,6 +11,7 @@ const ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC = access.authorize(permissions.ACKNOWLED
 const ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE = access.authorize(permissions.ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE, auth_affected_ack_id);
 const ACKNOWLEDGEMENT_DETAILS_VIEW = access.authorize(permissions.ACKNOWLEDGEMENT_DETAILS_VIEW, auth_affected_ack_id);
 const ACKNOWLEDGEMENT_CREATE = access.authorize(permissions.ACKNOWLEDGEMENT_CREATE, auth_affected_users_none);
+const THUMBSUP_CREATE = access.authorize(permissions.THUMBSUP_CREATE, auth_affected_ack_id);
 
 
 router.get('/', ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC, controller.getAllBrief);
@@ -18,6 +19,7 @@ router.get('/:id', ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC, controller.getOneBrief);
 router.get('/:id/details', ACKNOWLEDGEMENT_DETAILS_VIEW, controller.getOneDetails);
 
 router.post('/', ACKNOWLEDGEMENT_CREATE, controller.create);
+router.post('/:id/thumbsup', THUMBSUP_CREATE, controller.create);
 
 // ================================================================
 // Authentication functions

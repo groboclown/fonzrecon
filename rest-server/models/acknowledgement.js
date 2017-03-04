@@ -22,16 +22,16 @@ const ThumbsUpSchema = new Schema({
   },
   comment: String
 });
-ThumbsUpSchema.set('toJSON', { virtuals: true });
-ThumbsUpSchema.set('toObject', { virtuals: true });
 
 const AcknowledgementSchema = new Schema({
+  // FIXME this is now a user ref, so the name should be 'givenByUser'
   givenByUsername: {
     type: Schema.ObjectId,
     ref: 'User',
     required: true
   },
 
+  // FIXME this is now a user ref, so the name should be 'awardedToUsers'
   awardedToUsernames: [{
     type: Schema.ObjectId,
     ref: 'User'
@@ -51,46 +51,11 @@ const AcknowledgementSchema = new Schema({
 
   tags: [String],
 
+  // FIXME this is a list, so the name should be plural (thumbsUps)
   thumbsUp: [ThumbsUpSchema]
 }, {
   timestamps: true
 });
-AcknowledgementSchema.set('toJSON', { virtuals: true });
-AcknowledgementSchema.set('toObject', { virtuals: true });
-
-function toLinkedSimpleUser(user) {
-  if (typeof(user) === 'string') {
-    return {
-      username: user,
-      url: '/api/v1/users/' + user
-    };
-  } else {
-    return {
-      username: user.username,
-      url: '/api/v1/users/' + user.username,
-      names: user.names,
-      organization: user.organization
-    };
-  }
-}
-
-ThumbsUpSchema.virtual('givenBy')
-  .get(function() {
-    return toLinkedSimpleUser(this.givenByUsername);
-  });
-
-AcknowledgementSchema.virtual('givenBy')
-  .get(function() {
-    return toLinkedSimpleUser(this.givenByUsername);
-  });
-AcknowledgementSchema.virtual('awardedTo')
-  .get(function() {
-    var ret = [];
-    for (var i = 0; i < this.awardedToUsernames.length; i++) {
-      ret.push(toLinkedSimpleUser(this.awardedToUsernames[i]));
-    }
-    return ret;
-  });
 
 AcknowledgementSchema.methods.pointsGivenBy = function(username) {
   // In case we're passed a User object instead.
@@ -126,8 +91,10 @@ AcknowledgementSchema.methods.pointsGivenTo = function(username) {
   return 0;
 };
 
-AcknowledgementSchema.statics.findBriefPublic = function(conditions) {
-  conditions.public = true;
+/**
+ * Returns all acknowledgements.
+ */
+AcknowledgementSchema.statics.findBrief = function(conditions) {
   return this.find(conditions)
     .select('givenByUsername awardedToUsernames thumbsUp createdAt updatedAt givenBy awardedTo comment tags')
     .sort('-createdAt')
@@ -135,6 +102,34 @@ AcknowledgementSchema.statics.findBriefPublic = function(conditions) {
     .populate('awardedToUsernames', 'username names organization')
     .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
     .lean();
+};
+
+function conditionForVisibleToUser(username) {
+  // We don't need to check the ThumbsUp, because if you can't see
+  // the Ack, then you can't create a ThumbsUp.  Therefore, if you
+  // thumbed up an ack, then you can see it without a thumbs up.
+  return {
+    $or: [
+      {
+        public: true
+      },
+      {
+        'givenByUsername.username': username
+      },
+      {
+        'awardedToUsernames.username': username
+      }
+    ]
+  };
+}
+
+/**
+ * Return a brief list of acknowledgements that are viewable by the
+ * user, which means that they are public, or the user is in the list
+ * of awardedTo users, or the user is in the
+ */
+AcknowledgementSchema.statics.findBriefForUser = function(username) {
+  return this.findBrief(conditionForVisibleToUser(username));
 };
 
 AcknowledgementSchema.statics.findOneBrief = function(conditions) {
@@ -146,12 +141,61 @@ AcknowledgementSchema.statics.findOneBrief = function(conditions) {
   .lean();
 };
 
+AcknowledgementSchema.statics.findOneBriefForUser = function(ackId, username) {
+  return this.findOneBrief({
+    $and: [
+      conditionForVisibleToUser(username),
+      {
+        _id: ackId
+      }
+    ]
+  });
+};
+
+
 AcknowledgementSchema.statics.findOneDetails = function(conditions) {
   return this.findOne(conditions)
     .populate('givenByUsername', 'username names organization')
     .populate('awardedToUsernames', 'username names organization')
     .populate('thumbsUp', 'givenByUsername.username givenByUsername.names givenByUsername.organization createdAt')
     .lean();
-}
+};
+
+
+/**
+ * Load the full object for updating.  User needs view access here;
+ * this should ONLY be used for adding thumbs ups.
+ */
+AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, username) {
+  return this.findOne({
+      $and: [
+        conditionForVisibleToUser(username),
+        {
+          _id: ackId
+        }
+      ]
+    })
+    .populate('givenByUsername')
+    .populate('awardedToUsernames')
+    .populate('thumbsUp')
+};
+
+
+AcknowledgementSchema.statics.findOneDetailsForUser = function(ackId, username) {
+  return this.findOneDetails(
+    {
+      $or: [
+        // Note: public is not part of this condition.
+        {
+          'givenByUsername.username': username
+        },
+        {
+          'awardedToUsernames.username': username
+        }
+      ],
+      _id: ackId
+    });
+};
+
 
 module.exports = mongoose.model('Acknowledgement', AcknowledgementSchema);

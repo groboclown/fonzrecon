@@ -18,9 +18,10 @@
     * Allow for users to have an associated picture.
   * Bugs:
     * Issue with the brief acknowledgements list.  Right now, it only
-      returns public acks.  However, it should return public *and*
-      the private acks that the user can see.  This will require a more
-      complex where clause.
+      returns the brief thumbs up information.  If the user created the
+      thumbs up, then the user should be able to see its details.
+    * Acknowledgements need to use an update and where clause instead of
+      save when deducting points.
   * Features:
     * Allow for up-thumbing acknowledgements with optional comments.
     * Implement prize schema and API.

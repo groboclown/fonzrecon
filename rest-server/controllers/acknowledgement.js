@@ -4,15 +4,20 @@ const Acknowledgement = require('../models').Acknowledgement;
 const User = require('../models').User;
 const paging = require('./util').paging.extract;
 const jsonConvert = require('./util').jsonConvert;
+const accessLib = requrie('../lib/access');
 
 
 
 exports.getAllBrief = function(req, res, next) {
-  // TODO allow for query parameters.
+  const username = accessLib.getRequestUsername(req);
+  if (! username) {
+    return next(notAuthorized());
+  }
 
+  // TODO allow for query parameters.
   var pagination = paging(req);
   return Acknowledgement
-    .findBriefPublic({})
+    .findBriefForUser(req.userAccount.user.username)
     .paginate(pagination)
     .then(function (results) {
       results.type = 'AaayBrief';
@@ -26,8 +31,13 @@ exports.getAllBrief = function(req, res, next) {
 
 
 exports.getOneBrief = function(req, res, next) {
+  const username = accessLib.getRequestUsername(req);
+  if (! username) {
+    return next(notAuthorized());
+  }
+
   return Acknowledgement
-    .findOneBrief({ _id: req.params.id })
+    .findOneBriefForUser(req.params.id, username)
     .then(function (ack) {
       if (! ack) {
         return next(resourceNotFound());
@@ -42,8 +52,13 @@ exports.getOneBrief = function(req, res, next) {
 
 
 exports.getOneDetails = function(req, res, next) {
+  const username = accessLib.getRequestUsername(req);
+  if (! username) {
+    return next(notAuthorized());
+  }
+
   return Acknowledgement
-    .findOneDetails({ _id: req.params.id })
+    .findOneDetailsForUser(req.params.id, username)
     .then(function (ack) {
       if (! ack) {
         return next(resourceNotFound());
@@ -59,16 +74,9 @@ exports.getOneDetails = function(req, res, next) {
 
 
 exports.create = function(req, res, next) {
-  var user;
-  if (!!req.userAccount && !!req.userAccount.behalf) {
-    user = req.userAccount.behalf;
-  } else if (!!req.userAccount && !!req.userAccount.user) {
-    user = req.userAccount.user;
-  } else {
-    // those with just an account are not allowed to create acknowledgements.
-    var err = new Error('Forbidden');
-    err.status = 403;
-    return next(err);
+  const username = accessLib.getRequestUsername(req);
+  if (! username) {
+    return next(notAuthorized());
   }
 
   req.checkBody({
@@ -111,16 +119,17 @@ exports.create = function(req, res, next) {
     }
   });
 
+  // We need to get the full user object that's writable.
   var fromUserPromise = User
-    .findOne({ username: user.username })
+    .findOne({ username: username })
     .exec()
-    .then(function (_user) {
-      if (! _user) {
+    .then(function (user) {
+      if (! user) {
         var err = new Error('Internal error: cannot find requesting user.');
         err.status = 500;
         throw err;
       }
-      return _user;
+      return user;
     });
   var toUsersPromise = req.getValidationResult()
     .then(function (results) {
@@ -190,6 +199,12 @@ exports.create = function(req, res, next) {
       // account BEFORE we create the ack.
       fromUser.pointsToAward -= totalGivenPoints;
       console.log('Saving fromUser:');console.log(fromUser.toJSON());
+
+      // FIXME this is susseptible to a overwhelm attack - if
+      // a user sends a whole bunch of simultaneous requests at once,
+      // there's a chance that multiple of those can run at the same time.
+      // This needs to be replaced with a "update" and condition clause.
+
       return fromUser.save();
     });
   var saveAckPromise = Promise
@@ -233,6 +248,42 @@ exports.create = function(req, res, next) {
 
 
 
+exports.createThumbsUp = function(req, res, next) {
+  const username = accessLib.getRequestUsername(req);
+  if (! username) {
+    return next(notAuthorized());
+  }
+
+  // Find the *visible* ack...
+  var ackPromise = Acknowledgement
+    .findOneForAddingThumbsUp(req.params.id, username)
+    .then(function (ack) {
+      if (! ack) {
+        return next(resourceNotFound());
+      }
+      return ack;
+    });
+  // We need to load the full, savable user in the request, so that
+  // the points can be deducted, if the points are available.
+  var userPromise = User
+    .findOne({ username: username })
+    .then(function(user) {
+      if (! user) {
+        var err = new Error('Internal error: cannot find requesting user.');
+        err.status = 500;
+        throw err;
+      }
+      return user;
+    });
+
+
+    .catch(function (err) {
+      next(err);
+    });
+};
+
+
+
 exports.getUsersInAcknowledgement = function(req) {
   const ackId = req.params.id;
 
@@ -254,5 +305,11 @@ exports.getUsersInAcknowledgement = function(req) {
 function resourceNotFound() {
   var err = new Error('Resource not found');
   err.status = 404;
+  return err;
+}
+
+function notAuthorized() {
+  var err = new Error('Forbidden');
+  err.status = 403;
   return err;
 }

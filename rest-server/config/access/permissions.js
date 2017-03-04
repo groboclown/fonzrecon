@@ -13,4 +13,8 @@ module.exports = {
   ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: { key: 'ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE' },
   ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC: { key: 'ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC' },
   ACKNOWLEDGEMENT_CREATE: { key: 'ACKNOWLEDGEMENT_CREATE' },
+
+  // This is distinct from ACKNOWLEDGEMENT_CREATE, because you need to
+  // have view permissions AND create permissions to create it.
+  THUMBSUP_CREATE: { key: 'THUMBSUP_CREATE' },
 };
