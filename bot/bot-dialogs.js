@@ -117,8 +117,14 @@
   }
 
   function passthrough(session,response){
-    var textResponse = response.result.fulfillment;
-    session.send(JSON.stringify(textResponse,null,2));
+    var speech = get(response,"response.result.fulfillment.speech");
+    if(speech){
+      session.send(speech);
+    }
+    else{
+      session.send('*Hits Jukebox*');
+      session.endDialog('This thing never works...');
+    }
   }
 
   function dialogWrongTenant(session){
