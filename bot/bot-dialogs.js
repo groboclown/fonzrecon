@@ -87,9 +87,7 @@
 
       request.on('response', function(response) {
         console.log(response);
-        if(response){
-          session.send(JSON.stringify(response,null,2));
-        }
+        INTENTS[response.result.metadata.intentName](session, response);
       });
 
       request.on('error', function(error) {
@@ -116,6 +114,10 @@
     });
     */
     return bot;
+  }
+
+  function passthrough(session,response){
+    session.send(JSON.stringify(response,null,2));
   }
 
   function dialogWrongTenant(session){
