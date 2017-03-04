@@ -81,7 +81,6 @@
 
   function passthrough(session,response){
     var speech = get(response,"result.fulfillment.speech");
-    console.log(response, speech);
     if(speech){
       session.endDialog(speech);
     }
