@@ -9,7 +9,7 @@
 
   module.exports.giveThanks = function(giver,receivers,comment,callback){
     var aaay = {
-      behalf: user,
+      behalf: giver,
       to: receivers,
       points: 1,
       public: true,
