@@ -77,7 +77,7 @@
       }
 
       var request = nlp.textRequest(data.text, {
-        sessionId: data.userId
+        sessionId: data.userName
       });
 
       request.on('response', function(response) {
