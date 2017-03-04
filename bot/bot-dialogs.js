@@ -33,10 +33,12 @@
     bot.dialog('/', function (session) {
       var data = getMessageData(session);
 
+      /*
+      console.log('-----');
       for(var key in data){
         console.log(key,JSON.stringify(data[key]));
       }
-      console.log('-----');
+      */
 
       if(!data.tenantId || data.tenantId != TENANT_ID){
         session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
@@ -53,8 +55,9 @@
       });
 
       request.on('response', function(response) {
-        console.log(response);
         var intentName = get(response,'result.metadata.intentName');
+        var resolvedQuery = get(response,'result.resolvedQuery');
+        console.log(resolvedQuery,'=>',intentName);
         if(intentName && INTENTS[intentName]){
           INTENTS[intentName].respond(session, response);
         }
@@ -64,7 +67,7 @@
       });
 
       request.on('error', function(error) {
-        console.log(error);
+        console.log('error from api.ai',error);
         session.send('*Hits Jukebox*');
         session.endDialog('This thing never works...');
       });
