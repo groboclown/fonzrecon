@@ -4,21 +4,7 @@
 
   var apiai = require('apiai');
 
-  var app = apiai(process.env.API_AI_TOKEN);
-
-  var request = app.textRequest('To be or not to be that is the question', {
-    sessionId: 'UserId'
-  });
-
-  request.on('response', function(response) {
-    console.log(response);
-  });
-
-  request.on('error', function(error) {
-    console.log(error);
-  });
-
-  request.end();
+  var nlp = apiai(process.env.API_AI_TOKEN);
 
   const TENANT_ID = process.env.TENANT_ID;
   const BOT_NAME = process.env.BOT_NAME;
@@ -53,9 +39,27 @@
       condition: (data) => {return !data.isGroup},
       action: dialogGetInfo
     }
+  ];
+
+
+  const INTENTS = [
+    {
+      name: 'getHelp'
+    },
+    {
+      name: 'getThanksAbout'
+    },
+    {
+      name: 'getThanksCount'
+    },
+    {
+      name: 'giveThanks'
+    }
   ]
 
   module.exports.setupBot = function(connector){
+
+
 
     var bot = new builder.UniversalBot(connector);
 
@@ -67,20 +71,43 @@
       }
       console.log('-----');
 
+      if(!data.tenantId || data.tenantId != TENANT_ID){
+        session.send('Sorry. This client is unsupported. Please set up a new bot for your own client.');
+        return;
+      }
 
+      var request = nlp.textRequest(data.text, {
+        sessionId: data
+      });
+
+      request.on('response', function(response) {
+        console.log(response);
+        session.send(JSON.stringify(response,null,2));
+      });
+
+      request.on('error', function(error) {
+        console.log(error);
+        session.send(JSON.stringify(response,null,2));
+      });
+
+      request.end();
+
+      /*
       for(var i in DIALOG_ROUTES){
         var dialog = DIALOG_ROUTES[i];
         if(dialog.condition(data)){
           session.beginDialog('/' + dialog.name);
           return;
         }
-      }
+      }*/
     });
 
+
+    /*
     DIALOG_ROUTES.forEach(function(dialog){
       bot.dialog('/' + dialog.name, dialog.action);
     });
-
+    */
     return bot;
   }
 
