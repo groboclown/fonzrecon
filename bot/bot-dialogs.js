@@ -87,7 +87,7 @@
 
       request.on('response', function(response) {
         console.log(response);
-        INTENTS[response.result.metadata.intentName](session, response);
+        INTENTS[response.result.metadata.intentName].respond(session, response);
       });
 
       request.on('error', function(error) {
