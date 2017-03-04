@@ -102,7 +102,7 @@
     }
 
     session.sendTyping();
-    db.giveThanks(data.userId,ids,replaceMentions(text,data.mentions),function(err, response){
+    db.giveThanks(data.userId,ids,replaceMentions(data.text,data.mentions),function(err, response){
       if(err){
         console.log(err);
         session.send("Aaay! Something went wrong and I couldn't record this Aaay!");
