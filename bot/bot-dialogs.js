@@ -164,6 +164,8 @@
   }
 
   function replaceMentions(text,mentions){
+    console.log(mentions);
+    console.log(text);
     mentions.forEach(function(mention){
       text = text.replace('<at>' + mention.name + '</at>', formatName(mention.name));
     });
