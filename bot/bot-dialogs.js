@@ -40,10 +40,7 @@
       action: dialogGetInfo
     }
   ];
-  
-  function passthrough(session,response){
-    session.send(JSON.stringify(response,null,2));
-  }
+
 
   const INTENTS = {
     getHelp: {
@@ -117,6 +114,11 @@
     });
     */
     return bot;
+  }
+
+  function passthrough(session,response){
+    var textResponse = response.result.fulfillment;
+    session.send(JSON.stringify(textResponse,null,2));
   }
 
   function dialogWrongTenant(session){
