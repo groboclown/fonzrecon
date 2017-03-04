@@ -104,6 +104,8 @@
       names = names.join(', ') + ' and ' + last;
     }
 
+    console.log(JSON.stringify(session,null,2));
+
     session.send("Aaaay! Great job " + names + "!");
     session.endDialog(formatName(data.userName) + ' sent you recognition!');
   }
