@@ -1,6 +1,7 @@
 (function(){
 
   var builder = require('botbuilder');
+  var db = require('./db-interactions');
 
   var apiai = require('apiai');
 
@@ -87,8 +88,10 @@
   function dialogGiveThanks(session){
     var data = getMessageData(session);
     var names = [];
+    var ids = [];
     data.mentions.forEach(function(mention){
       names.push(formatName(mention.mentioned.name));
+      ids.push(mention.mentioned.id);
     });
 
     if(names.length === 0){
@@ -98,21 +101,26 @@
       return;
     }
 
-    //call service for aaays here
+    session.sendTyping();
+    db.giveThanks(data.userId,ids,replaceMentions(text,data.mentions),function(err, response){
+      if(err){
+        console.log(err);
+        session.send("Aaay! Something went wrong and I couldn't record this Aaay!");
+        session.endDialog("*Hits Jukebox*");
+        return;
+      }
+      var last = names.pop()
+      if(names.length === 0){
+        names = last;
+      }
+      else{
+        names = names.join(', ') + ' and ' + last;
+      }
 
-    var last = names.pop()
-    if(names.length === 0){
-      names = last;
-    }
-    else{
-      names = names.join(', ') + ' and ' + last;
-    }
-
-    session.send("Aaaay! Great job " + names + "!");
-    session.endDialog(formatName(data.userName) + ' sent you recognition!');
+      session.send("Aaaay! Great job " + names + "!");
+      session.endDialog(formatName(data.userName) + ' sent you recognition!');
+    });
   }
-
-
 
   //todo: Reduce this later. We don't need all this data.
   function getMessageData(session){
@@ -153,6 +161,15 @@
     return key.split(".").reduce(function(o, x) {
         return (typeof o == "undefined" || o === null) ? o : o[x];
     }, obj);
+  }
+
+  function replaceMentions(text,mentions){
+    mentions.forEach(function(mention){
+      text = text.replace('<at>' + mention.name + '</at>', formatName(mention.name));
+    });
+    text = text.replace('<at>','');
+    text = text.replace('</at>','');
+    return text;
   }
 
 }());
