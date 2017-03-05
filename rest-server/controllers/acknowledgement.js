@@ -390,7 +390,6 @@ exports.createThumbsUp = function(req, res, next) {
         }
       }
 
-console.log("Checking ack thumbs ups: " + ack.thumbsUps);
       for (i = 0; i < ack.thumbsUps.length; i++) {
         if (ack.thumbsUps[i].givenByUser.username === username) {
           throw extraValidationProblem('user', username,
@@ -500,7 +499,6 @@ console.log("Checking ack thumbs ups: " + ack.thumbsUps);
         givenByUser: fromUser,
         pointsToEachUser: req.body.points
       });
-      console.log(`number of thumbs up: ${ack.thumbsUps.length}`);
       return ack.save();
     });
     // note: failure means fromUser is SOL
@@ -521,6 +519,7 @@ console.log("Checking ack thumbs ups: " + ack.thumbsUps);
       res.sendStatus(201);
 
       // TODO send notification to each of the users.
+      console.log('Should send notification to ' + toUsers)
     })
     .catch(function (err) {
       next(err);
