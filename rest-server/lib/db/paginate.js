@@ -32,6 +32,12 @@ mongoose.Query.prototype.paginate = function(options) {
     .then(function(count) {
       let _skip = (options.page - 1) * options.perPage;
       _skip += options.offset;
+      if (_skip <= 0) {
+        return query.limit(+options.perPage).exec();
+      }
+      if (_skip >= count) {
+        return [];
+      }
       return query.skip(_skip).limit(+options.perPage).exec();
     });
   // Use the results from both the count and the exec calls.

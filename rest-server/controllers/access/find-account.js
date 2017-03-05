@@ -68,7 +68,7 @@ function discoverUserMiddleware(req, res, next) {
   var password = lookup(req.body, 'password') || lookup(req.query, 'password');
   if (!! username) {
     log("getting account for " + username);
-    var accountPromise = Account.findOne({ _id: username });
+    var accountPromise = Account.findOne({ id: username });
     var loginMatchPromise = accountPromise
       .then(function(account) {
         if (! account) {

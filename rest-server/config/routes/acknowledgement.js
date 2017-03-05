@@ -19,7 +19,7 @@ router.get('/:id', ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC, controller.getOneBrief);
 router.get('/:id/details', ACKNOWLEDGEMENT_DETAILS_VIEW, controller.getOneDetails);
 
 router.post('/', ACKNOWLEDGEMENT_CREATE, controller.create);
-router.post('/:id/thumbsup', THUMBSUP_CREATE, controller.create);
+router.post('/:id/thumbsup', THUMBSUP_CREATE, controller.createThumbsUp);
 
 // ================================================================
 // Authentication functions

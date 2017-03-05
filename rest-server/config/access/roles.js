@@ -44,6 +44,7 @@ module.exports = {
       // be created based on the currently logged-in user, the
       // bot should always be allowed to create.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
+      THUMBSUP_CREATE: ALLOW_ANY,
     }
   },
 
@@ -66,6 +67,7 @@ module.exports = {
       // only for the requesting user.  Because the requesting user
       // is a user, they will be allowed to create it for themselves.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
+      THUMBSUP_CREATE: ALLOW_ANY,
     }
   },
 
@@ -87,6 +89,7 @@ module.exports = {
 
       // Again, acks will only be created for the requesting user.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
+      THUMBSUP_CREATE: ALLOW_ANY,
     }
   },
 };

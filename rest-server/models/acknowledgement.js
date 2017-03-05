@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 // =====================================
 // Schema Definition
 
+
 const ThumbsUpSchema = new Schema({
   givenByUser: {
     type: Schema.ObjectId,
@@ -22,6 +23,7 @@ const ThumbsUpSchema = new Schema({
   },
   comment: String
 });
+
 
 const AcknowledgementSchema = new Schema({
   givenByUser: {
@@ -45,7 +47,10 @@ const AcknowledgementSchema = new Schema({
 
   comment: String,
 
-  public: Boolean,
+  public: {
+    type: Boolean,
+    default: true
+  },
 
   tags: [String],
 
@@ -53,6 +58,7 @@ const AcknowledgementSchema = new Schema({
 }, {
   timestamps: true
 });
+
 
 AcknowledgementSchema.methods.pointsGivenBy = function(username) {
   // In case we're passed a User object instead.
@@ -71,6 +77,7 @@ AcknowledgementSchema.methods.pointsGivenBy = function(username) {
   return sum;
 };
 
+
 AcknowledgementSchema.methods.pointsGivenTo = function(username) {
   // In case we're passed a User object instead.
   if (username.username) {
@@ -88,65 +95,77 @@ AcknowledgementSchema.methods.pointsGivenTo = function(username) {
   return 0;
 };
 
+
+const SORT_BY = [
+  'createdAt', '-createdAt',
+  'updatedAt', '-updatedAt'
+];
+
+
 /**
  * Returns all acknowledgements.
  */
-AcknowledgementSchema.statics.findBrief = function(conditions) {
+AcknowledgementSchema.statics.findBrief = function(conditions, sort) {
+  if (! sort || ! SORT_BY.includes(sort)) {
+    sort = '-createdAt';
+  }
+
   return this.find(conditions)
-    .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags')
-    .sort('-createdAt')
+    .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags public')
+    .sort(sort)
     .populate('givenByUser', 'username names organization')
     .populate('awardedToUsers', 'username names organization')
     .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
     .lean();
 };
 
-function conditionForVisibleToUser(username) {
+
+function conditionForVisibleToUser(userObj) {
   // We don't need to check the ThumbsUp, because if you can't see
   // the Ack, then you can't create a ThumbsUp.  Therefore, if you
   // thumbed up an ack, then you can see it without a thumbs up.
+  var objId = new mongoose.Types.ObjectId(userObj._id);
   return {
     $or: [
       {
         public: true
       },
       {
-        'givenByUser.username': username
+        'givenByUser': objId
       },
       {
-        'awardedToUsers.username': username
+        'awardedToUsers': objId
       }
     ]
   };
 }
+
 
 /**
  * Return a brief list of acknowledgements that are viewable by the
  * user, which means that they are public, or the user is in the list
  * of awardedTo users, or the user is in the
  */
-AcknowledgementSchema.statics.findBriefForUser = function(username) {
-  return this.findBrief(conditionForVisibleToUser(username));
+AcknowledgementSchema.statics.findBriefForUser = function(userObj, condition) {
+  return this.findBrief(condition)
+    .and(conditionForVisibleToUser(userObj));
 };
+
 
 AcknowledgementSchema.statics.findOneBrief = function(conditions) {
   return this.findOne(conditions)
-  .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags public')
-  .populate('givenByUser', 'username names organization')
-  .populate('awardedToUsers', 'username names organization')
-  .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
-  .lean();
+    .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags public')
+    .populate('givenByUser', 'username names organization')
+    .populate('awardedToUsers', 'username names organization')
+    .populate('thumbsUps', 'givenByUser createdAt comment')
+    .populate('thumbsUps.givenByUser', 'username names organization')
+    .lean();
 };
 
-AcknowledgementSchema.statics.findOneBriefForUser = function(ackId, username) {
-  return this.findOneBrief({
-    $and: [
-      conditionForVisibleToUser(username),
-      {
-        _id: ackId
-      }
-    ]
-  });
+
+AcknowledgementSchema.statics.findOneBriefForUser = function(ackId, userObj) {
+  return this.findOneBrief({ _id: ackId })
+    .and(conditionForVisibleToUser(userObj));
 };
 
 
@@ -154,7 +173,8 @@ AcknowledgementSchema.statics.findOneDetails = function(conditions) {
   return this.findOne(conditions)
     .populate('givenByUser', 'username names organization')
     .populate('awardedToUsers', 'username names organization')
-    .populate('thumbsUps', 'givenByUser.username givenByUser.names givenByUser.organization createdAt')
+    .populate('thumbsUps', 'givenByUser createdAt comment pointsToEachUser')
+    .populate('thumbsUps.givenByUser', 'username names organization')
     .lean();
 };
 
@@ -163,35 +183,28 @@ AcknowledgementSchema.statics.findOneDetails = function(conditions) {
  * Load the full object for updating.  User needs view access here;
  * this should ONLY be used for adding thumbs ups.
  */
-AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, username) {
-  return this.findOne({
-      $and: [
-        conditionForVisibleToUser(username),
-        {
-          _id: ackId
-        }
-      ]
-    })
+AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, userObj) {
+  return this.findOne({ _id: ackId })
+    .and(conditionForVisibleToUser(userObj))
     .populate('givenByUser')
     .populate('awardedToUsers')
     .populate('thumbsUps')
+    .populate('thumbsUps.givenByUser')
 };
 
 
-AcknowledgementSchema.statics.findOneDetailsForUser = function(ackId, username) {
-  return this.findOneDetails(
-    {
-      $or: [
-        // Note: public is not part of this condition.
-        {
-          'givenByUser.username': username
-        },
-        {
-          'awardedToUsers.username': username
-        }
-      ],
-      _id: ackId
-    });
+AcknowledgementSchema.statics.findOneDetailsForUser = function(ackId, userObj) {
+  var objId = new mongoose.Types.ObjectId(userObj._id);
+  return this.findOneDetails({ _id: ackId })
+    .and({ $or: [
+          // Note: public is not part of this condition.
+          {
+            'givenByUser': objId
+          },
+          {
+            'awardedToUsers': objId
+          }
+    ]})
 };
 
 

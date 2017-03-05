@@ -430,7 +430,8 @@ Retrieve the paged list of Aaay awards, with a brief description.
 
 * Paging:
   * Accepts the standard [paging](#paging) parameters.
-* *TODO this API needs ways to search the list of users.*
+* **`comment`** - a substring within the Aaays comments.
+* **`name`** - a user who gave an Aaay or received an Aaay.
 
 **Returns:**
 

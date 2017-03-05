@@ -11,7 +11,7 @@ const Acknowledgement = models.Acknowledgement;
 
 const SAMPLE_ACCOUNTS = [
   {
-    _id: 'user1',
+    id: 'user1',
     authentications: [
       {
         source: 'local',
@@ -25,7 +25,21 @@ const SAMPLE_ACCOUNTS = [
     role: roles.USER.name,
     userRef: 'user1',
   }, {
-    _id: 'bot1',
+    id: 'user2',
+    authentications: [
+      {
+        source: 'local',
+        id: 'user2@fonzrecon.github',
+        userInfo: ['1234'],
+        browser: [],
+        resetAuthenticationToken: null,
+        resetAuthenticationExpires: null,
+      }
+    ],
+    role: roles.USER.name,
+    userRef: 'user1',
+  }, {
+    id: 'bot1',
     authentications: [
       {
         source: 'local',
@@ -43,7 +57,7 @@ const SAMPLE_ACCOUNTS = [
     // so it has no user.
     userRef: null,
   }, {
-    _id: 'admin1',
+    id: 'admin1',
     authentications: [
       {
         source: 'local',
@@ -61,27 +75,41 @@ const SAMPLE_ACCOUNTS = [
 
 const SAMPLE_USERS = [
   {
-    '_id': 'user1', 'username': 'user1',
-    'names': ['User1', 'User One'],
-    'contact': [
+    username: 'user1',
+    names: ['User1', 'User One'],
+    contact: [
       {
-        'type': 'email',
-        'server': null,
-        'address': 'eat@fonzrecon.email.server'
+        type: 'email',
+        server: null,
+        address: 'eat@fonzrecon.email.server'
       }
     ],
-    'pointsToAward': 100,
-    'receivedPointsSpent': 30,
-    'organization': 'Engineering'
+    pointsToAward: 100,
+    receivedPointsSpent: 30,
+    organization: 'Engineering'
+  },
+  {
+    username: 'user2',
+    names: ['User2', 'User Two'],
+    contact: [
+      {
+        type: 'email',
+        server: null,
+        address: 'eat2@fonzrecon.email.server'
+      }
+    ],
+    pointsToAward: 50,
+    receivedPointsSpent: 9000,
+    organization: 'Sales'
   },
   // bot1 does not have a user
   {
-    '_id': 'admin1', 'username': 'admin1',
-    'names': ['Admin One'],
-    'contact': [],
-    'pointsToAward': 0,
-    'receivedPointsSpent': 0,
-    'organization': 'HR',
+    username: 'admin1',
+    names: ['Admin One'],
+    contact: [],
+    pointsToAward: 0,
+    receivedPointsSpent: 0,
+    organization: 'HR',
   }
 ];
 
@@ -96,10 +124,10 @@ function saveAccount(accountObj) {
   }
 }
 for (var i = 0; i < SAMPLE_ACCOUNTS.length; i++) {
-  requests.push(Account.findOne({ _id: SAMPLE_ACCOUNTS[i]._id })
+  requests.push(Account.findOne({ id: SAMPLE_ACCOUNTS[i].id })
     .then(saveAccount(SAMPLE_ACCOUNTS[i]))
     .then(function(account) {
-      console.log('Created account ' + account._id);
+      console.log('Created account ' + account.id);
     }));
 }
 

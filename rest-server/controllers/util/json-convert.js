@@ -1,5 +1,6 @@
 'use strict';
 
+
 // Helper functions to convert queried objects into a correctly
 // consumable format.
 // Hopefully, the model can be fixed so that the virtual versions
@@ -7,6 +8,9 @@
 
 function briefUser(user) {
   // Note: this must be manually updated along with the model.
+  if (typeof(user) === 'object' && ! user._id && typeof(user.toString) === 'function') {
+    user = user.toString();
+  }
   if (typeof(user) === 'string') {
     return {
       username: user,
@@ -25,6 +29,9 @@ function briefUser(user) {
 
 function user(_user) {
   var ret = briefUser(_user);
+  if (ret.type === 'UserBriefRef') {
+    return ret;
+  }
   ret.uri += '/details';
   ret.type = 'User';
   ret.createdAt = _user.createdAt;
@@ -48,6 +55,9 @@ function briefUserList(userList) {
 
 
 function briefAcknowledgement(ack) {
+  if (typeof(ack) === 'object' && ! ack._id && typeof(ack.toString) === 'function') {
+    ack = ack.toString();
+  }
   if (typeof(ack) === 'string') {
     return {
       id: ack,
@@ -65,7 +75,7 @@ function briefAcknowledgement(ack) {
     awardedTo: briefUserList(ack.awardedToUsers),
     comment: ack.comment,
     tags: ack.tags,
-    public: (ack.public === undefined ? true : ack.public),
+    public: ack.public,
     thumbsUps: ack.thumbsUps.map(function (tu) {
       return {
         id: tu.id,
@@ -82,6 +92,9 @@ function briefAcknowledgement(ack) {
 
 function detailedAcknowledgement(ack) {
   var ret = briefAcknowledgement(ack);
+  if (ret.type === 'AaayBriefRef') {
+    return ret;
+  }
   ret.pointsToEachUser = ack.pointsToEachUser;
   ret.uri = ret.uri + '/details';
   ret.type = 'Aaay'
@@ -112,4 +125,4 @@ module.exports = {
   detailedAcknowledgement: detailedAcknowledgement,
   pagedResults: pagedResults,
   user: user,
-}
+};

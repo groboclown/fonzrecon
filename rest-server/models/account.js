@@ -140,7 +140,7 @@ AuthenticationMethodSchema.methods.onLogin = function(reqAuthData) {
 
 const AccountSchema = new Schema({
   // identifier
-  _id: {
+  id: {
     type: String,
     lowercase: true,
     unique: true,

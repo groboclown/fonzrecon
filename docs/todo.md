@@ -17,15 +17,21 @@
     * Allow for ticket-based session login.
     * Allow for users to have an associated picture.
   * Bugs:
-    * Issue with the brief acknowledgements list.  Right now, it only
-      returns the brief thumbs up information.  If the user created the
-      thumbs up, then the user should be able to see its details.
-    * Acknowledgements need to use an update and where clause instead of
-      save when deducting points.
-  * Features:
-    * Allow for up-thumbing acknowledgements with optional comments.
+    * Admin users are limited in the scope of what aaays they can see.
+      They should be able to see all the aaays.
+  * Future Features:
+    * Allow a user who received an aaay to thumb up the aaay, if there were
+      additional people who received the aaay.  The user who gives the
+      thumbs up should not be awarded the points, though.
     * Implement prize schema and API.
-    * Add query parameters for listing users and listing acknowledgements.
+    * Add query parameters for listing users.
+    * Send a notification (email, etc) to a user who received points.
+    * Current split of details and brief probably isn't going to work
+      for aaays.  Instead, the aaays should all have the same format that
+      they return, but the points value should be nulled out if the user
+      can't see that one specific aaay details (that is, it's public but
+      the user isn't in the list of receivers or giver).  This should
+      also apply to thumbs ups.
 * bot:
   * MS Teams:
     * access through MS Teams
