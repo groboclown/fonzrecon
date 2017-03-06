@@ -22,6 +22,8 @@ const ThumbsUpSchema = new Schema({
     min: 1
   },
   comment: String
+}, {
+  timestamps: true
 });
 
 

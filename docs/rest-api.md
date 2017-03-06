@@ -260,7 +260,30 @@ Aaay.  It does not have a URI to reference it.*
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
 * `uri` - the relative path to the UserBrief.
-* `imageUrl` - the user's uploaded image.  May be `null`.
+* `imageUri` - the user's uploaded image.  May be `null`.
+
+
+
+### `Prize`
+
+```json
+{
+  "id": "68b5cbd4e2d144141823827f",
+  "name": "Handshake with The President",
+  "description": "The President will give you a handshake and a signed photo.",
+  "referenceUrl": "https://prizes-are-rewarded/handshake-with-the-prez",
+  "purchasePoints": 17,
+  "expires": "2010-02-28T18:50:34.115Z"
+}
+```
+
+* `id` - identifier for the prize; used when redeeming the prize.
+* `name` - a short description of the prize; usually used as a title.
+* `description` - a long description about the prize.
+* `referenceUrl` - an optional URL to find out more.
+* `purchasePoints` - how many points it takes to redeem this prize.
+* `expires` - optional date describing when the prize will (or did)
+  expire and become no longer available to redeem.
 
 
 
@@ -388,6 +411,28 @@ currently authenticated user, or the user requested through a bot.
 
 ```json
 {
-  ...
+  "points": 1,
+  "comment": "Good job!"
 }
 ```
+
+* `points` - number of points to add to the Aaay.  Must be a positive integer.
+* `comment` - optional additional text to post to the Aaay.
+
+
+## GET `api/v1/prizes`
+
+Returns a list of prizes that the user can redeem for points.
+
+**Access**: all authenticated users.
+
+**Query Parameters:**
+
+* Paging:
+  * Accepts the standard [paging](#paging) parameters.
+* **`maximum`** - maximum number of points.
+
+**Returns**:
+
+The returned value conforms to the [paging](#paging) results.  The type
+returned is [Prize](#prize) objects.

@@ -17,8 +17,8 @@
     * Allow for ticket-based session login.
     * Allow for users to have an associated picture.
   * Bugs:
-    * Admin users are limited in the scope of what aaays they can see.
-      They should be able to see all the aaays.
+    * Queries for aaays will not report the points to each user if the
+      user isn't part of the aaay, but gave the thumbs up.
   * Future Features:
     * Allow a user who received an aaay to thumb up the aaay, if there were
       additional people who received the aaay.  The user who gives the
@@ -26,12 +26,7 @@
     * Implement prize schema and API.
     * Add query parameters for listing users.
     * Send a notification (email, etc) to a user who received points.
-    * Current split of details and brief probably isn't going to work
-      for aaays.  Instead, the aaays should all have the same format that
-      they return, but the points value should be nulled out if the user
-      can't see that one specific aaay details (that is, it's public but
-      the user isn't in the list of receivers or giver).  This should
-      also apply to thumbs ups.
+    * Allow users to upload an image.
 * bot:
   * MS Teams:
     * access through MS Teams

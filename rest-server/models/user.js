@@ -58,6 +58,12 @@ const UserSchema = new Schema({
     default: 0
   },
 
+  // Does the user have an image uploaded?
+  image: {
+    type: Boolean,
+    default: false
+  }
+
   organization: String,
 }, {
   timestamps: true
