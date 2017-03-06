@@ -8,6 +8,7 @@ const roles = require('../config/access/roles');
 const Account = models.Account;
 const User = models.User;
 const Acknowledgement = models.Acknowledgement;
+const PrizeChoice = models.PrizeChoice;
 
 const SAMPLE_ACCOUNTS = [
   {
@@ -113,6 +114,15 @@ const SAMPLE_USERS = [
   }
 ];
 
+const SAMPLE_PRIZES = [
+  {
+    name: 'Beef',
+    description: 'A big slab of beef!',
+    referenceUrl: 'https://en.wikipedia.org/wiki/beef',
+    purchasePoints: 2
+  }
+];
+
 var requests = [];
 
 function saveAccount(accountObj) {
@@ -148,6 +158,26 @@ for (var i = 0; i < SAMPLE_USERS.length; i++) {
       console.log('Created user ' + user.username);
     }));
 }
+
+
+
+function savePrize(prizeObj) {
+  return function(prize) {
+    if (! prize) {
+      return new PrizeChoice(prizeObj).save();
+    }
+    return prize;
+  }
+}
+for (var i = 0; i < SAMPLE_PRIZES.length; i++) {
+  requests.push(PrizeChoice.findOne({ name: SAMPLE_PRIZES[i].name })
+    .then(savePrize(SAMPLE_PRIZES[i]))
+    .then(function(prize) {
+      console.log('Created prize ' + prize.name);
+    }));
+}
+
+
 
 Promise
   .all(requests)

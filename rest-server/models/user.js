@@ -62,7 +62,7 @@ const UserSchema = new Schema({
   image: {
     type: Boolean,
     default: false
-  }
+  },
 
   organization: String,
 }, {

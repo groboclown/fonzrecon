@@ -38,6 +38,7 @@ module.exports = {
       USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
+      PRIZE_VIEW: ALLOW_ANY,
 
       // This is a bit weird: the API will use the "behalf-of"
       // user first (user will be null).  So, because any user can
@@ -63,6 +64,7 @@ module.exports = {
       ACCOUNT_EDIT: ALLOW_SELF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
+      PRIZE_VIEW: ALLOW_ANY,
 
       // This, too is a bit weird.  The API will create an ack
       // only for the requesting user.  Because the requesting user
@@ -87,6 +89,7 @@ module.exports = {
       ACCOUNT_CREATE: ALLOW_ANY,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,
+      PRIZE_VIEW: ALLOW_ANY,
 
       // Again, acks will only be created for the requesting user.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,

@@ -16,6 +16,7 @@ exports.setup = function(app, passport) {
   // Authenticated Routes
   app.use('/api/v1/users', require('./users'));
   app.use('/api/v1/aaays', require('./acknowledgement'));
+  app.use('/api/v1/prizes', require('./prize'));
 
 
 

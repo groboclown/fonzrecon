@@ -100,6 +100,30 @@ exports.acknowledgementList = function(ackList, canViewDetails) {
 };
 
 
+exports.prize = function(prizeObj) {
+  if (typeof(prizeObj) === 'object' && ! prizeObj._id && typeof(prizeObj.toString) === 'function') {
+    prizeObj = prizeObj.toString();
+  }
+  if (typeof(prizeObj) === 'string') {
+    return {
+      id: prizeObj,
+      uri: '/api/v1/prizes/' + prizeObj,
+      type: 'PrizeRef'
+    };
+  }
+  return {
+    id: prizeObj._id,
+    name: prizeObj.name,
+    description: prizeObj.description,
+    referenceUrl: prizeObj.referenceUrl,
+    purchasePoints: prizeObj.purchasePoints,
+    expires: prizeObj.expires,
+    uri: '/api/v1/prizes/' + prizeObj._id,
+    type: 'Prize'
+  }
+};
+
+
 exports.pagedResults = function(pagedResults, converterFunc) {
   pagedResults.results = pagedResults.results.map(converterFunc);
   return pagedResults;

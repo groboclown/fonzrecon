@@ -13,7 +13,7 @@ const Schema = mongoose.Schema;
 // Schema Definition
 
 
-const PriceChoiceSchema = new Schema({
+const PrizeChoiceSchema = new Schema({
   name: {
     type: String,
     required: true
@@ -33,6 +33,7 @@ const PriceChoiceSchema = new Schema({
     get: v => Math.round(v),
     set: v => Math.round(v),
     min: 1,
+    max: 10000000,
     required: true
   },
   // Allows for making a prize no longer
@@ -50,16 +51,20 @@ const PriceChoiceSchema = new Schema({
 
 PrizeChoiceSchema.statics.findActive = function(condition) {
   condition = condition || {};
-  condition.expires = {
-    $gt: new Date()
-  };
+  condition.$and = condition.$and || [];
+  condition.$and.push({
+    $or: [
+      { expires: { $gt: new Date() } },
+      { expires: null }
+    ]
+  });
   return this.find(condition);
 };
 
 
-PriceChoiceSchema.statics.findAtMostPoints = function(points) {
+PrizeChoiceSchema.statics.findAtMostPoints = function(points) {
   return this.findActive({ purchasePoints: { $lte: points } });
 };
 
 
-module.exports = mongoose.model('PriceChoice', PriceChoiceSchema);
+module.exports = mongoose.model('PrizeChoice', PrizeChoiceSchema);
