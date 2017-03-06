@@ -36,13 +36,11 @@ module.exports = function(permission, affected_user_list_func) {
       return next(forbidden());
     }
     var account = req.userAccount.account;
-    var username = null;
     var role_permission_func = null;
     if (!! account) {
-      username = account.username || null;
       if (! account.role || ! roles[account.role]) {
-        console.error(`Account ${username} has invalid role id ${account.role}`);
-        var err = new Error('Invalid account role for ' + username);
+        console.error(`Account ${account.id} has invalid role id ${account.role}`);
+        var err = new Error('Invalid account role for ' + account.id);
         err.status = 500;
         return next(err);
       }
@@ -53,6 +51,9 @@ module.exports = function(permission, affected_user_list_func) {
         return next(forbidden());
       }
       role_permission_func = role.permissions[permission.key];
+      var username = (req.userAccount.user
+        ? req.userAccount.user.username
+        : null);
       var behalf = req.userAccount.behalf;
       var behalf_username = null;
       if (!! behalf && behalf.username) {
@@ -80,7 +81,14 @@ module.exports = function(permission, affected_user_list_func) {
         // Authenticated!!!
         return next();
       } else {
-        return next(forbidden());
+        if (role_permission_func(username, behalf_username, affected_users)) {
+          // Authenticated!!!
+          next();
+        } else {
+          console.log(`"${username}" "${behalf_username}" ${affected_users} ${permission.key}- forbidden`);
+          next(forbidden());
+        }
+        // return next(forbidden());
       }
     } else {
       return next(forbidden());

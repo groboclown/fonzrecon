@@ -37,7 +37,7 @@ const SAMPLE_ACCOUNTS = [
       }
     ],
     role: roles.USER.name,
-    userRef: 'user1',
+    userRef: 'user2',
   }, {
     id: 'bot1',
     authentications: [

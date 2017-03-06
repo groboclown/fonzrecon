@@ -9,12 +9,12 @@ module.exports = {
   USER_DETAILS_EDIT: { key: 'USER_DETAILS_EDIT'},
   USER_BRIEF_VIEW: { key: 'USER_BRIEF_VIEW' },
   USER_DETAILS_VIEW: { key: 'USER_DETAILS_VIEW' },
-  ACKNOWLEDGEMENT_DETAILS_VIEW: { key: 'ACKNOWLEDGEMENT_DETAILS_VIEW' },
-  ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: { key: 'ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE' },
-  ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC: { key: 'ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC' },
+  ACKNOWLEDGEMENT_VIEW: { key: 'ACKNOWLEDGEMENT_VIEW' },
   ACKNOWLEDGEMENT_CREATE: { key: 'ACKNOWLEDGEMENT_CREATE' },
-
-  // This is distinct from ACKNOWLEDGEMENT_CREATE, because you need to
-  // have view permissions AND create permissions to create it.
   THUMBSUP_CREATE: { key: 'THUMBSUP_CREATE' },
+
+  // This one is called the same, but the result (true or false)
+  // means whether the user can view private acknowledgements.  This
+  // affects the query made.
+  ACKNOWLEDGEMENT_PRIVATE_VIEW: { key: 'ACKNOWLEDGEMENT_PRIVATE_VIEW' },
 };

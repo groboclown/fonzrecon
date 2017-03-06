@@ -155,82 +155,8 @@ query parameters and response formats.
 * `thumbsUps` - a list of [ThumbsUp](#thumbsup) added to the
   Aaay by other users to add their support of the Aaay.
 * `pointsToEachUser` - number of points assigned to each user in the
-  `awardedTo` list.
-
-
-### `AaayBrief`
-
-```json
-{
-  "id": "58b5cbd4d8d1441418238274",
-  "updatedAt": "2017-02-28T19:13:24.737Z",
-  "createdAt": "2017-02-28T19:13:24.737Z",
-  "givenBy": {
-    "username": "username1",
-    "organization": "Org Name",
-    "names": [
-        "username",
-        "Name1, User"
-    ],
-    "uri": "/api/v1/users/username1",
-    "type": "UserBrief"
-  },
-  "awardedTo": [
-    {
-      "username": "username2",
-      "organization": "Another Org Name",
-      "names": [
-        "username2",
-        "Name2, User"
-      ],
-      "uri": "/api/v1/users/username2",
-      "type": "UserBrief"
-    }
-  ],
-  "comment": "Award comment.",
-  "tags": [
-    "tag 1",
-    "tag 2"
-  ],
-  "public": true,
-  "uri": "/api/v1/aaay/58b5cbd4d8d1441418238274",
-  "type": "AaayBrief",
-  "thumbsUps": [
-    {
-      "id": "58b5cbd4e2d1441418238274",
-      "updatedAt": "2017-02-28T19:13:24.737Z",
-      "createdAt": "2017-02-28T19:13:24.737Z",
-      "givenBy": {
-        "username": "username3",
-        "organization": "Another Org Name",
-        "names": [
-          "username3",
-          "Name3, User"
-        ],
-        "uri": "/api/v1/users/username3",
-        "type": "UserBrief"
-      },
-      "comment": "additional comment",
-      "type": "ThumbsUpBrief"
-    }
-  ]
-}
-```
-
-* `id` - unique identifier for this Aaay.
-* `updatedAt` - timestamp when the Aaay was last edited.
-* `createdAt` - timestamp when the Aaay was first created.
-* `givenBy` - a [UserBrief](#userbrief) for the user that gave the Aaay.
-* `awardedTo` - list of [UserBrief](#userbrief) users who were awarded
-  the Aaay.
-* `comment` - Comment written by the `givenBy` user, describing the
-  reason for the Aaay.
-* `tags` - list of string values that tag this Aaay.
-* `public` - boolean indicating whether the Aaay is publicly viewable.
-* `uri` - the relative path to the AaayBrief.
-* `type` - constant `"AaayBrief"` string.
-* `thumbsUps` - a list of [ThumbsUpBrief](#thumbsupbrief) added to the
-  Aaay by other users to add their support of the Aaay.
+  `awardedTo` list.  If the user does not have permissions to view this
+  value, then it will be `null`.
 
 
 ### `ThumbsUp`
@@ -264,43 +190,10 @@ Aaay.  It does not have a URI to reference it.*
 * `createdAt` - timestamp when the Thumbs Up was first created.
 * `givenBy` - a [UserBrief](#userbrief) for the user who gave the Thumbs Up.
 * `pointsToEachUser` - number of points assigned to each user in the
-  parent Aaay.
+  parent Aaay.  If the requesting  user does not have permissions to view this
+  value, then it will be `null`.
 * `comment` - optional string describing the reason for the Thumbs Up.
 * `type` - constant `"ThumbsUp"` string.
-
-
-
-### `ThumbsUpBrief`
-
-```json
-{
-  "id": "58b5cbd4e2d1441418238274",
-  "updatedAt": "2017-02-28T19:13:24.737Z",
-  "createdAt": "2017-02-28T19:13:24.737Z",
-  "givenBy": {
-    "username": "username3",
-    "organization": "Another Org Name",
-    "names": [
-        "username3",
-        "Name3, User"
-    ],
-    "uri": "/api/v1/users/username3",
-    "type": "UserBrief"
-  },
-  "comment": "additional comment",
-  "type": "ThumbsUpBrief"
-}
-```
-
-*Note that the thumbs up can only be seen in context of an
-Aaay.  It does not have a URI to reference it.*
-
-* `id` - unique id for this thumbs up.
-* `updatedAt` - timestamp when the Thumbs Up was last edited.
-* `createdAt` - timestamp when the Thumbs Up was first created.
-* `givenBy` - a [UserBrief](#userbrief) for the user who gave the Thumbs Up.
-* `comment` - optional string describing the reason for the Thumbs Up.
-* `type` - constant `"ThumbsUpBrief"` string.
 
 
 ### `User`
@@ -328,11 +221,19 @@ Aaay.  It does not have a URI to reference it.*
 }
 ```
 
-* `updatedAt` - timestamp when the User was last edited.
-* `createdAt` - timestamp when the User was first created.
+* `updatedAt` - timestamp when the User was last edited.  If the requesting
+  user does not have permissions to view this value, then it will be `null`.
+* `createdAt` - timestamp when the User was first created.  If the requesting
+  user does not have permissions to view this value, then it will be `null`.
 * `username` - user's simple name.
 * `pointsToAward` - integer; the number of points that this user has left
-  to give out in Aaay and Thumbs Up awards.
+  to give out in Aaay and Thumbs Up awards.  If the requesting user does
+  not have permissions to view this value, then it will be `null`.
+* `receivedPointsToSpend` - integer; the number of points available for
+  the user to spend on prizes.  If the requesting user does not have
+  permissions to view this value, then it will be `null`.
+* `contact` - how to reach the user.  If the requesting user does not have
+  permissions to view this value, then it will be `null`.
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
 * `type` - constant `"User"` string.
@@ -350,6 +251,7 @@ Aaay.  It does not have a URI to reference it.*
       "Name3, User"
   ],
   "uri": "/api/v1/users/username3",
+  "imageUri": "/static/user/username3.png",
   "type": "UserBrief"
 }
 ```
@@ -358,6 +260,7 @@ Aaay.  It does not have a URI to reference it.*
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
 * `uri` - the relative path to the UserBrief.
+* `imageUrl` - the user's uploaded image.  May be `null`.
 
 
 
@@ -384,27 +287,9 @@ returned is [UserBrief](#userbrief).
 
 ## GET `/api/v1/users/:username`
 
-Retrieve a brief description of the user.
+Retrieve the details of the user.
 
 **Access**: all authenticated users.
-
-**Returns:**
-
-```json
-{
-  "UserBrief": { ... }
-}
-```
-
-* `UserBrief` - a [UserBrief](#userbrief) object for the requested user.
-
-
-
-## GET `/api/v1/users/:username/details`
-
-Retrieve details about a specific user.
-
-**Access**: Only the specific user, or bots acting as the specific user.
 
 **Returns:**
 
@@ -436,7 +321,7 @@ Retrieve the paged list of Aaay awards, with a brief description.
 **Returns:**
 
 The returned value conforms to the [paging](#paging) results.  The type
-returned is [AaayBrief](#aaaybrief).
+returned is [Aaay](#aaay).
 
 
 
@@ -445,26 +330,6 @@ returned is [AaayBrief](#aaaybrief).
 Retrieve a brief description of the Aaay award.
 
 **Access**: all authenticated users.
-
-**Returns:**
-
-```json
-{
-  "AaayBrief": { ... }
-}
-```
-
-* `AaayBrief` - an [AaayBrief](#aaaybrief) object of the requested id.
-
-
-
-## GET `api/v1/aaays/:id/details`
-
-Retrieve details about the Aaay award.
-
-**Access**: Only the specific user, or bots acting as the specific user,
-which either gave the award, or was awarded to.  Those who only "thumb up"
-the award cannot see this detail level.
 
 **Returns:**
 
@@ -481,7 +346,7 @@ the award cannot see this detail level.
 ## POST `api/v1/aaays`
 
 Create a new award.  The award will be given by the currently authenticated
-user, or the bot acting as a user.
+user, or the user requested from a bot.
 
 **Access**: all authenticated users.
 
@@ -505,3 +370,24 @@ user, or the bot acting as a user.
 * `comment` - String (4 to 4000 characters long) describing the reason for
   the award.
 * `tags` - array of strings describing the category of the award.
+
+**Returns**:
+
+An `AaayRef` that describes the ID of the created Aaay.
+
+
+
+## POST `api/v1/aaays/:id/thumbsUp`
+
+Create a new thumbs up for this award.  The award will be given by the
+currently authenticated user, or the user requested through a bot.
+
+**Access**: all authenticated users who have visibility into the Aaay.
+
+**Body Schema**:
+
+```json
+{
+  ...
+}
+```

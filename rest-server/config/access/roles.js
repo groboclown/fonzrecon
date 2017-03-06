@@ -21,22 +21,23 @@ function ALLOW_NONE(self_user, on_behalf_of, affected_users) {
 module.exports = {
   names: ['BOT', 'USER', 'ADMIN'],
 
-  // Roles that can use the "behalf" parameter.  It will be ignored
-  // for all other users.  This allows for simplified logic in the
-  // controllers, so that they just check for the "on behalf of"
-  // then "user" to see who the requestor is.
-  canRunOnBehalfOf: ['BOT'],
-
   // Can view basic user info, can award on users' behalf, can view
-  // basic public award info
+  // basic public award info.  Even if the user is an admin, the user
+  // cannot get admin views.
   BOT: {
     name: 'BOT',
+
+    // Roles that can use the "behalf" parameter.  It will be ignored
+    // for all other users.  This allows for simplified logic in the
+    // controllers, so that they just check for the "on behalf of"
+    // then "user" to see who the requestor is.
+    canRunOnBehalfOf: true,
+
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PUBLIC: ALLOW_ANY,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ON_BEHALF_OF,
-      ACKNOWLEDGEMENT_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
+      ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
+      ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
 
       // This is a bit weird: the API will use the "behalf-of"
       // user first (user will be null).  So, because any user can
@@ -53,15 +54,15 @@ module.exports = {
   // given to self or awarded by self, can view .
   USER: {
     name: 'USER',
+    canRunOnBehalfOf: false,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
       USER_DETAILS_EDIT: ALLOW_SELF,
       ACCOUNT_VIEW: ALLOW_SELF,
       ACCOUNT_EDIT: ALLOW_SELF,
-      ACKNOWLEDGEMENT_DETAILS_VIEW: ALLOW_SELF,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_SELF,
+      ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
+      ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
 
       // This, too is a bit weird.  The API will create an ack
       // only for the requesting user.  Because the requesting user
@@ -76,6 +77,7 @@ module.exports = {
   // then don't assign the admin account a user.
   ADMIN: {
     name: 'ADMIN',
+    canRunOnBehalfOf: false,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ANY,
@@ -83,9 +85,8 @@ module.exports = {
       ACCOUNT_VIEW: ALLOW_ANY,
       ACCOUNT_EDIT: ALLOW_ANY,
       ACCOUNT_CREATE: ALLOW_ANY,
-      ACKNOWLEDGEMENT_DETAILS_VIEW: ALLOW_ANY,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
-      ACKNOWLEDGEMENT_BRIEF_VIEW_PRIVATE: ALLOW_ANY,
+      ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
+      ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,
 
       // Again, acks will only be created for the requesting user.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,

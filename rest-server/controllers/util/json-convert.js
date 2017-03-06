@@ -6,7 +6,7 @@
 // Hopefully, the model can be fixed so that the virtual versions
 // do what this is doing, and this file can be deleted.
 
-function briefUser(user) {
+exports.briefUser = function(user) {
   // Note: this must be manually updated along with the model.
   if (typeof(user) === 'object' && ! user._id && typeof(user.toString) === 'function') {
     user = user.toString();
@@ -27,7 +27,7 @@ function briefUser(user) {
   };
 };
 
-function user(_user) {
+exports.user = function(_user) {
   var ret = briefUser(_user);
   if (ret.type === 'UserBriefRef') {
     return ret;
@@ -49,12 +49,14 @@ function user(_user) {
 };
 
 
-function briefUserList(userList) {
-  return userList.map(briefUser);
+exports.briefUserList = function(userList) {
+  return userList.map(exports.briefUser);
 };
 
 
-function briefAcknowledgement(ack) {
+/**
+ */
+exports.acknowledgement = function(ack, canViewDetails) {
   if (typeof(ack) === 'object' && ! ack._id && typeof(ack.toString) === 'function') {
     ack = ack.toString();
   }
@@ -62,17 +64,18 @@ function briefAcknowledgement(ack) {
     return {
       id: ack,
       uri: '/api/v1/aaays/' + ack,
-      type: 'AaayBriefRef'
+      type: 'AaayRef'
     };
   }
   return {
     id: ack._id,
     uri: '/api/v1/aaays/' + ack._id,
-    type: 'AaayBrief',
+    type: 'Aaay',
     updatedAt: ack.updatedAt,
     createdAt: ack.createdAt,
-    givenBy: briefUser(ack.givenByUser),
-    awardedTo: briefUserList(ack.awardedToUsers),
+    pointsToEachUser: canViewDetails ? ack.pointsToEachUser : null,
+    givenBy: exports.briefUser(ack.givenByUser),
+    awardedTo: exports.briefUserList(ack.awardedToUsers),
     comment: ack.comment,
     tags: ack.tags,
     public: ack.public,
@@ -81,48 +84,22 @@ function briefAcknowledgement(ack) {
         id: tu.id,
         updatedAt: tu.updatedAt,
         createdAt: tu.createdAt,
-        givenBy: briefUser(tu.givenByUser),
+        givenBy: exports.briefUser(tu.givenByUser),
         comment: tu.comment,
-        type: 'ThumbsUpBrief'
+        pointsToEachUser: canViewDetails ? tu.pointsToEachUser : null,
+        type: 'ThumbsUp'
       };
     })
   };
 }
 
 
-function detailedAcknowledgement(ack) {
-  var ret = briefAcknowledgement(ack);
-  if (ret.type === 'AaayBriefRef') {
-    return ret;
-  }
-  ret.pointsToEachUser = ack.pointsToEachUser;
-  ret.uri = ret.uri + '/details';
-  ret.type = 'Aaay'
-  for (var i = 0; i < ack.thumbsUps.length; i++) {
-    ret.thumbsUps[i].pointsToEachUser = ack.thumbsUps[i].pointsToEachUser;
-    ret.thumbsUps[i].type = 'ThumbsUp';
-  }
-  return ret;
-}
-
-
-function briefAcknowledgementList(ackList) {
-  return ackList.map(briefAcknowledgement);
+exports.acknowledgementList = function(ackList, canViewDetails) {
+  return ackList.map(function(ack) { exports.acknowledgement(ack, canViewDetails) });
 };
 
 
-function pagedResults(pagedResults, converterFunc) {
+exports.pagedResults = function(pagedResults, converterFunc) {
   pagedResults.results = pagedResults.results.map(converterFunc);
   return pagedResults;
 }
-
-
-module.exports = {
-  briefUser: briefUser,
-  briefUserList: briefUserList,
-  briefAcknowledgement: briefAcknowledgement,
-  briefAcknowledgementList: briefAcknowledgementList,
-  detailedAcknowledgement: detailedAcknowledgement,
-  pagedResults: pagedResults,
-  user: user,
-};

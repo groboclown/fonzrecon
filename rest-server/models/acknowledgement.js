@@ -141,41 +141,36 @@ function conditionForVisibleToUser(userObj) {
 }
 
 
-/**
- * Return a brief list of acknowledgements that are viewable by the
- * user, which means that they are public, or the user is in the list
- * of awardedTo users, or the user is in the
- */
-AcknowledgementSchema.statics.findBriefForUser = function(userObj, condition) {
-  return this.findBrief(condition)
-    .and(conditionForVisibleToUser(userObj));
-};
-
-
-AcknowledgementSchema.statics.findOneBrief = function(conditions) {
-  return this.findOne(conditions)
-    .select('givenByUser awardedToUsers thumbsUps createdAt updatedAt givenBy awardedTo comment tags public')
-    .populate('givenByUser', 'username names organization')
-    .populate('awardedToUsers', 'username names organization')
-    .populate('thumbsUps', 'givenByUser createdAt comment')
-    .populate('thumbsUps.givenByUser', 'username names organization')
-    .lean();
-};
-
-
-AcknowledgementSchema.statics.findOneBriefForUser = function(ackId, userObj) {
-  return this.findOneBrief({ _id: ackId })
-    .and(conditionForVisibleToUser(userObj));
-};
-
-
-AcknowledgementSchema.statics.findOneDetails = function(conditions) {
-  return this.findOne(conditions)
+AcknowledgementSchema.statics.findOneDetails = function(id) {
+  var objId = new mongoose.Types.ObjectId(id);
+  return this.findOne({ _id: objId })
     .populate('givenByUser', 'username names organization')
     .populate('awardedToUsers', 'username names organization')
     .populate('thumbsUps', 'givenByUser createdAt comment pointsToEachUser')
     .populate('thumbsUps.givenByUser', 'username names organization')
     .lean();
+};
+
+
+AcknowledgementSchema.statics.findOneDetailsForUser = function(userObj, id) {
+  return this.findOneDetails(id)
+    .and(conditionForVisibleToUser(userObj));
+};
+
+
+AcknowledgementSchema.statics.findDetails = function(conditions) {
+  return this.find(conditions)
+    .populate('givenByUser', 'username names organization')
+    .populate('awardedToUsers', 'username names organization')
+    .populate('thumbsUps', 'givenByUser createdAt comment pointsToEachUser')
+    .populate('thumbsUps.givenByUser', 'username names organization')
+    .lean();
+};
+
+
+AcknowledgementSchema.statics.findDetailsForUser = function(userObj, conditions) {
+  return this.findDetails(conditions)
+    .and(conditionForVisibleToUser(userObj));
 };
 
 
@@ -190,21 +185,6 @@ AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, userObj
     .populate('awardedToUsers')
     .populate('thumbsUps')
     .populate('thumbsUps.givenByUser')
-};
-
-
-AcknowledgementSchema.statics.findOneDetailsForUser = function(ackId, userObj) {
-  var objId = new mongoose.Types.ObjectId(userObj._id);
-  return this.findOneDetails({ _id: ackId })
-    .and({ $or: [
-          // Note: public is not part of this condition.
-          {
-            'givenByUser': objId
-          },
-          {
-            'awardedToUsers': objId
-          }
-    ]})
 };
 
 

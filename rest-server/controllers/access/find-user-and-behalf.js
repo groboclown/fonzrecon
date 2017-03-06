@@ -3,9 +3,11 @@
 const roles = require('../../config/access/roles');
 const models = require('../../models');
 const User = models.User;
+const Account = models.Account;
 
 module.exports = function(account, behalfOfName) {
-  if (! roles.canRunOnBehalfOf.includes(account.role)) {
+  const role = roles[account.role];
+  if (role && ! role.canRunOnBehalfOf) {
     // Ensure that, if the account can't run on behalf of
     // another user, that we don't load up the behalf-of
     // user object.
@@ -22,17 +24,34 @@ module.exports = function(account, behalfOfName) {
         }
       }
       // Search by name, not username.
-      return User.findOneByName(behalfOfName)
+      var behalfPromise = User
+        .findOneByName(behalfOfName)
+        .exec();
+      var behalfAcctPromise = behalfPromise
         .then(function(behalfUser) {
-          // if behalf-of was specified, but the
-          // behalf-of user does not exist, then this is
-          // an error.
           if (! behalfUser) {
             return null;
           }
+          return Account
+            .findOne({ userRef: behalfUser.username });
+        });
+      return Promise
+        .all([behalfPromise, behalfAcctPromise])
+        .then(function(args) {
+          var behalfUser = args[0];
+          var behalfAcct = args[1];
+
+          // If the behalf-of user doesn't have an account,
+          // then the request is bad, so null out the behalf-of
+          // user.
+          if (! behalfAcct) {
+            behalfUser = null;
+          }
+
           return {
             account: account,
             user: user,
+            behalfAcount: behalfAcct,
             behalf: behalfUser,
           }
         });
