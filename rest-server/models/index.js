@@ -20,6 +20,6 @@ module.exports = {
   Account: require('./account'),
   User: require('./user'),
   Acknowledgement: require('./acknowledgement'),
-  ClaimedPrize: require('./redeemed-prize'),
+  ClaimedPrize: require('./claimed-prize'),
   PrizeChoice: require('./prize-choice'),
 };

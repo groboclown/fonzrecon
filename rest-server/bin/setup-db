@@ -86,7 +86,7 @@ const SAMPLE_USERS = [
       }
     ],
     pointsToAward: 100,
-    receivedPointsSpent: 30,
+    receivedPointsToSpend: 30,
     organization: 'Engineering'
   },
   {
@@ -100,7 +100,7 @@ const SAMPLE_USERS = [
       }
     ],
     pointsToAward: 50,
-    receivedPointsSpent: 9000,
+    receivedPointsToSpend: 9000,
     organization: 'Sales'
   },
   // bot1 does not have a user
@@ -109,7 +109,7 @@ const SAMPLE_USERS = [
     names: ['Admin One'],
     contact: [],
     pointsToAward: 0,
-    receivedPointsSpent: 0,
+    receivedPointsToSpend: 0,
     organization: 'HR',
   }
 ];

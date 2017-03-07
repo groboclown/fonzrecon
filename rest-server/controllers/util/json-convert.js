@@ -29,7 +29,7 @@ exports.briefUser = function(user) {
 };
 
 exports.user = function(_user) {
-  var ret = briefUser(_user);
+  var ret = exports.briefUser(_user);
   if (ret.type === 'UserBriefRef') {
     return ret;
   }
@@ -122,6 +122,30 @@ exports.prize = function(prizeObj) {
     type: 'Prize'
   }
 };
+
+
+
+exports.claimedPrize = function(claimed) {
+  if (typeof(claimed) === 'object' && ! claimed._id && typeof(claimed.toString) === 'function') {
+    claimed = claimed.toString();
+  }
+  if (typeof(claimed) === 'string') {
+    return {
+      id: claimed,
+      uri: '/api/v1/claimed-prizes/' + claimed,
+      type: 'ClaimedPrizeRef'
+    };
+  }
+  return {
+    id: claimed._id,
+    claimedByUser: exports.briefUser(claimed.claimedByUser),
+    prize: exports.prize(claimed.prize),
+    uri: '/api/v1/claimed-prizes/' + claimed._id,
+    createdAt: claimed.createdAt,
+    type: 'ClaimedPrize'
+  }
+};
+
 
 
 exports.pagedResults = function(pagedResults, converterFunc) {

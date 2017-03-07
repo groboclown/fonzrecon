@@ -58,6 +58,9 @@ exports.getAll = function(req, res, next) {
 
   queryByUser
     .then(function(queryCondition) {
+      if (!queryCondition) {
+        return util.emptyResults(pagination);
+      }
       if (extraAccess.canViewPrivate(req)) {
         return Acknowledgement
           .findDetails(queryCondition)

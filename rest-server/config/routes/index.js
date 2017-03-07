@@ -17,7 +17,7 @@ exports.setup = function(app, passport) {
   app.use('/api/v1/users', require('./users'));
   app.use('/api/v1/aaays', require('./acknowledgement'));
   app.use('/api/v1/prizes', require('./prize'));
-
+  app.use('/api/v1/claimed-prizes', require('./claimed-prize'));
 
 
 

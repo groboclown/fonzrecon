@@ -67,4 +67,10 @@ PrizeChoiceSchema.statics.findAtMostPoints = function(points) {
 };
 
 
+PrizeChoiceSchema.statics.findOneById = function(id) {
+  var objId = new mongoose.Types.ObjectId(id);
+  return this.findOne({ _id: objId });
+};
+
+
 module.exports = mongoose.model('PrizeChoice', PrizeChoiceSchema);

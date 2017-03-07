@@ -14,8 +14,8 @@ module.exports = {
   THUMBSUP_CREATE: { key: 'THUMBSUP_CREATE' },
   PRIZE_VIEW: { key: 'PRIZE_VIEW' },
   PRIZE_CREATE: { key: 'PRIZE_CREATE' },
-  REDEEM_VIEW: { key: 'REDEEM_VIEW' },
-  REDEEM_CREATE: { key: 'REDEEM_CREATE' },
+  CLAIM_VIEW: { key: 'CLAIM_VIEW' },
+  CLAIM_CREATE: { key: 'CLAIM_CREATE' },
 
   // This one is called the same, but the result (true or false)
   // means whether the user can view private acknowledgements.  This

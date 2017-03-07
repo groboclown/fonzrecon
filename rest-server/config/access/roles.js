@@ -39,6 +39,8 @@ module.exports = {
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
       PRIZE_VIEW: ALLOW_ANY,
+      CLAIM_VIEW: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_NONE,
 
       // This is a bit weird: the API will use the "behalf-of"
       // user first (user will be null).  So, because any user can
@@ -71,6 +73,8 @@ module.exports = {
       // is a user, they will be allowed to create it for themselves.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
+      CLAIM_VIEW: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_ANY,
     }
   },
 
@@ -90,10 +94,13 @@ module.exports = {
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,
       PRIZE_VIEW: ALLOW_ANY,
+      PRIZE_CREATE: ALLOW_ANY,
 
       // Again, acks will only be created for the requesting user.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
+      CLAIM_VIEW: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_NONE,
     }
   },
 };

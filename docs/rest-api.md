@@ -273,7 +273,9 @@ Aaay.  It does not have a URI to reference it.*
   "description": "The President will give you a handshake and a signed photo.",
   "referenceUrl": "https://prizes-are-rewarded/handshake-with-the-prez",
   "purchasePoints": 17,
-  "expires": "2010-02-28T18:50:34.115Z"
+  "uri": "/api/v1/prizes/68b5cbd4e2d144141823827f",
+  "expires": "2010-02-28T18:50:34.115Z",
+  "type": "Prize"
 }
 ```
 
@@ -284,6 +286,29 @@ Aaay.  It does not have a URI to reference it.*
 * `purchasePoints` - how many points it takes to redeem this prize.
 * `expires` - optional date describing when the prize will (or did)
   expire and become no longer available to redeem.
+
+
+
+### `Redeemed`
+
+```json
+{
+  "id": "68b5cbd4e2d144141823beef",
+  "redeemedByUser": { (UserBrief) },
+  "prize": { (Prize) },
+  "createdAt": "2016-02-28T18:50:34.115Z",
+  "uri": "/api/v1/redeemeds/68b5cbd4e2d144141823beef",
+  "type": "Redeemed"
+}
+```
+
+* `id` - identifier for the redemtion.
+* `redeemedByUser` - a [UserBrief](#userbrief) for the person who redeemed
+  points for the prize.
+* `prize` - the [Prize](#prize) that was redeemed.
+* `createdAt` - when the redemtion occurred.
+* `type` - static "Redeemed" string.
+
 
 
 
@@ -420,6 +445,9 @@ currently authenticated user, or the user requested through a bot.
 * `comment` - optional additional text to post to the Aaay.
 
 
+
+# Prize API
+
 ## GET `api/v1/prizes`
 
 Returns a list of prizes that the user can redeem for points.
@@ -436,3 +464,9 @@ Returns a list of prizes that the user can redeem for points.
 
 The returned value conforms to the [paging](#paging) results.  The type
 returned is [Prize](#prize) objects.
+
+
+
+# Claimed Prize API
+
+## GET `api/v1/prizeclaims`
