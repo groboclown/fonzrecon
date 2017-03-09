@@ -13,7 +13,7 @@ const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
 
 
-function findUsersReferenced(toUserNames) {
+function findUsersReferenced(toUserNames, isBotWithBehalf) {
   var isCreateUserOnRefPromise =
     Setting.getCreateUserOnReference();
   var toUsersPromise = User
@@ -141,7 +141,8 @@ exports.create = function(req, res, next) {
         throw errors.validationProblems(results.array());
       }
 
-      return findUsersReferenced(req.body.to);
+      var isBotWithBehalf = !! req.userAccount.behalf;
+      return findUsersReferenced(req.body.to, isBotWithBehalf);
     });
   var saveUserPromise = toUsersPromise
     .then(function (toUsers) {
