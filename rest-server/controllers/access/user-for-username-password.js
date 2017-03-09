@@ -6,35 +6,35 @@ const permissions = require('../../config/access/permissions');
 const roles = require('../../config/access/roles');
 const models = require('../../models');
 const Account = models.Account;
-const findUserAndBehalf = require('./find-user-and-behalf');
 const BAD_LOGIN_TEXT = 'Authentication required';
 
 module.exports = function(username, password) {
-  return Account.findOne({ _id: username })
+  console.log(`getting account for ${username}`);
+  var accountPromise = Account.findOne({ id: username });
+  var loginMatchPromise = accountPromise
     .then(function(account) {
       if (! account) {
-        // TODO perform the encrypt function to wait the same
-        // amount of time as a found user call.
-        // console.log('No account found named ' + username);
-        return new Promise(function(resolve, reject) {
-          var err = new Error(BAD_LOGIN_TEXT);
-          err.isDone = true;
-          reject(err);
-        });
-      } else {
-        // Get the local account, if there is one.
-        return account.compareAuthentication(password)
-          .then(function(isMatch) {
-            if (! isMatch) {
-              // console.log('No auth match for ' + username);
-              return new Promise(function(resolve, reject) {
-                var err = new Error(BAD_LOGIN_TEXT);
-                err.isDone = true;
-                reject(err);
-              });
-            }
-            return { account: account };
-          });
+        return null;
       }
+      return account.getAuthenticationNamed('local');
     })
+    .then(function(auth) {
+      if (! auth) {
+        return false;
+      }
+      return auth.onLogin({ password: password });
+    });
+  return Promise
+    .all([accountPromise, loginMatchPromise])
+    .then(function(args) {
+      let account = args[0];
+      let isMatch = args[1];
+      if (! account) {
+        return false;
+      }
+      if (! isMatch) {
+        return false;
+      }
+      return account;
+    });
 };

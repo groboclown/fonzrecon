@@ -7,7 +7,6 @@ const cors = require('cors');
 const csrf = require('csurf');
 const validator = require('express-validator');
 const cookieParser = require('cookie-parser');
-const session = require('express-session');
 const fingerprint = require('express-fingerprint');
 const settings = require('./settings');
 
@@ -46,8 +45,6 @@ exports.setup = function(app, passport) {
 
   // use passport session
   app.use(passport.initialize());
-  app.use(session({ secret: settings.secret }));
-  app.use(passport.session());
 
   if (settings.envName !== 'test') {
     // csrf requires sessions and cookies, which we're not

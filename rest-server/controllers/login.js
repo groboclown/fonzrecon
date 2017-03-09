@@ -9,10 +9,7 @@
  * the tickets.  Much of this needs to be rewritten.
  */
 
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const Account = require('../model/account');
-const config = require('../../config');
 const permissions = require('./permissions');
 const roles = require('./roles');
 

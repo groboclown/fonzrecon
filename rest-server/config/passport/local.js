@@ -21,10 +21,6 @@ module.exports = new LocalStrategy({
       done(null, res);
     })
     .catch(function(err) {
-      if (err.isDone) {
-        done(null, false, err.message);
-      } else {
-        done(err);
-      }
+      done(err);
     });
 });

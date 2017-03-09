@@ -141,6 +141,10 @@ exports.create = function(req, res, next) {
         throw errors.validationProblems(results.array());
       }
 
+      // Only set if the user is running on behalf of someone.  Only
+      // accounts with the "bot" role can have the canRunOnBehalfOf
+      // flag set, which allows for  the behalf user variable to be
+      // set.
       var isBotWithBehalf = !! req.userAccount.behalf;
       return findUsersReferenced(req.body.to, isBotWithBehalf);
     });

@@ -12,15 +12,7 @@ const log = require('../../config/log');
 
 module.exports = function(passport) {
   return [
-    // TODO figure out the right way to specify passport here for
-    // any of the authentication methods that don't require login/session.
-    // passport.authenticate('jwt', { session: false}),
-    // passport.authenticate('local', { session: false}),
-
-    // Placeholder until we get logins working right.
-    discoverUserMiddleware,
-
-    // Then, load the user and on-behalf-of objects.
+    discoverUserMiddleware(passport),
     discoverOnBehalfOfMiddleware
   ];
 };
@@ -58,51 +50,24 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
 /**
  * Super simple middleware in case passport doesn't work.
  */
-function discoverUserMiddleware(req, res, next) {
-  if (req.user) {
-    return next();
-  }
-  const Account = require('../../models').Account;
-  req.user = null;
-  var username = lookup(req.body, 'username') || lookup(req.query, 'username');
-  // really, shouldn't be checking the query for the password.
-  var password = lookup(req.body, 'password') || lookup(req.query, 'password');
-  if (!! username) {
-    log("getting account for " + username);
-    var accountPromise = Account.findOne({ id: username });
-    var loginMatchPromise = accountPromise
-      .then(function(account) {
-        if (! account) {
-          return null;
-        }
-        return account.getAuthenticationNamed('local');
-      })
-      .then(function(auth) {
-        if (! auth) {
-          return false;
-        }
-        return auth.onLogin({ password: password });
-      });
-    Promise.all([accountPromise, loginMatchPromise])
-      .then(function(args) {
-        let account = args[0];
-        let isMatch = args[1];
-        if (! account) {
-          return next();
-        }
-        if (! isMatch) {
-          return next(forbidden());
-        }
-        req.user = account;
-        next();
-      })
-      .catch(function(err) {
+function discoverUserMiddleware(passport) {
+  return function(req, res, next) {
+    console.log('starting passport auth check');
+    passport.authenticate(['token', 'local'], function(err, user, info) {
+      if (err) {
+        console.log(`Passport error: ${err.message}`);
+        console.log(err.stack);
         return next(err);
-      });
-  } else {
-    log("no account given");
-    next();
-  }
+      }
+      if (!user) {
+        console.log(`forbidden via passport`);
+        return next(forbidden());
+      }
+      console.log(`setting user`);
+      req.user = user;
+      next();
+    })(req, res, next);
+  };
 }
 
 // =========================================================================

@@ -5,13 +5,13 @@ const Schema = mongoose.Schema;
 const roles = require('../config/access/roles');
 const accountLib = require('../lib/account');
 const uuid = require('uuid');
-const TOKEN_EXPIRATION_DAYS = 30;
+const DEFAULT_TOKEN_EXPIRATION_HOURS = 30 * 24;
 
 // =====================================
 // Schema Definition
 
 
-const BrowserToken = new Schema({
+const BrowserTokenSchema = new Schema({
   token: {
     type: String,
     required: true,
@@ -55,6 +55,36 @@ const BrowserToken = new Schema({
 });
 
 
+BrowserTokenSchema.methods.isFingerprintMatch = function(fingerprint) {
+  var b = this;
+  return fingerprint.useragent.browser.family === b.fingerprint.useragent.browser.family
+      && fingerprint.useragent.browser.version === b.fingerprint.useragent.browser.version
+      && fingerprint.useragent.device.family === b.fingerprint.useragent.device.family
+      && fingerprint.useragent.device.version === b.fingerprint.useragent.device.version
+      && fingerprint.useragent.os.family === b.fingerprint.useragent.os.family
+      && fingerprint.useragent.os.major === b.fingerprint.useragent.os.major
+      && fingerprint.useragent.os.minor === b.fingerprint.useragent.os.minor
+      && fingerprint.acceptHeaders.accept === b.fingerprint.acceptHeaders.accept
+      && fingerprint.acceptHeaders.encoding === b.fingerprint.acceptHeaders.encoding
+      && fingerprint.acceptHeaders.language === b.fingerprint.acceptHeaders.language
+      && fingerprint.geoip.country === b.fingerprint.geoip.country
+      && fingerprint.geoip.region === b.fingerprint.geoip.region
+      && fingerprint.geoip.city === b.fingerprint.geoip.city;
+}
+
+
+BrowserTokenSchema.methods.isActive = function() {
+  var now = new Date();
+  return now < this.expires;
+};
+
+
+BrowserTokenSchema.methods.isExpired = function() {
+  var now = new Date();
+  return now >= this.expires;
+}
+
+
 // Keeps track of one kind of authentication
 // method, such as a local login, or twitter,
 // etc.
@@ -80,7 +110,7 @@ const AuthenticationMethodSchema = new Schema({
   userInfo: [String],
 
   // Token assigned to the user's "browser".
-  browsers: [BrowserToken],
+  browsers: [BrowserTokenSchema],
 
   // Password reset notices
   resetAuthenticationToken: {
@@ -134,6 +164,88 @@ AuthenticationMethodSchema.methods.onLogin = function(reqAuthData) {
   return this.getAuthenticationFunctions().onLogin(this.userInfo, reqAuthData);
 };
 
+
+
+AuthenticationMethodSchema.methods.findBrowsersForFingerprint = function(fingerprint, allowExpires) {
+  var auth = this;
+  return new Promise(function(resolve, reject) {
+    var ret = {
+      browserIndexes: [],
+      browsers: []
+    };
+    var amindex;
+    var bindex;
+    var b;
+    for (bindex = 0; bindex < auth.browsers.length; bindex++) {
+      // Check if matching fingerprint.
+      b = auth.browsers[bindex];
+      if ((allowExpires || b.isActive()) && b.isFingerprintMatch(fingerprint)) {
+        ret.browserIndexes.push(bindex);
+        ret.browsers.push(b);
+      }
+    }
+    return resolve(ret);
+  });
+};
+
+
+/**
+ * Creates the BrowserTokenSchema object and adds it to the AuthenticationMethod.
+ * Does not save the AuthenticationMethod.  The returned object is the
+ * pure JSon version of the browser token object.
+ */
+AuthenticationMethodSchema.statics.generateBrowserEntry = function(fingerprint, expirationHours) {
+  if (! expirationHours) {
+    expirationHours = DEFAULT_TOKEN_EXPIRATION_HOURS;
+  }
+
+  // uuid SHOULD be unique, but let's be really, really sure.
+  var schm = this;
+  var genid = uuid();
+  return this.findOne({ 'authentications.browsers.token': genid })
+    .then(function(acct) {
+      if (! accnt) {
+        var expires = new Date();
+        expires.setTime(date.getTime() + (expirationHours * 3600000));
+        var browser = {
+          token: genid,
+          expires: expires,
+          // Ensure correct ordering
+          fingerprint: {
+            useragent: {
+              browser: {
+                family: fingerprint.useragent.browser.family,
+                version: fingerprint.useragent.browser.version
+              },
+              device: {
+                family: fingerprint.useragent.device.family,
+                version: fingerprint.useragent.device.version
+              },
+              os: {
+                family: fingerprint.useragent.os.family,
+                major: fingerprint.useragent.os.major,
+                minor: fingerprint.useragent.os.minor
+              }
+            },
+            acceptHeaders: {
+              accept: fingerprint.acceptHeaders.accept,
+              encoding: fingerprint.acceptHeaders.encoding,
+              language: fingerprint.acceptHeaders.language
+            },
+            geoip: {
+              country: fingerprint.geoip.country,
+              region: fingerprint.geoip.region,
+              city: fingerprint.geoip.city
+            }
+          }
+        };
+        this.browsers.push(browser);
+        return browser;
+      } else {
+        return schm.generateUniqueBrowserToken(fingerprint);
+      }
+    });
+};
 
 
 
@@ -194,24 +306,11 @@ AccountSchema.statics.findByBrowser = function(token, fingerprint) {
 };
 
 
-AccountSchema.statics.generateUniqueBrowserToken = function(fingerprint) {
-  // uuid SHOULD be unique, but let's be really, really sure.
-  var schm = this;
-  var genid = uuid();
-  return this.findOne({ 'authentications.browsers.token': genid })
-    .then(function(acct) {
-      if (! accnt) {
-        var expires = new Date();
-        expires.setTime( date.getTime() + TOKEN_EXPIRATION_DAYS * 86400000 );
-        return {
-          token: genid,
-          expires: expires,
-          fingerprint: fingerprint
-        };
-      } else {
-        return schm.generateUniqueBrowserToken(fingerprint);
-      }
-    });
+AccountSchema.statics.findByUserRef = function(username) {
+  if (username.username) {
+    username = username.username;
+  }
+  return this.findOne({ userRef: username });
 };
 
 
@@ -235,7 +334,6 @@ AccountSchema.methods.getAuthenticationNamed = function(authName) {
     return resolve(null);
   });
 };
-
 
 
 module.exports = mongoose.model('Account', AccountSchema);
