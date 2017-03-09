@@ -155,7 +155,6 @@ function genAccountLibMethod(name) {
   };
 }
 for (var k = 0; k < accountLib.sourceMethodNames.length; k++) {
-  console.log('Setting authentication method ' + accountLib.sourceMethodNames[k]);
   AuthenticationMethodSchema.methods[accountLib.sourceMethodNames[k]] =
     genAccountLibMethod(accountLib.sourceMethodNames[k]);
 }
@@ -326,7 +325,6 @@ AccountSchema.methods.getAuthenticationNamed = function(authName) {
       return reject(new Error('Unknown authorization source ' + authName));
     }
     for (var i = 0; i < acct.authentications.length; i++) {
-      // console.log("Checking authentication `" + acct.authentications[i].source + "'");
       if (acct.authentications[i].source === authName) {
         return resolve(acct.authentications[i]);
       }

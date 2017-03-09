@@ -24,15 +24,12 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
 
   var accountPromise;
   if (req.userAccount.account) {
-    console.log('Using already loaded account.');
     accountPromise = new Promise(function(resolve, reject) {
       return resolve(req.userAccount.account);
     });
   } else if (req.user) {
-    console.log('Loading account for user');
     accountPromise = Account.findByUserRef(req.user);
   } else {
-    console.error('user value not created yet.');
     return next(new Error('InternalError'));
   }
 

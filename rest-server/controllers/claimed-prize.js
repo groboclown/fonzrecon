@@ -27,7 +27,6 @@ exports.getAll = function(req, res, next) {
           // No results.
           return false;
         }
-        console.log("found users");
         return {
           redeemedByUser: { $in: users }
         }
@@ -114,8 +113,6 @@ exports.create = function(req, res, next) {
           'purchasePoints', prizeChoice.purchasePoints,
           'insufficient points to spend to receive the prize');
       }
-
-      console.log(`Reduing user points ${fromUser.receivedPointsToSpend} by ${prizeChoice.purchasePoints}`)
 
       return User.update(
           {

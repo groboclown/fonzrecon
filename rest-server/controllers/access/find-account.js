@@ -52,18 +52,13 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
  */
 function discoverUserMiddleware(passport) {
   return function(req, res, next) {
-    console.log('starting passport auth check');
     passport.authenticate(['token', 'local'], function(err, user, info) {
       if (err) {
-        console.log(`Passport error: ${err.message}`);
-        console.log(err.stack);
         return next(err);
       }
       if (!user) {
-        console.log(`forbidden via passport`);
         return next(forbidden());
       }
-      console.log(`setting user`);
       req.user = user;
       next();
     })(req, res, next);

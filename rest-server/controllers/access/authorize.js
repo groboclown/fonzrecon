@@ -47,7 +47,6 @@ module.exports = function(permission, affected_user_list_func) {
       var role = roles[account.role];
       if (! role.permissions[permission.key]) {
         // Permission not set, so not available to perform (default permission).
-        console.log(`No permission (${permission.key}) defined in role ${role.name}`);
         return next(forbidden());
       }
       role_permission_func = role.permissions[permission.key];
@@ -85,7 +84,6 @@ module.exports = function(permission, affected_user_list_func) {
           // Authenticated!!!
           next();
         } else {
-          console.log(`"${username}" "${behalf_username}" ${affected_users} ${permission.key}- forbidden`);
           next(forbidden());
         }
         // return next(forbidden());

@@ -56,10 +56,8 @@ function verifyIsBoolean(val) {
 
 function toBoolean(val, defaultVal) {
   if (val.value === true || val.value === false) {
-    console.log(`Using stored value ${val.value} for ${val}`);
     return val.value;
   }
-  console.log(`using default value ${defaultVal} for ${val}`);
   return defaultVal;
 }
 

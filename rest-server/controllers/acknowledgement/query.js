@@ -89,7 +89,6 @@ exports.getOne = function(req, res, next) {
   }
 
   var ackPromise;
-  console.log(`id: ${req.params.id} ${typeof(req.params.id)}`);
   if (extraAccess.canViewPrivate(req)) {
     ackPromise = Acknowledgement
       .findOneDetails(req.params.id)

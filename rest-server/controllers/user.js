@@ -23,7 +23,6 @@ exports.getAllBrief = function(req, res, next) {
 };
 
 exports.getOneBrief = function(req, res, next) {
-  console.log('Finding brief user ' + req.params.id);
   User
     .findOneBrief({ username: req.params.id })
     .exec()

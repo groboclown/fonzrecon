@@ -41,7 +41,6 @@ function findUsersReferenced(toUserNames, isBotWithBehalf) {
       organization: '[NEW_USER]'
     }).save()
     .then(function(user) {
-      console.log(`created referenced user ${name}: ${user}`);
       return user;
     });
   }
@@ -152,7 +151,6 @@ exports.create = function(req, res, next) {
     .then(function (toUsers) {
       if (! toUsers || toUsers.length !== req.body.to.length) {
         // Did not find all the users
-        console.log(`to users: ${req.body.to}, fetched users: ${toUsers}`)
         throw errors.extraValidationProblem('to', req.body.to,
           'At least one of the given users does not exist, or there was a duplicate name.');
       }
