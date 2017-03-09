@@ -33,7 +33,7 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
   var role = roles[req.user.role];
   var onBehalfOf = null;
   if (role && role.canRunOnBehalfOf) {
-    onBehalfOf = lookup(req.body, 'behalf') || lookup(req.query, 'behalf');
+    onBehalfOf = req.body.behalf || req.query.behalf;
   }
 
   findUserAndBehalf(req.user, onBehalfOf)
@@ -72,18 +72,6 @@ function discoverUserMiddleware(passport) {
 
 // =========================================================================
 // Utility functions
-
-function lookup(obj, field) {
-  if (!obj) { return null; }
-  var chain = field.split(']').join('').split('[');
-  for (var i = 0, len = chain.length; i < len; i++) {
-    var prop = obj[chain[i]];
-    if (typeof(prop) === 'undefined') { return null; }
-    if (typeof(prop) !== 'object') { return prop; }
-    obj = prop;
-  }
-  return null;
-}
 
 
 function forbidden() {
