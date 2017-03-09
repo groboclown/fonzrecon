@@ -9,6 +9,7 @@ const Account = models.Account;
 const User = models.User;
 const Acknowledgement = models.Acknowledgement;
 const PrizeChoice = models.PrizeChoice;
+const Setting = models.Setting;
 
 const SAMPLE_ACCOUNTS = [
   {
@@ -178,12 +179,28 @@ for (var i = 0; i < SAMPLE_PRIZES.length; i++) {
 }
 
 
+// settings
+requests.push(Setting
+  .setCreateUserOnReference(true)
+  .then(function() {
+    console.log('Created setting CreateUserOnReference');
+  })
+);
+
 
 Promise
   .all(requests)
   .then(function(results) {
     console.log('Completed generating data.');
+
+    // Make sure we quit, by closing off our connections.
+    require('mongoose').disconnect();
+
+    // This should exit normally, but it just hangs.  Apparently,
+    // there's some open socket somewhere.
+    process.exit(0);
   })
   .catch(function(err) {
-    console.error(err);
+    console.error(err.essage);
+    console.error(err.stack);
   });

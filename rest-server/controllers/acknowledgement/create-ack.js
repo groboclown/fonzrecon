@@ -3,6 +3,7 @@
 const models = require('../../models');
 const Acknowledgement = models.Acknowledgement;
 const User = models.User;
+const Setting = models.Setting;
 const util = require('../util');
 const paging = util.paging.extract;
 const jsonConvert = util.jsonConvert;
@@ -10,6 +11,81 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
+
+
+function findUsersReferenced(toUserNames) {
+  var isCreateUserOnRefPromise =
+    Setting.getCreateUserOnReference();
+  var toUsersPromise = User
+        .find()
+        // request is for the name, not username.
+        .where('names').in(toUserNames)
+        .exec();
+
+  function userPromiseGen(userObj) {
+    return new Promise(function(resolve, reject) { resolve(userObj); });
+  }
+  function createUserPromiseGen(name) {
+    // TODO this should be extracted out.
+    var username = name.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+    if (username.length <= 0) {
+      throw errors.extraValidationProblem('to', toUserNames,
+        'At least one of the given users is bad (' +name + ').');
+    }
+    return new User({
+      username: username,
+      names: [username, name],
+      contact: [],
+      pointsToAward: 0,
+      receivedPointsToSpend: 0,
+      organization: '[NEW_USER]'
+    }).save()
+    .then(function(user) {
+      console.log(`created referenced user ${name}: ${user}`);
+      return user;
+    });
+  }
+
+  return Promise
+    .all([toUsersPromise, isCreateUserOnRefPromise])
+    .then(function (args) {
+      var isCreateUserOnRef = args[1];
+      var toUsers = args[0];
+      if (! isCreateUserOnRef) {
+        // We don't create users if they were requested but don't exist.
+        if (! toUsers || toUsers.length !== toUserNames.length) {
+          // Did not find all the users
+          throw errors.extraValidationProblem('to', toUserNames,
+            'At least one of the given users does not exist, or there was a duplicate name.');
+        }
+        // We have all the requested users.  Return them immediately.
+        return toUsers;
+      }
+
+      // Find all the users that don't exist...
+      var userResult = [];
+      var found;
+      for (var i = 0; i < toUserNames.length; i++) {
+        found = false;
+        for (var j = 0; j < toUsers.length; j++) {
+          if (toUsers[j].names.includes(toUserNames[i])) {
+            found = true;
+            userResult.push(userPromiseGen(toUsers[j]));
+            break;
+          }
+        }
+        if (! found) {
+          // Create the user.
+          userResult.push(createUserPromiseGen(toUserNames[i]));
+        }
+      }
+
+      // join all the user discovery and user creation into a
+      // single array argument.
+      return Promise.all(userResult);
+    });
+
+}
 
 
 
@@ -65,19 +141,13 @@ exports.create = function(req, res, next) {
         throw errors.validationProblems(results.array());
       }
 
-      // Ensure the list of acknowledged users exist,
-      // and find them for point allocation and assignment
-      // to the acknowledge.
-      return User
-        .find()
-        // request is for the name, not username.
-        .where('names').in(req.body.to)
-        .exec();
+      return findUsersReferenced(req.body.to);
     });
   var saveUserPromise = toUsersPromise
     .then(function (toUsers) {
       if (! toUsers || toUsers.length !== req.body.to.length) {
         // Did not find all the users
+        console.log(`to users: ${req.body.to}, fetched users: ${toUsers}`)
         throw errors.extraValidationProblem('to', req.body.to,
           'At least one of the given users does not exist, or there was a duplicate name.');
       }
@@ -170,8 +240,9 @@ exports.create = function(req, res, next) {
     .catch(function(err) {
       // FIXME if the save fails, then the user is SOL - the points
       // are just lost.  Really, we should roll back the lost points.
-      console.error(`User ${toUser.username} deducted points but ack did not save right.`);
-
+      console.error(`User ${fromUser.username} deducted points but ack did not save right.`);
+      console.log(err.message);
+      console.log(err.stack);
       throw err;
     });
 

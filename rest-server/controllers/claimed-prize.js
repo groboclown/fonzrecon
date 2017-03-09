@@ -69,7 +69,7 @@ exports.getOne = function(req, res, next) {
       if (! claimed) {
         throw errors.resourceNotFound();
       }
-      res.status(200).json(jsonConvert.claimedPrize(claimed));
+      return res.status(200).json(jsonConvert.claimedPrize(claimed));
     })
     .catch(function(err) {
       next(err);
