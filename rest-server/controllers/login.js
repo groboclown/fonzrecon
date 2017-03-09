@@ -9,88 +9,80 @@
  * the tickets.  Much of this needs to be rewritten.
  */
 
-const Account = require('../model/account');
-const permissions = require('./permissions');
-const roles = require('./roles');
+const access = require('./access');
+const errors = require('./util').errors;
+const models = require('../models');
+const Account = models.Account;
 
 // ==============================================
 // Request handlers
 
-exports.login = function(req, res, next) {
-  let userInfo = setUserInfo(req.user);
-  res.status(200).json({
-    token: 'JWT ' + generateToken(userInfo),
-    user: userInfo
-  });
-};
-
-exports.register = function(req, res, next) {
-  const email = req.body.email;
-  const username = req.body.username;
-  const auth = req.body.password;
-
-  if (! validateEmail(email)) {
-    var err = new Error('You must enter a valid email address.');
-    err.status = 422;
-    return next(err);
-  }
-  if (! validateUsername(username)) {
-    var err = new Error('You must enter a valid username.');
-    err.status = 422;
-    return next(err);
-  }
-  if (! validateAuth(auth)) {
-    var err = new Error('You must enter a valid password.');
-    err.status = 422;
-    return next(err);
-  }
-  Account.findOne({ username: username }, function(err, existingUser1) {
-    if (err) {
-      return next(err);
+exports.login = function(passport) {
+  return function(req, res, next) {
+    // If the user already has a browser token associated with this,
+    // then remove it before attempting login.
+    let username = req.body.username || req.query.username;
+    let cleanupPromise;
+    if (username) {
+      cleanupPromise = access.token.removeToken(username, 'local', req);
+    } else {
+      cleanupPromise = new Promise(function(resolve, reject) { resolve() });
     }
-    if (existingUser1) {
-      var err = new Error('Username already in use.');
-      err.status = 422;
-      return next(err);
-    }
-    Account.findOne({ email: email }, function(err, existingUser2) {
-      if (err) {
-        return next(err);
-      }
-      if (existingUser2) {
-        var err = new Error('Email is already in use.');
-        err.status = 422;
-        return next(err);
-      }
-      let account = new Account({
-        email: email,
-        username: username,
-        authentication: auth
-      });
-      account.save(function(err, _account) {
-        if (err) {
-          return next(err);
-        }
 
-        let userInfo = setUserInfo(_account);
-        res.status(201).json({
-          token: 'JWT ' + generateToken(userInfo);
-          user: userInfo
+    cleanupPromise
+      .then(function() {
+        return new Promise(function(resolve, reject) {
+          passport.authenticate('local', function(err, user, info) {
+            if (err) {
+              return reject(err);
+            }
+            if (! user) {
+              let err = new Error('Incorrect login');
+              err.status = 401;
+              return reject(err);
+            }
+            req.user = user;
+            // Generate the request token for the user.
+            resolve(access.token.generateToken(true, 'local', req));
+          })(req, res, next);
         });
+      })
+      .then(function(browserToken) {
+        res.status(200).json({
+          token: browserToken.token,
+          expires: browserToken.expires
+        });
+      })
+      .catch(function(err) {
+        next(err);
       });
-    });
-  });
+   };
 };
+
+
+exports.logout = function(req, res, next) {
+  // Unlike the other APIs, this one needs to be authorized.
+  if (! req.user) {
+    // Not logged in
+    let err = new Error('Not logged in');
+    err.status = 400;
+    return next(err);
+  }
+
+  access.token
+    .removeToken(req.user.userRef, 'local', req)
+    .then(function() {
+      res.status(200).json({});
+    })
+    .catch(function(err) {
+      next(err);
+    });
+};
+
 
 
 // =============================================
 // Helper functions
-
-function generateToken(userInfo) {
-  return jwt.sign(userInfo, config.secret, {
-    expiresIn: 10080 // seconds
-  })
-}
 
 function setUserInfo(req) {
   return {

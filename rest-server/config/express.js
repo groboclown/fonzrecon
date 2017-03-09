@@ -8,16 +8,19 @@ const csrf = require('csurf');
 const validator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const fingerprint = require('express-fingerprint');
+const helmet = require('helmet');
 const settings = require('./settings');
 
 exports.setup = function(app, passport) {
+
   // Compression middleware (should be placed before express.static)
   app.use(compression({
       threshold: 512
   }));
 
-  app.use(cors());
   app.use(fingerprint());
+  app.use(cors());
+  app.use(helmet());
 
   app.use(logger('dev'));
   app.use(cookieParser());

@@ -2,7 +2,7 @@
 
 const AccountTokenStrategy = require('./account-token-strategy');
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const findAccountByToken = require('../../controllers/access').token;
+const findAccountByToken = require('../../controllers/access').token.findAccountByToken;
 
 const accountOptions = {
   // Passport should use authorization headers from JWT

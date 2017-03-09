@@ -5,9 +5,82 @@ const Account = models.Account;
 
 
 exports.findAccountByToken = function(req) {
+  if (! req.fingerprint) {
+    console.error('No browser / request fingerprint. Is express setup?');
+    return new Promise(function(resolve, reject) {
+      reject(new Error('InternalError'));
+    });
+  }
+
   return Account
     .findByBrowser(req.token, req.fingerprint);
 };
+
+
+exports.removeToken = function(username, authName, req) {
+  if (! req.fingerprint) {
+    console.error('No browser / request fingerprint. Is express setup?');
+    return new Promise(function(resolve, reject) {
+      reject(new Error('InternalError'));
+    });
+  }
+
+
+  var accountPromise;
+  if (req.userAccount && req.userAccount.account) {
+    accountPromise = new Promise(function(resolve, reject) {
+      return resolve(req.userAccount.account);
+    });
+  } else if (req.user) {
+    accountPromise = Account.findByUserRef(username);
+  } else {
+    accountPromise = new Promise(function(resolve, reject) { resolve(null); });
+  }
+
+  var authMethodPromise = accountPromise
+    .then(function(account) {
+      if (! account) {
+        // This is fine.
+        return null;
+      }
+      return account.getAuthenticationNamed(authName);
+    });
+  var existingTokensForReqPromise = authMethodPromise
+    .then(function(authMethod) {
+      if (! authMethod) {
+        // Does not exist, so there's nothing to do.
+        return { browsers: [], browserIndexes: [] };
+      }
+      //
+      return authMethod.findBrowsersForFingerprint(req.fingerprint, true);
+    });
+
+  // If there's an existing browser token, then we either need to delete it.
+  return Promise.
+    all([accountPromise, authMethodPromise, existingTokensForReqPromise])
+    .then(function(args) {
+      var account = args[0];
+      var authMethod = args[1];
+      var existingTokens = args[2];
+      if (existingTokens.browsers.length > 0) {
+        // Delete the browser token by adding all the existing browsers
+        // that *aren't* a match.
+        var newBrowsers = [];
+        for (var i = 0; i < authMethod.browsers.length; i++) {
+          if (! existingTokens.browserIndexes.includes(i)) {
+            newBrowsers.push(auth.browsers[i]);
+          }
+        }
+        authMethod.browsers = newBrowsers;
+      }
+      // else no existing tokens that match.
+
+      if (account) {
+        return account.save();
+      }
+      return null;
+    });
+}
 
 
 /**
@@ -23,14 +96,18 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
   }
 
   var accountPromise;
-  if (req.userAccount.account) {
+  if (req.userAccount && req.userAccount.account) {
     accountPromise = new Promise(function(resolve, reject) {
       return resolve(req.userAccount.account);
     });
   } else if (req.user) {
-    accountPromise = Account.findByUserRef(req.user);
+    accountPromise = new Promise(function(resolve, reject) {
+      resolve(req.user);
+    });
   } else {
-    return next(new Error('InternalError'));
+    return new Promise(function(resolve, reject) {
+      reject(new Error('InternalError'));
+    });
   }
 
   var authMethodPromise = accountPromise
@@ -76,7 +153,7 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
             newBrowsers.push(auth.browsers[i]);
           }
         }
-        auth.browsers = newBrowsers;
+        authMethod.browsers = newBrowsers;
       }
       // else no existing tokens that match.
 
@@ -88,12 +165,13 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
   var savedAccount = Promise
     .all([accountPromise, browserToken])
     .then(function(args) {
+      console.log(`Saving account`);
       return args[0].save();
     });
 
   return Promise
     .all([savedAccount, browserToken])
     .then(function(args) {
-      return args[1].token;
+      return args[1];
     });
 };

@@ -7,11 +7,11 @@ exports.setup = function(app, passport) {
   // Require authorization for all '/api' URIs.
   app.all('/api/*', access.findAccount(passport));
 
-
-
-
   // Public Routes
-  app.use('/auth', require('./authentication'));
+
+  // Authentication route is setup a bit differently, because
+  // of its tight integration with passport.
+  app.use('/auth', require('./authentication')(passport));
 
   // Authenticated Routes
   app.use('/api/v1/users', require('./users'));
@@ -19,10 +19,12 @@ exports.setup = function(app, passport) {
   app.use('/api/v1/prizes', require('./prize'));
   app.use('/api/v1/claimed-prizes', require('./claimed-prize'));
 
-
-
   // Generic error handler
   app.use(function(err, req, res, next) {
+    if (! err) {
+      err = new Error('Unknown error');
+    }
+
     // treat as 404
     if (err.message
         && (~err.message.indexOf('not found')

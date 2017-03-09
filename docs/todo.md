@@ -24,7 +24,6 @@
       * users can only be created by admins.
     * Allow for users to update their user and limited rights
       to update their account.
-    * Allow for ticket-based session login.
     * Allow for prize creation, editing, and expiring.
 * bot:
   * MS Teams:

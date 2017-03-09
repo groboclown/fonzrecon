@@ -14,7 +14,7 @@ function AccountTokenStrategy(options, findByReq) {
   }
 
   this._findByReq = findByReq;
-  if (!this._findByReq) {
+  if (!this._findByReq || typeof(this._findByReq) !== 'function') {
     throw new TypeError('AccountTokenStrategy requires the account retrieval function that returns a promise object');
   }
 }

@@ -2,10 +2,6 @@
 
 # Authentication
 
-Current authentication is trivially simple.  You must pass, either as
-query parameters or as part of the JSon request object, the parameters
-`username` and `password`.
-
 The API makes a distinction between login accounts and users.  Users
 can participate in the award system.  If a login account does not have
 a user, then it cannot be awarded Aaays or give out Aaays.  This allows
@@ -15,6 +11,25 @@ automated proxy system that performs actions on behalf of other users.
 For the automated proxy systems (called *bots*), they should send an
 additional parameter, `behalf`, which is set to one of the names of
 the requested user.
+
+## Token requests
+
+To use tokens to authenticate requests, send a request to the
+[/auth/login](#login) API with the username and password in the JSON
+request body.  If the login was valid, the request will return the
+`token` parameter.
+
+This token can then be passed in the Authorization header like so:
+
+```
+Authorization: JWT (token)
+```
+
+## Token-less Requests
+
+To make requests without tokens, you must pass, either as
+query parameters or as part of the JSON request object, the parameters
+`username` and `password`.
 
 
 # Common
@@ -309,6 +324,56 @@ Aaay.  It does not have a URI to reference it.*
 * `createdAt` - when the redemtion occurred.
 * `type` - static "Redeemed" string.
 
+
+
+
+# Authentication API
+
+## POST `/auth/login`
+
+Logs in with the simple username/password authorization.  Returns a
+token that can be used for future requests without sending the username
+and password with each request.
+
+The login token returned is only valid for the requesting browser, until the
+listed expiration time.
+
+The returned `token` value can be used in future requests by adding it to
+the headers as:
+
+```
+Authorization: JWT (token string)
+```
+
+**Access**: all requests.
+
+**JSON Body:**
+
+```json
+{
+  "username": "request user name",
+  "password": "user's password"
+}
+```
+
+**Returns:**
+
+```json
+{
+    "token": "fSxyKq7iGp3osOHnqoo2Mz3EJZ0V5ZOYYOiWKqwmBe128rh3Exso2GUeSOl5bZoKRPIvqW3hgOpe46D8CBFLFw==",
+    "expires": "2013-04-08T21:31:03.818Z"
+}
+```
+
+
+
+## POST `/auth/logout`
+
+Removes the requestor's token from the system, so that it can no longer be
+used in future requests.
+
+This requests takes no parameters or body values as input.  It returns an
+empty JSON object (`{}`).
 
 
 

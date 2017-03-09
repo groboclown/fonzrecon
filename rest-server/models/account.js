@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const roles = require('../config/access/roles');
 const accountLib = require('../lib/account');
-const uuid = require('uuid');
+const crypto = require('crypto');
 const DEFAULT_TOKEN_EXPIRATION_HOURS = 30 * 24;
 
 // =====================================
@@ -166,6 +166,7 @@ AuthenticationMethodSchema.methods.onLogin = function(reqAuthData) {
 
 
 AuthenticationMethodSchema.methods.findBrowsersForFingerprint = function(fingerprint, allowExpires) {
+  fingerprint = normalizeFingerprint(fingerprint);
   var auth = this;
   return new Promise(function(resolve, reject) {
     var ret = {
@@ -188,62 +189,90 @@ AuthenticationMethodSchema.methods.findBrowsersForFingerprint = function(fingerp
 };
 
 
+function normalizeFingerprint(fingerprint) {
+  if (fingerprint.components) {
+    fingerprint = fingerprint.components;
+  }
+
+  fingerprint.useragent = fingerprint.useragent || {};
+  fingerprint.useragent.browser = fingerprint.useragent.browser || {};
+  fingerprint.useragent.browser.family = fingerprint.useragent.browser.family || null;
+  fingerprint.useragent.browser.version = fingerprint.useragent.browser.version || null;
+  fingerprint.useragent.device = fingerprint.useragent.device || {};
+  fingerprint.useragent.device.family = fingerprint.useragent.device.family || null;
+  fingerprint.useragent.device.version = fingerprint.useragent.device.version || null;
+  fingerprint.useragent.os = fingerprint.useragent.os || {};
+  fingerprint.useragent.os.family = fingerprint.useragent.os.family || null;
+  fingerprint.useragent.os.major = fingerprint.useragent.os.major || null;
+  fingerprint.useragent.os.minor = fingerprint.useragent.os.minor || null;
+  fingerprint.acceptHeaders = fingerprint.acceptHeaders || {};
+  fingerprint.acceptHeaders.accept = fingerprint.acceptHeaders.accept || null;
+  fingerprint.acceptHeaders.encoding = fingerprint.acceptHeaders.encoding || null;
+  fingerprint.acceptHeaders.language = fingerprint.acceptHeaders.language || null;
+  fingerprint.geoip = fingerprint.geoip || {};
+  fingerprint.geoip.country = fingerprint.geoip.country || null;
+  fingerprint.geoip.region = fingerprint.geoip.region || null;
+  fingerprint.geoip.city = fingerprint.geoip.city || null;
+  return fingerprint;
+};
+
+
 /**
  * Creates the BrowserTokenSchema object and adds it to the AuthenticationMethod.
  * Does not save the AuthenticationMethod.  The returned object is the
  * pure JSon version of the browser token object.
  */
-AuthenticationMethodSchema.statics.generateBrowserEntry = function(fingerprint, expirationHours) {
+AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, expirationHours) {
   if (! expirationHours) {
     expirationHours = DEFAULT_TOKEN_EXPIRATION_HOURS;
   }
+  fingerprint = normalizeFingerprint(fingerprint);
 
-  // uuid SHOULD be unique, but let's be really, really sure.
-  var schm = this;
-  var genid = uuid();
-  return this.findOne({ 'authentications.browsers.token': genid })
-    .then(function(acct) {
-      if (! accnt) {
-        var expires = new Date();
-        expires.setTime(date.getTime() + (expirationHours * 3600000));
-        var browser = {
-          token: genid,
-          expires: expires,
-          // Ensure correct ordering
-          fingerprint: {
-            useragent: {
-              browser: {
-                family: fingerprint.useragent.browser.family,
-                version: fingerprint.useragent.browser.version
-              },
-              device: {
-                family: fingerprint.useragent.device.family,
-                version: fingerprint.useragent.device.version
-              },
-              os: {
-                family: fingerprint.useragent.os.family,
-                major: fingerprint.useragent.os.major,
-                minor: fingerprint.useragent.os.minor
-              }
-            },
-            acceptHeaders: {
-              accept: fingerprint.acceptHeaders.accept,
-              encoding: fingerprint.acceptHeaders.encoding,
-              language: fingerprint.acceptHeaders.language
-            },
-            geoip: {
-              country: fingerprint.geoip.country,
-              region: fingerprint.geoip.region,
-              city: fingerprint.geoip.city
-            }
-          }
-        };
-        this.browsers.push(browser);
-        return browser;
-      } else {
-        return schm.generateUniqueBrowserToken(fingerprint);
+  // Generate a cryptographically secure random string as the token.
+  var self = this;
+  var expires = new Date();
+  expires.setTime(expires.getTime() + (expirationHours * 3600000));
+  return new Promise(function(resolve, reject) {
+    crypto.randomBytes(64, function(err, buffer) {
+      if (err) {
+        return reject(err);
       }
+      var browser = {
+        token: buffer.toString('base64'),
+        expires: expires,
+        // Ensure correct ordering
+        fingerprint: {
+          useragent: {
+            browser: {
+              family: fingerprint.useragent.browser.family,
+              version: fingerprint.useragent.browser.version
+            },
+            device: {
+              family: fingerprint.useragent.device.family,
+              version: fingerprint.useragent.device.version
+            },
+            os: {
+              family: fingerprint.useragent.os.family,
+              major: fingerprint.useragent.os.major,
+              minor: fingerprint.useragent.os.minor
+            }
+          },
+          acceptHeaders: {
+            accept: fingerprint.acceptHeaders.accept,
+            encoding: fingerprint.acceptHeaders.encoding,
+            language: fingerprint.acceptHeaders.language
+          },
+          geoip: {
+            country: fingerprint.geoip.country,
+            region: fingerprint.geoip.region,
+            city: fingerprint.geoip.city
+          }
+        }
+      };
+      self.browsers.push(browser);
+      resolve(browser);
     });
+  });
 };
 
 
@@ -282,12 +311,9 @@ const AccountSchema = new Schema({
 });
 
 
-AccountSchema.statics.findByBrowser = function(token, fingerprint) {
-  return this.findOne({
-    'authentications.browsers.token': token,
-    'authentications.browsers.expires': {
-      $lt: new Date()
-    },
+function fingerprintCondition(fingerprint) {
+  fingerprint = normalizeFingerprint(fingerprint);
+  return {
     'authentications.browsers.fingerprint.useragent.browser.family': fingerprint.useragent.browser.family,
     'authentications.browsers.fingerprint.useragent.browser.version': fingerprint.useragent.browser.version,
     'authentications.browsers.fingerprint.useragent.device.family': fingerprint.useragent.device.family,
@@ -301,7 +327,17 @@ AccountSchema.statics.findByBrowser = function(token, fingerprint) {
     'authentications.browsers.fingerprint.geoip.country': fingerprint.geoip.country,
     'authentications.browsers.fingerprint.geoip.region': fingerprint.geoip.region,
     'authentications.browsers.fingerprint.geoip.city': fingerprint.geoip.city,
-  });
+  };
+}
+
+
+AccountSchema.statics.findByBrowser = function(token, fingerprint) {
+  var condition = fingerprintCondition(fingerprint);
+  condition['authentications.browsers.token'] = token;
+  condition['authentications.browsers.expires'] = {
+    $gt: new Date()
+  };
+  return this.findOne(condition);
 };
 
 

@@ -22,7 +22,7 @@ const roles = require('../../config/access/roles');
  */
 module.exports = function(permission, affected_user_list_func) {
   if (! permissions[permission.key]) {
-    // Programming bug; will be thrown at program startup.
+    // Program integrety validation; will be thrown at program startup.
     throw new Error('Unknown permission ' + permission.key);
   }
   if (! affected_user_list_func) {
