@@ -294,35 +294,35 @@ Aaay.  It does not have a URI to reference it.*
 }
 ```
 
-* `id` - identifier for the prize; used when redeeming the prize.
+* `id` - identifier for the prize; used when claiming the prize.
 * `name` - a short description of the prize; usually used as a title.
 * `description` - a long description about the prize.
 * `referenceUrl` - an optional URL to find out more.
-* `purchasePoints` - how many points it takes to redeem this prize.
+* `purchasePoints` - how many points it takes to claim this prize.
 * `expires` - optional date describing when the prize will (or did)
-  expire and become no longer available to redeem.
+  expire and become no longer available to claim.
 
 
 
-### `Redeemed`
+### `ClaimedPrize`
 
 ```json
 {
   "id": "68b5cbd4e2d144141823beef",
-  "redeemedByUser": { (UserBrief) },
+  "claimedByUser": { (UserBrief) },
   "prize": { (Prize) },
   "createdAt": "2016-02-28T18:50:34.115Z",
-  "uri": "/api/v1/redeemeds/68b5cbd4e2d144141823beef",
-  "type": "Redeemed"
+  "uri": "/api/v1/claimed-prize/68b5cbd4e2d144141823beef",
+  "type": "ClaimedPrize"
 }
 ```
 
 * `id` - identifier for the redemtion.
-* `redeemedByUser` - a [UserBrief](#userbrief) for the person who redeemed
+* `claimedByUser` - a [UserBrief](#userbrief) for the person who redeemed
   points for the prize.
-* `prize` - the [Prize](#prize) that was redeemed.
+* `prize` - the [Prize](#prize) that was claimed.
 * `createdAt` - when the redemtion occurred.
-* `type` - static "Redeemed" string.
+* `type` - static "ClaimedPrize" string.
 
 
 
@@ -559,7 +559,7 @@ currently authenticated user, or the user requested through a bot.
 
 ## GET `api/v1/prizes`
 
-Returns a list of prizes that the user can redeem for points.
+Returns a list of prizes that the user can claim for awarded points.
 
 **Access**: all authenticated users.
 
@@ -578,4 +578,116 @@ returned is [Prize](#prize) objects.
 
 # Claimed Prize API
 
-## GET `api/v1/prizeclaims`
+## GET `api/v1/claimed-prizes`
+
+Retrieve all the prizes claimed by users.
+
+**Access**: all authenticated users.
+
+**Query Parameters:**
+
+* Paging:
+  * Accepts the standard [paging](#paging) parameters.
+* **`user`** - user name to search for claimed prizes.
+
+**Returns:**
+
+The returned value conforms to the [paging](#paging) results.  The type
+returned is [ClaimedPrize](#claimedprize) objects.
+
+
+
+## GET `api/v1/claimed-prizes/:id`
+
+Retrieve the single claimed prize with the given id.
+
+**Access**: all authenticated users.
+
+**Query Parameters:** None.
+
+**Returns:**
+
+A [ClaimedPrize](#claimedprize) object.
+
+
+
+## POST `api/v1/claimed-prizes`
+
+Claims a prize for the requesting user.
+
+**Access**: Users with the `USER` role.  Administrators cannot claim prizes!
+
+**Request Body:**
+
+```json
+{
+  "prizeChoiceId": "prize id"
+}
+```
+
+* `prizeChoiceId` - ID of the prize to claim.
+
+**Returns:**
+
+```json
+{
+  "id": "58be287d0f686b16c03bd62a",
+  "uri": "/api/v1/claimed-prizes/58be287d0f686b16c03bd62a",
+  "type": "ClaimedPrizeRef"
+}
+```
+
+* `id` - the identifier of the claimed prize.
+* `uri` - a pointer to the location of the claimed prize.
+* `type` - the static "ClaimedPrizeRef" string.
+
+
+
+# Settings API
+
+## GET `api/v1/settings`
+
+Retrieves a map of all the site-wide settings.
+
+**Access**: Only viewable by administrators.  Bots cannot access it.
+
+**Query Parameters:** None.
+
+**Returns:**
+
+```json
+{
+  "KeyName": {
+    "key": "KeyName",
+    "description": "Untranslated description of the key",
+    "value": "current setting; type is key dependent"
+  },
+  ...
+}
+```
+
+
+
+## PUT `api/v1/settings`
+
+Updates one or more site-wide setting values.
+
+**Access**: Only administrators.
+
+**Request Body:**
+
+A sub-set of the list of settings that should be updated.
+
+```json
+{
+  "settings": {
+    "KeyName": "key value; type is key dependent",
+    ...
+  }
+}
+```
+
+**Returns:**
+
+The map of final setting values that were updated in the request.
+This is a subset of the values returned by [GET](#getapiv1settings).

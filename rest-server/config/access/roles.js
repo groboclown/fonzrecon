@@ -107,7 +107,8 @@ module.exports = {
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
       CLAIM_VIEW: ALLOW_ANY,
-      CLAIM_CREATE: ALLOW_NONE,
+      CLAIM_CREATE: ALLOW_NONE, // admins can't claim prizes
+      SITE_SETTINGS: ALLOW_ANY,
     }
   },
 };

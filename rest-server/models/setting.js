@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const validate = require('../lib/validate');
 
 // =====================================
 // Schema Definition
@@ -47,197 +48,217 @@ SettingSchema.statics._setKey = function(key, description, value) {
     });
 };
 
-function verifyIsBoolean(val) {
-  if (val !== true && val !== false) {
-    throw new Error('ValidationError');
-  }
-  return val;
-}
 
-function toBoolean(val, defaultVal) {
-  if (val && (val.value === true || val.value === false)) {
-    return val.value;
-  }
-  return defaultVal;
-}
-
-function verifyIsArray(val) {
-  if (! val || ! Array.isArray(val)) {
-    throw new Error('ValidationError');
-  }
-  return val;
-}
-
-function verifyIsString(val) {
-  if (! val || typeof(val) !== 'string') {
-    throw new Error('ValidationError');
-  }
-  return val;
-}
-
+// =========================================================================
 // Well defined keys
 
-/*
-const CREATE_USER_ON_REFERENCE = 'CreateUserOnReference';
-const DEFAULT_CREATE_USER_ON_REFERENCE = false;
-SettingSchema.statics.setCreateUserOnReference = function(bol) {
-  verifyIsBoolean(bol);
-  return this._setKey(
-    CREATE_USER_ON_REFERENCE,
-    'When true, the user will be created if acknowledged if it does not exist.',
-    bol);
+
+const ALL_SETTINGS = {
+  'AdminActionNotificationEmails': {
+    description: 'Who to send emails to when an administration action occurs',
+    defaultValue: [],
+    validator: [ validate.isArrayOf, validate.isEmailAddress ],
+    templateAccess: 'private',
+  },
+  'SiteUrl': {
+    description: 'Root url of the site',
+    defaultValue: 'http://localhost',
+    validator: validate.isURL,
+    templateAccess: 'public',
+  },
+  'EmailTheme': {
+    description: 'Directory under templates/email to use for formatted emails',
+    defaultValue: 'light',
+    validator: [ validate.isString, 1 ],
+    templateAccess: 'public',
+  },
+  'SiteFromEmail': {
+    description: 'The `from` line in the emails sent from the site',
+    defaultValue: 'no-reply@site.fonzrecon',
+    validator: validate.isEmailAddress,
+    templateAccess: 'public',
+  },
+  'SiteName': {
+    description: 'How the site self identifies',
+    defaultValue: 'FonzRecon For You',
+    validator: [ validate.isString, 1 ],
+    templateAccess: 'public',
+  }
+};
+const PUBLIC_TEMPLATE_SETTING_KEYS = [];
+const PRIVATE_TEMPLATE_SETTING_KEYS = [];
+const ALL_SETTING_KEYS = [];
+
+function simplePromiseFactory() {
+  return function(value) { return Promise.resolve(value); };
 }
-SettingSchema.statics.getCreateUserOnReference = function() {
-  return this._forKey(CREATE_USER_ON_REFERENCE).lean()
+for (var k in ALL_SETTINGS) {
+  if (ALL_SETTINGS.hasOwnProperty(k)) {
+    ALL_SETTINGS[k].key = k;
+    ALL_SETTING_KEYS.push(k);
+    if (! ALL_SETTINGS[k].validator) {
+      ALL_SETTINGS[k].validatorPromiseFactory = simplePromiseFactory();
+    } else if (validate.isArray(ALL_SETTINGS[k].validator)) {
+      ALL_SETTINGS[k].validatorPromiseFactory = validate.asValidatePromiseFactory(
+        ALL_SETTINGS[k].validator[0], k, ALL_SETTINGS[k].validator[1]
+      );
+    } else {
+      ALL_SETTINGS[k].validatorPromiseFactory = validate.asValidatePromiseFactory(
+        ALL_SETTINGS[k].validator, k, []);
+    }
+
+    if (ALL_SETTINGS[k].templateAccess === 'public') {
+      PUBLIC_TEMPLATE_SETTING_KEYS.push(k);
+    } else if (ALL_SETTINGS[k].templateAccess === 'private') {
+      PRIVATE_TEMPLATE_SETTING_KEYS.push(k);
+    }
+  }
+}
+
+
+SettingSchema.statics._settingGetterValue = function(keyDef) {
+  keyDef.validatorPromise
+  return this._forKey(keyDef.key)
     .then(function(val) {
-      return toBoolean(val, DEFAULT_CREATE_USER_ON_REFERENCE);
+      if (!val) {
+        return keyDef.defaultValue;
+      }
+      return val.value;
     });
 }
-*/
-
-const ADMIN_ACTION_NOTIFIACTION_EMAILS = 'AdminActionNotificationEmails';
-SettingSchema.statics.setAdminActionNotificationEmails = function(emails) {
-  verifyIsArray(emails);
-  return this._setKey(
-    ADMIN_ACTION_NOTIFIACTION_EMAILS,
-    'Who to send emails to when an administration action occurs',
-    emails
-  );
-};
-SettingSchema.statics.getAdminActionNotificationEmails = function() {
-  return this._forKey(ADMIN_ACTION_NOTIFIACTION_EMAILS).lean()
-    .then(function(val) {
-      if (!val) {
-        return [];
-      }
-      return val.value;
+SettingSchema.statics._settingSetter = function(keyDef, value) {
+  return keyDef.validatorPromiseFactory(value)
+    .then(function(scrubbed) {
+      return this._setKey(keyDef.key, keyDef.description, scrubbed);
     });
-};
+}
+function createSettingGetterSetter(keyDef) {
+  SettingSchema.statics['get' + keyDef.key] = function() {
+    return this._settingGetterValue(keydef);
+  };
+  SettingSchema.statics['set' + keyDef.key] = function(value) {
+    return this._settingSetter(keyDef, value);
+  }
+}
+for (let k in ALL_SETTINGS) {
+  if (ALL_SETTINGS.hasOwnProperty(k)) {
+    createSettingGetterSetter(ALL_SETTINGS[k]);
+  }
+}
 
-const EMAIL_THEME = 'EmailTheme';
-const DEFAULT_EMAIL_THEME = 'light';
-SettingSchema.statics.setEmailTheme = function(theme) {
-  verifyIsString(theme);
-  return this._setKey(
-    EMAIL_THEME,
-    'directory under templates/email to use for formatted emails',
-    theme
-  );
-};
-SettingSchema.statics.getEmailTheme = function() {
-  return this._forKey(EMAIL_THEME).lean()
-    .then(function(val) {
-      if (!val) {
-        return DEFAULT_EMAIL_THEME;
+
+
+
+// =========================================================================
+
+
+SettingSchema.statics.findFor = function(keys) {
+  var self = this;
+  return this.find({ key: { $in: keys } })
+    .then(function(settings) {
+      let found = {};
+
+      for (let i = 0; i < settings.length; i++) {
+        found[settings[i].key] = true;
       }
-      return val.value;
-    });
-};
 
-
-const SITE_FROM_EMAIL = 'SiteFromEmail';
-const DEFAULT_SITE_FROM_EMAIL = 'no-reply@site.fonzrecon';
-SettingSchema.statics.setSiteFromEmail = function(email) {
-  verifyIsString(email);
-  return this._setKey(
-    SITE_FROM_EMAIL,
-    'the `from` line in the emails sent from the site',
-    email
-  );
-};
-SettingSchema.statics.getSiteFromEmail = function() {
-  return this._forKey(SITE_NAME).lean()
-    .then(function(val) {
-      if (! val) {
-        return DEFAULT_SITE_FROM_EMAIL;
+      for (let i = 0; i < keys.length; i++) {
+        if (! found[keys[i]] && ALL_SETTINGS[keys[i]]) {
+          settings.push(new self({
+            key: keys[i],
+            description: ALL_SETTINGS[keys[i]].description,
+            value: ALL_SETTINGS[keys[i]].defaultValue,
+          }));
+        }
       }
-      return val.value;
+
+      return settings;
     });
 };
 
 
-const SITE_NAME = 'SiteName';
-const DEFAULT_SITE_NAME = 'FonzRecon For You';
-SettingSchema.statics.setSiteName = function(name) {
-  verifyIsString(name);
-  return this._setKey(
-    SITE_NAME,
-    'how the site self identifies',
-    name
-  );
+SettingSchema.statics.findAll = function() {
+  return this.findFor(ALL_SETTING_KEYS);
 };
-SettingSchema.statics.getSiteName = function() {
-  return this._forKey(SITE_NAME).lean()
-    .then(function(val) {
-      if (! val) {
-        return DEFAULT_SITE_NAME;
+
+
+SettingSchema.statics.getMappedSettingObjects = function(keys) {
+  return this.findFor(keys)
+    .then(function(settings) {
+      let ret = {};
+
+      for (let i = 0; i < settings.length; i++) {
+        ret[settings[i].key] = settings[i];
       }
-      return val.value;
+
+      return ret;
     });
 };
 
 
-const SITE_URL = 'SiteUrl';
-const DEFAULT_SITE_URL = 'http://localhost';
-SettingSchema.statics.setSiteUrl = function(url) {
-  verifyIsString(url);
-  return this._setKey(
-    SITE_NAME,
-    'root url of the site',
-    url
-  )
-};
-SettingSchema.statics.getSiteUrl = function() {
-  return this._forKey(SITE_URL).lean()
-    .then(function(val) {
-      if (!val) {
-        return DEFAULT_SITE_URL;
+SettingSchema.statics.setSettings = function(keyValueMap) {
+  var self = this;
+  var keys = [];
+  var validationPromises = [];
+  for (let k in keyValueMap) {
+    if (keyValueMap.hasOwnProperty(k)) {
+      if (!! ALL_SETTINGS[k]) {
+        keys.push(k);
+        validationPromises.push(
+          ALL_SETTINGS[k].validatorPromiseFactory(keyValueMap[k]));
+      } else {
+        validationPromises.push(
+          Promise.reject(validate.error(keyValueMap[k], k, 'not a setting')));
       }
-      return val.value;
+    }
+  }
+  return validate.allValidationPromises(validationPromises)
+    .then(function() {
+      return self.getMappedSettingObjects(keys);
+    })
+    .then(function(settings) {
+      var settingObjs = [];
+      for (let i = 0; i < keys.length; i++) {
+        console.log(`adding ${keys[i]} -> ${JSON.stringify(settings[keys[i]])}`)
+        settingObjs.push(settings[keys[i]]);
+      }
+      return Promise
+        .all(settingObjs.map(function(s) {
+          s.value = keyValueMap[s.key];
+          return s.save();
+        }));
     });
 };
-
-
 
 
 /**
- * Fills the object's entries with values.  If the key in the
- * object is a setting, then it will be populated with the
- * db value.  The original object will be altered.
+ * Loads all the values
  */
-SettingSchema.statics.fillSettings = function(baseObj) {
-  // TODO optimize the call by limiting the keys to what's in the
-  // base object.
-  return this.find().lean()
+SettingSchema.statics.getSettingValues = function(keys) {
+  return this.getMappedSettingObjects(keys)
     .then(function(settings) {
+      let ret = {};
       for (let i = 0; i < settings.length; i++) {
-        if (!! baseObj[settings[i].key] && typeof(settings[i]) !== 'undefined') {
-          baseObj[settings[i].key] = settings[i].value;
-        }
+        ret[settings[i].key] = settings[i].value;
       }
-      return baseObj;
+      return ret;
     });
 };
+
+
 
 
 /**
  * Retrieve a single object with all the settings used by email.
  */
-const PUBLIC_EMAIL_SETTINGS_DEFAULTS = {
-  EMAIL_THEME: DEFAULT_EMAIL_THEME,
-  SITE_FROM_EMAIL: DEFAULT_SITE_FROM_EMAIL,
-  SITE_NAME: DEFAULT_SITE_NAME,
-  SITE_URL: DEFAULT_SITE_URL,
-};
-const PRIVATE_EMAIL_SETTINGS_DEFAULTS = {
-  ADMIN_ACTION_NOTIFIACTION_EMAILS: null,
-};
+
 SettingSchema.statics.getEmailSettings = function() {
   // Shallow clone of the dictionaries above.
-  var publicSettings = Object.assign({}, PUBLIC_EMAIL_SETTINGS_DEFAULTS);
-  var privateSettings = Object.assign({}, PRIVATE_EMAIL_SETTINGS_DEFAULTS);
   return Promise
-    .all([this.fillSettings(publicSettings), this.fillSettings(privateSettings)])
+    .all([
+      this.getSettingValues(PUBLIC_TEMPLATE_SETTING_KEYS),
+      this.getSettingValues(PRIVATE_TEMPLATE_SETTING_KEYS)
+    ])
     .then(function(args) {
       return { public: args[0], private: args[1] };
     });

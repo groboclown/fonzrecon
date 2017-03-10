@@ -14,10 +14,11 @@ exports.setup = function(app, passport) {
   app.use('/auth', require('./authentication')(passport));
 
   // Authenticated Routes
-  app.use('/api/v1/users', require('./users'));
+  app.use('/api/v1/users', require('./user'));
   app.use('/api/v1/aaays', require('./acknowledgement'));
   app.use('/api/v1/prizes', require('./prize'));
   app.use('/api/v1/claimed-prizes', require('./claimed-prize'));
+  app.use('/api/v1/settings', require('./setting'));
 
   // Generic error handler
   app.use(function(err, req, res, next) {

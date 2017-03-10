@@ -18,6 +18,7 @@ module.exports = {
   PRIZE_CREATE: { key: 'PRIZE_CREATE' },
   CLAIM_VIEW: { key: 'CLAIM_VIEW' },
   CLAIM_CREATE: { key: 'CLAIM_CREATE' },
+  SITE_SETTINGS: { key: 'SITE_SETTINGS' },
 
   // This one is called the same, but the result (true or false)
   // means whether the user can view private acknowledgements.  This
