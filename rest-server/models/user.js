@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const contactTypes = require('../config/contact').types;
 
 // =====================================
 // Schema Definition
@@ -10,6 +10,7 @@ const Schema = mongoose.Schema;
 const ContactSchema = new Schema({
   type: {
     type: String,
+    enum: contactTypes,
     required: true
   },
   server: String,
@@ -36,7 +37,7 @@ const UserSchema = new Schema({
   },
 
   // Ways to contact the user.
-  contact: [ContactSchema],
+  contacts: [ContactSchema],
 
   // Points the user can spend.
   pointsToAward: {
@@ -63,6 +64,8 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+
+  locale: String,
 
   organization: String,
 }, {

@@ -82,7 +82,7 @@ const SAMPLE_USERS = [
   {
     username: 'user1',
     names: ['User1', 'User One'],
-    contact: [
+    contacts: [
       {
         type: 'email',
         server: null,
@@ -97,7 +97,7 @@ const SAMPLE_USERS = [
   {
     username: 'user2',
     names: ['User2', 'User Two'],
-    contact: [
+    contacts: [
       {
         type: 'email',
         server: null,
@@ -113,7 +113,13 @@ const SAMPLE_USERS = [
   {
     username: 'admin1',
     names: ['Admin One'],
-    contact: [],
+    contacts: [
+      {
+        type: 'email',
+        server: null,
+        address: 'admin1@fonzrecon.github',
+      }
+    ],
     pointsToAward: 0,
     receivedPointsToSpend: 0,
     image: false,
@@ -142,7 +148,7 @@ function saveAccount(accountObj) {
 }
 for (var i = 0; i < SAMPLE_ACCOUNTS.length; i++) {
   requests.push(Account.findOne({ id: SAMPLE_ACCOUNTS[i].id })
-    .then(saveAccount(SAMPLE_ACCOUNTS[i]));
+    .then(saveAccount(SAMPLE_ACCOUNTS[i])));
 }
 
 

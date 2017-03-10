@@ -15,7 +15,7 @@
       additional people who received the aaay.  The user who gives the
       thumbs up should not be awarded the points, though.
     * Add query parameters for listing users.
-    * Send a notification (email, etc) to a user who received points.
+    * Implement notifications, such as email.
     * Allow users to upload an image.
     * Allow for account creation.
       * account must have unique email and username.

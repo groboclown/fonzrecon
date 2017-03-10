@@ -10,6 +10,7 @@ const jsonConvert = util.jsonConvert;
 const errors = util.errors;
 const accessLib = require('../lib/access');
 const roles = require('../config/access/roles');
+const email = require('../lib/email');
 
 
 
@@ -147,9 +148,15 @@ exports.create = function(req, res, next) {
       .save();
     })
     .then(function(claimedPrize) {
-      // TODO Send the redeption request to the appropriate person.
       console.log(`send request to fulfil prize: ${claimedPrize}`);
       res.status(201).json(jsonConvert.claimedPrize(claimedPrize._id));
+
+      // Note that we don't want the email error to be sent to the
+      // user.
+      email.send('prize-pending', reqUser, {
+        username: reqUser.username,
+        prizeId: claimedPrize._id
+      });
     })
     .catch(function(err) {
       next(err);

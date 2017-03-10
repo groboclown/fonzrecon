@@ -10,6 +10,7 @@ const jsonConvert = util.jsonConvert;
 const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
+const email = require('../../lib/email');
 
 
 
@@ -22,19 +23,19 @@ module.exports = function(req, res, next) {
   req.checkBody({
     'user.username': {
       isLength: {
-        options: [{ min: 3, max: 100}],
+        options: [{ min: 3, max: 100 }],
         errorMessage: 'must be more than 3 characters, and less than 100'
       },
       isAlphanumeric: {
         errorMessage: 'must be only alphanumeric characters'
       },
-      notEmpty: true
+      notEmpty: true,
     },
     'user.email': {
       isEmail: {
         errorMessage: 'contact email for validating account',
       },
-      notEmpty: true
+      notEmpty: true,
     },
     'user.names': {
       // list of "names" for the user, not usernames!
@@ -46,17 +47,15 @@ module.exports = function(req, res, next) {
     },
     'user.pointsToAward': {
       isInt: {
-        options: {
-          gte: 0
-        },
-        errorMessage: 'must be present and non-negative.'
+        options: { gt: -1 },
+        errorMessage: 'must be present and non-negative.',
       },
-      notEmpty: true
+      notEmpty: true,
     },
     'user.organization': {
       isLength: {
         options: [{ min: 1, max: 100 }],
-        errorMessage: 'cannot be empty'
+        errorMessage: 'cannot be empty',
       },
       notEmpty: true
     },
@@ -65,8 +64,14 @@ module.exports = function(req, res, next) {
         // Weird usage: needs to be a list in a list.
         options: [roles.names]
       },
-      notEmpty: true
-    }
+      notEmpty: true,
+    },
+    'user.locale': {
+      isLength: {
+        options: [{min: 2, max: 8 }],
+        errorMessage: 'incorrect locale',
+      }
+    },
   });
 
   const reqUser = req.body.user;
@@ -136,9 +141,9 @@ module.exports = function(req, res, next) {
       return new User({
         username: reqUser.username,
         names: reqUser.names,
-        contact: [{
+        contacts: [{
           type: 'email',
-          server: 'email',
+          server: null,
           address: reqUser.email,
         }],
         pointsToAward: reqUser.pointsToAward,
@@ -148,16 +153,26 @@ module.exports = function(req, res, next) {
       }).save();
     });
 
-  return Promise
+  var resetValuesPromise = Promise
     .all([accountPromise, userPromise])
     .then(function(args) {
       let account = args[0];
       return account.resetAuthentication();
-    })
-    .then(function(resetValues) {
+    });
+  return Promise
+    .all([userPromise, resetValuesPromise])
+    .then(function(args) {
+      var user = args[0];
+      var resetValues = args[1];
+
       res.status(201).json(resetValues);
 
-      // TODO send user email w/ validation values.
+      email.send('new-user', user, {
+        username: user.username,
+        user: user,
+        resetAuthenticationToken: resetValues.resetAuthenticationToken,
+        resetAuthenticationExpires: resetValues.resetAuthenticationExpires,
+      });
     })
     .catch(function(err) {
       next(err);

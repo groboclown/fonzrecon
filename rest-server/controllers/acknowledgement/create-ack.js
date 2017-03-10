@@ -10,6 +10,7 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
+const email = require('../../lib/email');
 
 
 function findUsersReferenced(toUserNames, isBotWithBehalf) {
@@ -208,7 +209,7 @@ exports.create = function(req, res, next) {
     });
 
   return Promise
-    .all([updatedUsersPromise, saveAckPromise])
+    .all([toUsersPromise, saveAckPromise, updatedUsersPromise])
     .then(function(args) {
       var toUsers = args[0];
       var ack = args[1];
@@ -217,8 +218,9 @@ exports.create = function(req, res, next) {
       // Note that this is sending the very specific ID form.
       res.status(201).json(jsonConvert.acknowledgement(ack._id, false));
 
-      // TODO send notification to each of the users.
-      console.log('Should send notification to ' + toUsers)
+      email.send('new-aaay', toUsers, {
+        aaay: ack,
+      });
     })
     .catch(function (err) {
       next(err);

@@ -10,6 +10,7 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
+const email = require('../../lib/email');
 
 
 
@@ -155,7 +156,7 @@ exports.createThumbsUp = function(req, res, next) {
       return ack.save();
     });
     // note: failure means fromUser is SOL
-  return Promise
+  var savedToUsersPromise = Promise
     .all([saveThumbsUpPromise, updateUserPromise])
     .then(function(args) {
       // For each user, add in the received points.
@@ -166,13 +167,16 @@ exports.createThumbsUp = function(req, res, next) {
         );
       });
       return Promise.all(promises);
-    })
-    .then(function(toUsers) {
+    });
+  return Promise
+    .all([saveThumbsUpPromise, savedToUsersPromise])
+    .then(function(args) {
       // Send status, then perform the sending of values.
       res.sendStatus(201);
 
-      // TODO send notification to each of the users.
-      console.log('Should send notification to ' + toUsers)
+      email.send('thumbs-up', args[1], {
+        aaay: args[0],
+      });
     })
     .catch(function (err) {
       next(err);
