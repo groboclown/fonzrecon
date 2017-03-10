@@ -41,7 +41,6 @@ exports.send = function(template, to, data) {
     if (typeof(user) !== 'string') {
       locale = user.locale;
       email = [];
-      console.log(`preparing send to ${JSON.stringify(user)}`)
       for (let j = 0; j < user.contacts.length; j++) {
         if (user.contacts[j].type === 'email') {
           email.push(user.contacts[j].address);
@@ -67,7 +66,7 @@ exports.send = function(template, to, data) {
         let templateFile = args[1];
         let subjectFile = args[2];
         let toEmails = args[3];
-        console.log(`Send email ${templateFile} to ${JSON.stringify(toEmails)}`);
+        console.log(`TODO Send email ${templateFile} to ${JSON.stringify(toEmails)}`);
 
         // TODO format subject
         // TODO format body
@@ -130,7 +129,6 @@ function getEmailTemplate(name, locale, settings) {
   return files.getFileReadableStatus(locationOrder)
     .then(function(fileStats) {
       for (let i = 0; i < fileStats.length; i++) {
-        console.log(`checking ${fileStats[i][0]} ${fileStats[i][1]}`)
         if (fileStats[i][1]) {
           return fileStats[i][0];
         }

@@ -12,7 +12,6 @@ exports.pathFromRoot = function(path) {
 exports.isFileReadable = function(filename) {
   return new Promise(function(resolve, reject) {
     fs.access(filename, fs.constants.R_OK, function(err) {
-      console.log(`${filename} exists? ${! err}`);
       resolve(! err);
     });
   });
