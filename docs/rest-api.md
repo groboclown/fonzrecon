@@ -416,6 +416,50 @@ Retrieve the details of the user.
 
 
 
+## POST `/api/v1/users`
+
+Create a new user.
+
+The users created by this action will be assigned the `USER` role.  To create
+other kinds of accounts, an administrator (*not bot*) must use the `/auth/account`
+function.
+
+After creation, the user will not be able to log into the account until the
+account is verified.  The user must use the returned `resetAuthenticationToken`
+value before it expires in order to set a password and be able to log in.
+
+**Access**: Administrators and bots only.  Bots are allowed to create users in
+the situation where a user is sending to a known user in the external system
+(say, the LDAP server), but the user hasn't been created in the site.
+
+**JSON Body:**
+
+```json
+{
+  "user": {
+    "username": "uniqueusername",
+    "email": "my.name@somewhere",
+    "names": ["Alias 1", "One, Alias"],
+    "pointsToAward": 0,
+    "organization": "Sales",
+    "locale": "en"
+  }
+}
+```
+
+The `pointsToAward` value determines the starting number of points the
+user can give.
+
+**Returns:**
+
+```json
+{
+  "resetAuthenticationToken": "very-long-token-used-in-calls-to-validate-the-user-email",
+  "resetAuthenticationExpires": "2013-04-08T21:31:03.818Z"
+}
+```
+
+
 # Aaay Access API
 
 ## GET `api/v1/aaays`

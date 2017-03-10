@@ -59,13 +59,6 @@ module.exports = function(req, res, next) {
       },
       notEmpty: true
     },
-    'user.role': {
-      isIn: {
-        // Weird usage: needs to be a list in a list.
-        options: [roles.names]
-      },
-      notEmpty: true,
-    },
     'user.locale': {
       isLength: {
         options: [{min: 2, max: 8 }],
@@ -75,6 +68,10 @@ module.exports = function(req, res, next) {
   });
 
   const reqUser = req.body.user;
+
+  // The user's role can only be USER when invoked from
+  // this method.
+  reqUser.role = roles.USER.name;
 
   var accountPromise = req.getValidationResult()
     // Validate that the input
