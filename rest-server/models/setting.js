@@ -63,6 +63,7 @@ function toBoolean(val, defaultVal) {
 
 // Well defined keys
 
+/*
 const CREATE_USER_ON_REFERENCE = 'CreateUserOnReference';
 const DEFAULT_CREATE_USER_ON_REFERENCE = false;
 SettingSchema.statics.setCreateUserOnReference = function(bol) {
@@ -79,6 +80,7 @@ SettingSchema.statics.getCreateUserOnReference = function() {
       return toBoolean(val, DEFAULT_CREATE_USER_ON_REFERENCE);
     });
 }
+*/
 
 
 module.exports = mongoose.model('Setting', SettingSchema);

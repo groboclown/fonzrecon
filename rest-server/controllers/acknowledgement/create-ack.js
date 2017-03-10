@@ -3,7 +3,6 @@
 const models = require('../../models');
 const Acknowledgement = models.Acknowledgement;
 const User = models.User;
-const Setting = models.Setting;
 const util = require('../util');
 const paging = util.paging.extract;
 const jsonConvert = util.jsonConvert;
@@ -14,76 +13,21 @@ const extraAccess = require('./extra-access');
 
 
 function findUsersReferenced(toUserNames, isBotWithBehalf) {
-  var isCreateUserOnRefPromise =
-    Setting.getCreateUserOnReference();
-  var toUsersPromise = User
-        .find()
-        // request is for the name, not username.
-        .where('names').in(toUserNames)
-        .exec();
-
-  function userPromiseGen(userObj) {
-    return new Promise(function(resolve, reject) { resolve(userObj); });
-  }
-  function createUserPromiseGen(name) {
-    // TODO this should be extracted out.
-    var username = name.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
-    if (username.length <= 0) {
-      throw errors.extraValidationProblem('to', toUserNames,
-        'At least one of the given users is bad (' +name + ').');
-    }
-    return new User({
-      username: username,
-      names: [username, name],
-      contact: [],
-      pointsToAward: 0,
-      receivedPointsToSpend: 0,
-      organization: '[NEW_USER]'
-    }).save()
-    .then(function(user) {
-      return user;
-    });
-  }
-
-  return Promise
-    .all([toUsersPromise, isCreateUserOnRefPromise])
-    .then(function (args) {
-      var isCreateUserOnRef = args[1];
-      var toUsers = args[0];
-      if (! isCreateUserOnRef) {
-        // We don't create users if they were requested but don't exist.
-        if (! toUsers || toUsers.length !== toUserNames.length) {
-          // Did not find all the users
-          throw errors.extraValidationProblem('to', toUserNames,
-            'At least one of the given users does not exist, or there was a duplicate name.');
-        }
-        // We have all the requested users.  Return them immediately.
-        return toUsers;
+  return User
+    .find()
+    // request is for the name, not username.
+    .where('names').in(toUserNames)
+    .exec()
+    .then(function(toUsers) {
+      // We don't create users if they were requested but don't exist.
+      if (! toUsers || toUsers.length !== toUserNames.length) {
+        // Did not find all the users
+        throw errors.extraValidationProblem('to', toUserNames,
+          'At least one of the given users does not exist, or there was a duplicate name.');
       }
-
-      // Find all the users that don't exist...
-      var userResult = [];
-      var found;
-      for (var i = 0; i < toUserNames.length; i++) {
-        found = false;
-        for (var j = 0; j < toUsers.length; j++) {
-          if (toUsers[j].names.includes(toUserNames[i])) {
-            found = true;
-            userResult.push(userPromiseGen(toUsers[j]));
-            break;
-          }
-        }
-        if (! found) {
-          // Create the user.
-          userResult.push(createUserPromiseGen(toUserNames[i]));
-        }
-      }
-
-      // join all the user discovery and user creation into a
-      // single array argument.
-      return Promise.all(userResult);
+      // We have all the requested users.  Return them immediately.
+      return toUsers;
     });
-
 }
 
 
