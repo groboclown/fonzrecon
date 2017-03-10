@@ -48,7 +48,7 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
 
 
 /**
- * Super simple middleware in case passport doesn't work.
+ * Uses passport to perform logged in status check.
  */
 function discoverUserMiddleware(passport) {
   return function(req, res, next) {

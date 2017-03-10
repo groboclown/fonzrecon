@@ -43,6 +43,8 @@ module.exports = {
       CLAIM_CREATE: ALLOW_NONE,
 
       // No account management.
+      // But a bot can create a user if it doesn't already exist.
+      ACCOUNT_CREATE: ALLOW_ANY,
 
       // This is a bit weird: the API will use the "behalf-of"
       // user first (user will be null).  So, because any user can
@@ -93,7 +95,7 @@ module.exports = {
       USER_DETAILS_VIEW: ALLOW_ANY,
       USER_DETAILS_EDIT: ALLOW_ANY,
       ACCOUNT_VIEW: ALLOW_ANY,
-      ACCOUNT_EDIT: ALLOW_ANY,
+      ACCOUNT_EDIT: ALLOW_SELF,
       ACCOUNT_CREATE: ALLOW_ANY,
       ACCOUNT_VALIDATE: ALLOW_SELF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,

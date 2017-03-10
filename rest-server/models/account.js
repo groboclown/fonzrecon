@@ -225,7 +225,9 @@ AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, 
   var expires = new Date();
   expires.setTime(expires.getTime() + (expirationHours * 3600000));
   return new Promise(function(resolve, reject) {
-    crypto.randomBytes(64, function(err, buffer) {
+    // "66" means that there isn't the extra "=" at the end of the
+    // base64 encoding.
+    crypto.randomBytes(66, function(err, buffer) {
       if (err) {
         return reject(err);
       }

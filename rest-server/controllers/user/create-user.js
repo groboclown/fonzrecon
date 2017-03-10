@@ -1,7 +1,7 @@
 'use strict';
 
 const models = require('../../models');
-const Account = models.User;
+const Account = models.Account;
 const User = models.User;
 const Setting = models.Setting;
 const util = require('../util');
@@ -20,51 +20,56 @@ module.exports = function(req, res, next) {
   }
 
   req.checkBody({
-    username: {
+    'user.username': {
       isLength: {
         options: [{ min: 3, max: 100}],
         errorMessage: 'must be more than 3 characters, and less than 100'
       },
       isAlphanumeric: {
         errorMessage: 'must be only alphanumeric characters'
-      }
+      },
+      notEmpty: true
     },
-    email: {
+    'user.email': {
       isEmail: {
         errorMessage: 'contact email for validating account',
       },
       notEmpty: true
     },
-    names: {
+    'user.names': {
       // list of "names" for the user, not usernames!
       isArrayOfString: {
         options: 1,
         errorMessage: 'list of alternate names',
-      }
+      },
+      notEmpty: true
     },
-    pointsToAward: {
+    'user.pointsToAward': {
       isInt: {
         options: {
           gte: 0
         },
         errorMessage: 'must be present and non-negative.'
-      }
+      },
+      notEmpty: true
     },
-    organization: {
+    'user.organization': {
       isLength: {
-        options: {
-          gt: 0,
-          lt: 100
-        },
+        options: [{ min: 1, max: 100 }],
         errorMessage: 'cannot be empty'
-      }
+      },
+      notEmpty: true
     },
-    role: {
+    'user.role': {
       isIn: {
-        options: roles.names
-      }
+        // Weird usage: needs to be a list in a list.
+        options: [roles.names]
+      },
+      notEmpty: true
     }
   });
+
+  const reqUser = req.body.user;
 
   var accountPromise = req.getValidationResult()
     // Validate that the input
@@ -73,18 +78,15 @@ module.exports = function(req, res, next) {
         throw errors.validationProblems(results.array());
       }
 
-      userMatchCondition = [
-        { username: req.body.username },
-        { email: req.body.email },
+      let userMatchCondition = [
+        { username: reqUser.username },
       ];
-      for (var i = 0; i < req.body.names.length; i++) {
-        userMatchCondition.push({ names: req.body.names[i] });
+      for (let i = 0; i < reqUser.names.length; i++) {
+        userMatchCondition.push({ names: reqUser.names[i] });
       }
 
-      return Users
-        .find()
-        .or(userMatchCondition)
-        .lean()
+      return User
+        .find({ $or: userMatchCondition })
         .exec();
     })
 
@@ -92,8 +94,26 @@ module.exports = function(req, res, next) {
     .then(function(matchingUsers) {
       if (matchingUsers.length > 0) {
         throw errors.extraValidationProblem(
-          'username or names or email',
-          [ req.body.username, req.body.names, req.body.email ],
+          'username or names',
+          [ reqUser.username, reqUser.names ],
+          'One of these values is already in use'
+        );
+      }
+
+      return Account
+        .find({
+          // Email does not need to be unique.
+          //$or: [ { id: req.body.username }, { accountEmail: req.body.email }],
+          id: reqUser.username,
+        })
+        .lean()
+        .exec();
+    })
+    .then(function(matchingAccounts) {
+      if (matchingAccounts.length > 0) {
+        throw errors.extraValidationProblem(
+          'username or names',
+          [ reqUser.username, reqUser.names ],
           'One of these values is already in use'
         );
       }
@@ -101,31 +121,30 @@ module.exports = function(req, res, next) {
       // Create the account.  This might fail due to a duplicate
       // username, which is fine.
       return new Account({
-        id: req.body.username,
+        id: reqUser.username,
         // Do not give any authentications, because it's not able to
         // be logged into yet.  The user needs to validate it, first.
         authentications: [],
-        role: req.body.role,
-        userRef: req.body.username,
-        accountEmail: req.body.email,
-        resetAuthenticationToken: null,
-        resetAuthenticationExpires: null,
+        role: reqUser.role,
+        userRef: reqUser.username,
+        accountEmail: reqUser.email,
       }).save();
     });
   var userPromise = accountPromise
     .then(function(account) {
+      console.log(`creating user account`)
       return new User({
-        username: req.body.username,
-        names: req.body.names,
+        username: reqUser.username,
+        names: reqUser.names,
         contact: [{
           type: 'email',
           server: 'email',
-          address: req.body.email,
+          address: reqUser.email,
         }],
-        pointsToAward: req.body.pointsToAward,
+        pointsToAward: reqUser.pointsToAward,
         receivedPointsToSpend: 0,
-        image: null,
-        organization: req.body.organization,
+        image: false,
+        organization: reqUser.organization,
       }).save();
     });
 

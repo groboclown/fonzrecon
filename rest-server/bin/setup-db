@@ -25,6 +25,7 @@ const SAMPLE_ACCOUNTS = [
       }
     ],
     role: roles.USER.name,
+    accountEmail: 'user1@fonzrecon.github',
     userRef: 'user1',
   }, {
     id: 'user2',
@@ -34,12 +35,12 @@ const SAMPLE_ACCOUNTS = [
         id: 'user2@fonzrecon.github',
         userInfo: ['1234'],
         browser: [],
-        resetAuthenticationToken: null,
-        resetAuthenticationExpires: null,
       }
     ],
     role: roles.USER.name,
     userRef: 'user2',
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
   }, {
     id: 'bot1',
     authentications: [
@@ -48,11 +49,12 @@ const SAMPLE_ACCOUNTS = [
         id: 'bot1@fonzrecon.github',
         userInfo: ['bot!'],
         browser: [],
-        resetAuthenticationToken: null,
-        resetAuthenticationExpires: null,
       }
     ],
     role: roles.BOT.name,
+    accountEmail: 'bot1@fonzrecon.github',
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
 
     // cannot act as a user, meaning no one
     // can assign it stuff or send it stuff,
@@ -66,12 +68,13 @@ const SAMPLE_ACCOUNTS = [
         id: 'admin1@fonzrecon.github',
         userInfo: ['sekret'],
         browser: [],
-        resetAuthenticationToken: null,
-        resetAuthenticationExpires: null,
       }
     ],
+    accountEmail: 'admin1@fonzrecon.github',
     role: roles.ADMIN.name,
     userRef: 'admin1',
+    resetAuthenticationToken: null,
+    resetAuthenticationExpires: null,
   }
 ];
 
@@ -88,7 +91,8 @@ const SAMPLE_USERS = [
     ],
     pointsToAward: 100,
     receivedPointsToSpend: 30,
-    organization: 'Engineering'
+    image: false,
+    organization: 'Engineering',
   },
   {
     username: 'user2',
@@ -102,7 +106,8 @@ const SAMPLE_USERS = [
     ],
     pointsToAward: 50,
     receivedPointsToSpend: 9000,
-    organization: 'Sales'
+    image: false,
+    organization: 'Sales',
   },
   // bot1 does not have a user
   {
@@ -111,6 +116,7 @@ const SAMPLE_USERS = [
     contact: [],
     pointsToAward: 0,
     receivedPointsToSpend: 0,
+    image: false,
     organization: 'HR',
   }
 ];
@@ -136,10 +142,7 @@ function saveAccount(accountObj) {
 }
 for (var i = 0; i < SAMPLE_ACCOUNTS.length; i++) {
   requests.push(Account.findOne({ id: SAMPLE_ACCOUNTS[i].id })
-    .then(saveAccount(SAMPLE_ACCOUNTS[i]))
-    .then(function(account) {
-      console.log('Created account ' + account.id);
-    }));
+    .then(saveAccount(SAMPLE_ACCOUNTS[i]));
 }
 
 
@@ -153,6 +156,7 @@ function saveUser(userObj) {
   }
 }
 for (var i = 0; i < SAMPLE_USERS.length; i++) {
+  console.log(`${SAMPLE_USERS[i].username}`)
   requests.push(User.findOne({ username: SAMPLE_USERS[i].username })
     .then(saveUser(SAMPLE_USERS[i]))
     .then(function(user) {
@@ -180,12 +184,14 @@ for (var i = 0; i < SAMPLE_PRIZES.length; i++) {
 
 
 // settings
+/*
 requests.push(Setting
   .setCreateUserOnReference(true)
   .then(function() {
     console.log('Created setting CreateUserOnReference');
   })
 );
+*/
 
 
 Promise
