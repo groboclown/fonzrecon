@@ -42,6 +42,8 @@ module.exports = {
       CLAIM_VIEW: ALLOW_ANY,
       CLAIM_CREATE: ALLOW_NONE,
 
+      // No account management.
+
       // This is a bit weird: the API will use the "behalf-of"
       // user first (user will be null).  So, because any user can
       // create an acknowledgement, but acknowledgments will only
@@ -64,6 +66,8 @@ module.exports = {
       USER_DETAILS_EDIT: ALLOW_SELF,
       ACCOUNT_VIEW: ALLOW_SELF,
       ACCOUNT_EDIT: ALLOW_SELF,
+      ACCOUNT_CREATE: ALLOW_NONE,
+      ACCOUNT_VALIDATE: ALLOW_SELF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
       PRIZE_VIEW: ALLOW_ANY,
@@ -91,6 +95,7 @@ module.exports = {
       ACCOUNT_VIEW: ALLOW_ANY,
       ACCOUNT_EDIT: ALLOW_ANY,
       ACCOUNT_CREATE: ALLOW_ANY,
+      ACCOUNT_VALIDATE: ALLOW_SELF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,
       PRIZE_VIEW: ALLOW_ANY,
