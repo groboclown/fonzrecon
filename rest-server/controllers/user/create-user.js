@@ -20,207 +20,127 @@ module.exports = function(req, res, next) {
   }
 
   req.checkBody({
-    to: {
+    username: {
+      isLength: {
+        options: [{ min: 3, max: 100}],
+        errorMessage: 'must be more than 3 characters, and less than 100'
+      },
+      isAlphanumeric: {
+        errorMessage: 'must be only alphanumeric characters'
+      }
+    },
+    email: {
+      isEmail: {
+        errorMessage: 'contact email for validating account',
+      },
+      notEmpty: true
+    },
+    names: {
       // list of "names" for the user, not usernames!
       isArrayOfString: {
         options: 1,
-        errorMessage: 'Missing "to" list of users'
+        errorMessage: 'list of alternate names',
       }
     },
-    points: {
+    pointsToAward: {
       isInt: {
         options: {
-          gt: 0
+          gte: 0
         },
-        errorMessage: 'must be present and positive.'
+        errorMessage: 'must be present and non-negative.'
       }
     },
-    public: {
-      optional: true,
-      isBoolean: {
-        errorMessage: 'must be true or false'
-      }
-    },
-    comment: {
+    organization: {
       isLength: {
         options: {
-          gt: 4,
-          lt: 4000
+          gt: 0,
+          lt: 100
         },
-        errorMessage: 'must be more than 4 characters, and less than 4000'
+        errorMessage: 'cannot be empty'
       }
     },
-    tags: {
-      isArrayOfString: {
-        options: 0,
-        errorMessage: 'must a list of strings'
-      },
-      optional: true
+    role: {
+      isIn: {
+        options: roles.names
+      }
     }
   });
 
-  var toUsersPromise = req.getValidationResult()
+  var accountPromise = req.getValidationResult()
+    // Validate that the input
     .then(function (results) {
       if (! results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
 
-      // Only set if the user is running on behalf of someone.  Only
-      // accounts with the "bot" role can have the canRunOnBehalfOf
-      // flag set, which allows for  the behalf user variable to be
-      // set.
-      var isBotWithBehalf = !! req.userAccount.behalf;
-      return findUsersReferenced(req.body.to, isBotWithBehalf);
-    });
-  var saveUserPromise = toUsersPromise
-    .then(function (toUsers) {
-      if (! toUsers || toUsers.length !== req.body.to.length) {
-        // Did not find all the users
-        throw errors.extraValidationProblem('to', req.body.to,
-          'At least one of the given users does not exist, or there was a duplicate name.');
-      }
-      for (var tindex = 0; tindex < toUsers.length; tindex++) {
-        if (toUsers[tindex]._id === fromUser._id) {
-          throw errors.extraValidationProblem('to', req.body.to,
-            'Cannot send award to yourself');
-        }
-      }
-      // Check if the user has enough points to give out.
-      var totalGivenPoints = req.body.points * toUsers.length;
-      if (fromUser.pointsToAward < totalGivenPoints) {
-        throw errors.validationProblems([{
-          param: 'points',
-          msg: 'insufficient points',
-          value: req.body.points,
-          quantity: toUsers.length,
-          total: totalGivenPoints
-        }]);
+      userMatchCondition = [
+        { username: req.body.username },
+        { email: req.body.email },
+      ];
+      for (var i = 0; i < req.body.names.length; i++) {
+        userMatchCondition.push({ names: req.body.names[i] });
       }
 
-      // Rather than just saving the object with the deducted points,
-      // the user is updated when it has the minimum number of points.
-      // This way, we allow for some level of mid-air collision, but
-      // still force the business rule to be valid.
-      return User.update(
-          {
-            username: fromUser.username,
-            // Must have at least totalGivenPoints available to give.
-            pointsToAward: { $gte: totalGivenPoints }
-          },
-
-          // Deduct the given points
-          { $inc: { pointsToAward: -totalGivenPoints } },
-            // We want the update to only update one document,
-            // and have the safest update commit possible.
-            // "j: true" write concern would be nice, but that will
-            // produce an error if the DB does not have journaling
-            // turned on.  However, "majority" uses the safest means,
-            // so it will confirm when the journal is updated if the
-            // db has journalling.
-          { multi: false, writeConcern: { w: "majority" } }
-        )
+      return Users
+        .find()
+        .or(userMatchCondition)
+        .lean()
         .exec();
     })
-    .then(function(numUpdated) {
-      // Validation of user update
-      if (numUpdated > 1) {
-        throw new Error('Inconsistent DB state: multiple users with same name');
-      }
-      if (numUpdated < 1) {
-        // Alternatively, the user may not exist, but this is by far the
-        // more common alternative.  And if the user, for some reason, was
-        // suddenly removed at this point, then this error is okay, too,
-        // because a non-existent user doesn't have any points ;)
-        throw errors.validationProblems([{
-          param: 'points',
-          msg: 'insufficient points',
-          value: req.body.points,
-          quantity: toUsers.length,
-          total: totalGivenPoints
-        }]);
-      }
-      // Nothing to return.
-      return null;
-    });
-  var saveAckPromise = Promise
-    // We need the to-users, but we also need to run after the save user.
-    .all([toUsersPromise, saveUserPromise])
-    .then(function (args) {
-      var toUsers = args[0];
-      var pub = req.body.public;
-      if (typeof(req.body.public) === 'undefined') {
-        pub = true;
-      } else if (typeof(req.body.public) === 'string') {
-        pub = req.body.public !== 'false';
-      } else {
-        pub = !! req.body.public;
-      }
-      return new Acknowledgement({
-        givenByUser: fromUser,
-        awardedToUsers: toUsers,
-        pointsToEachUser: req.body.points,
-        comment: req.body.comment,
-        public: pub,
-        tags: req.body.tags || [],
-        thumbsUps: []
-      }).save();
-    })
-    .catch(function(err) {
-      // FIXME if the save fails, then the user is SOL - the points
-      // are just lost.  Really, we should roll back the lost points.
-      console.error(`User ${fromUser.username} deducted points but ack did not save right.`);
-      console.log(err.message);
-      console.log(err.stack);
-      throw err;
-    });
 
-
-  var updatedUsersPromise = Promise
-    .all([toUsersPromise, saveAckPromise])
-    .then(function(args) {
-      // For each user, add in the received points.
-      var promises = args[0].map(function(toUser) {
-        return User.update({ username: toUser.username },
-          { $inc: { receivedPointsToSpend: req.body.points } },
-          { multi: false, writeConcern: { w: "majority" } }
+    // Create the account.
+    .then(function(matchingUsers) {
+      if (matchingUsers.length > 0) {
+        throw errors.extraValidationProblem(
+          'username or names or email',
+          [ req.body.username, req.body.names, req.body.email ],
+          'One of these values is already in use'
         );
-      });
-      return Promise.all(promises);
+      }
+
+      // Create the account.  This might fail due to a duplicate
+      // username, which is fine.
+      return new Account({
+        id: req.body.username,
+        // Do not give any authentications, because it's not able to
+        // be logged into yet.  The user needs to validate it, first.
+        authentications: [],
+        role: req.body.role,
+        userRef: req.body.username,
+        accountEmail: req.body.email,
+        resetAuthenticationToken: null,
+        resetAuthenticationExpires: null,
+      }).save();
+    });
+  var userPromise = accountPromise
+    .then(function(account) {
+      return new User({
+        username: req.body.username,
+        names: req.body.names,
+        contact: [{
+          type: 'email',
+          server: 'email',
+          address: req.body.email,
+        }],
+        pointsToAward: req.body.pointsToAward,
+        receivedPointsToSpend: 0,
+        image: null,
+        organization: req.body.organization,
+      }).save();
     });
 
   return Promise
-    .all([updatedUsersPromise, saveAckPromise])
+    .all([accountPromise, userPromise])
     .then(function(args) {
-      var toUsers = args[0];
-      var ack = args[1];
-
-      // Send status, then perform the sending of values.
-      // Note that this is sending the very specific ID form.
-      res.status(201).json(jsonConvert.acknowledgement(ack._id, false));
-
-      // TODO send notification to each of the users.
-      console.log('Should send notification to ' + toUsers)
+      let account = args[0];
+      return account.resetAuthentication();
     })
-    .catch(function (err) {
+    .then(function(resetValues) {
+      res.status(201).json(resetValues);
+
+      // TODO send user email w/ validation values.
+    })
+    .catch(function(err) {
       next(err);
     });
 };
-
-
-
-exports.getUsersInAcknowledgement = function(req) {
-  const ackId = req.params.id;
-
-  return Acknowledgement
-    .findOneBrief({ _id: ackId })
-    .then(function(ack) {
-      if (! ack) {
-        return [];
-      }
-      var ret = [ ack.givenByUser.username ];
-      for (var i = 0; i < ack.awardedToUsers.length; i++) {
-        ret.push(ack.awardedToUsers[i].username);
-      }
-      return ret;
-    });
-}

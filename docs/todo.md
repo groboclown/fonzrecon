@@ -8,6 +8,8 @@
   * Bugs:
     * Queries for aaays will not report the points to each user if the
       user isn't part of the aaay, but gave the thumbs up.
+    * User authentication - should it be allowed if a user has a pending
+      validation token?
   * Future Features:
     * Allow a user who received an aaay to thumb up the aaay, if there were
       additional people who received the aaay.  The user who gives the

@@ -111,14 +111,6 @@ const AuthenticationMethodSchema = new Schema({
 
   // Token assigned to the user's "browser".
   browsers: [BrowserTokenSchema],
-
-  // Password reset notices
-  resetAuthenticationToken: {
-    type: String
-  },
-  resetAuthenticationExpires: {
-    type: Date
-  },
 }, {
   timestamps: true
 });
@@ -277,7 +269,6 @@ AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, 
 
 
 
-
 const AccountSchema = new Schema({
   // identifier
   id: {
@@ -305,9 +296,22 @@ const AccountSchema = new Schema({
   // this was kept as a populating object, though.
   userRef: {
     type: String
-  }
+  },
+
+  accountEmail: {
+    type: String
+  },
+
+
+  // Password reset notices
+  resetAuthenticationToken: {
+    type: String
+  },
+  resetAuthenticationExpires: {
+    type: Date
+  },
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
 
@@ -368,6 +372,35 @@ AccountSchema.methods.getAuthenticationNamed = function(authName) {
     return resolve(null);
   });
 };
+
+
+AccountSchema.methods.resetAuthentication = function(expirationHours) {
+  if (! expirationHours) {
+    expirationHours = DEFAULT_TOKEN_EXPIRATION_HOURS;
+  }
+  var self = this;
+  var expires = new Date();
+  expires.setTime(expires.getTime() + (expirationHours * 3600000));
+
+  return new Promise(function(resolve, reject) {
+    crypto.randomBytes(64, function(err, buffer) {
+      if (err) {
+        return reject(err);
+      }
+      self.resetAuthenticationToken = buffer.toString('base64');
+      self.resetAuthenticationExpires = expires;
+      return resolve(self.save());
+    });
+  })
+  .then(function() {
+    return {
+      resetAuthenticationToken: self.resetAuthenticationToken,
+      resetAuthenticationExpires: self.resetAuthenticationExpires,
+    }
+  });
+};
+
+
 
 
 module.exports = mongoose.model('Account', AccountSchema);
