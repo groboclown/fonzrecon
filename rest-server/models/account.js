@@ -355,6 +355,14 @@ AccountSchema.statics.findByUserRef = function(username) {
 };
 
 
+AccountSchema.statics.findByUserResetAuthenticationToken = function(username, resetAuthenticationToken) {
+  return this.findOne({
+    userRef: username,
+    resetAuthenticationToken: resetAuthenticationToken,
+    resetAuthenticationExpires: { $lt: new Date() },
+  });
+};
+
 
 /**
  * Returns a promise that contains the AuthenticationMethodSchema object

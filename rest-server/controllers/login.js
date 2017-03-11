@@ -13,6 +13,7 @@ const access = require('./access');
 const errors = require('./util').errors;
 const models = require('../models');
 const Account = models.Account;
+const User = models.User;
 
 // ==============================================
 // Request handlers
@@ -26,7 +27,7 @@ exports.login = function(passport) {
     if (username) {
       cleanupPromise = access.token.removeToken(username, 'local', req);
     } else {
-      cleanupPromise = new Promise(function(resolve, reject) { resolve() });
+      cleanupPromise = Promise.resolve(null);
     }
 
     cleanupPromise
@@ -80,29 +81,136 @@ exports.logout = function(req, res, next) {
 };
 
 
+/**
+ * Validate a user's password change, and perform the password change.
+ * The user must provide the username and password.
+ */
+exports.validate = function(req, res, next) {
+  // If the requested account does not have an existing local account,
+  // it should be created here.
 
-// =============================================
-// Helper functions
+  req.checkBody({
+    'resetAuthenticationToken': {
+      isLength: {
+        options: [{ min: 4, max: 100 }],
+      },
+      notEmpty: true,
+    },
+    'username': {
+      isLength: {
+        options: [{ min: 3, max: 100 }],
+        errorMessage: 'must be more than 3 characters, and less than 100'
+      },
+      isAlphanumeric: {
+        errorMessage: 'must be only alphanumeric characters'
+      },
+      notEmpty: true,
+    },
+    'password': {
+      isLength: {
+        options: [{ min: 6, max: 100 }],
+        errorMessage: 'must be more than 3 characters, and less than 100'
+      },
+      notEmpty: true,
+    },
+  });
 
-function setUserInfo(req) {
-  return {
-    _id: req._id,
-    username: req.username,
-    email: req.email,
-    role: req.role
-  };
-}
+  var accountPromise = req.getValidationResult()
+    .then(function(results) {
+      if (! results.isEmpty()) {
+        throw errors.validationProblems(results.array());
+      }
 
-function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return (!! email) && re.test(email);
-}
+      return Account
+        .findByUserResetAuthenticationToken(
+          req.body.username, req.body.resetAuthenticationToken)
+    })
+    .then(function(account) {
+      if (! account) {
+        throw errors.extraValidationProblem(
+          'username and resetAuthenticationToken', [], 'username does not have active token');
+      }
+    });
+  var userPromise = accountPromise
+    .then(function(account) {
+      return User.findOne({ username: account.userRef });
+    });
+  var savedAccountPromise = accountPromise
+    .then(function(account) {
+      // Update the account entry
+      account.resetAuthenticationToken = null;
+      account.resetAuthenticationExpires = null;
+      let auth = account.getAuthenticationNamed('local');
+      if (auth) {
+        auth.userInfo = [req.body.password];
+      } else {
+        account.authentications.push({
+          source: 'local',
+          id: account.accountEmail,
+          userInfo: [req.body.password],
+          browser: [],
+        });
+      }
+      return account.save();
+    });
+  Promise
+    .all([accountPromise, userPromise, savedAccountPromise])
+    .then(function(args) {
+      // Do not automatically log the user in.
+      // For that, use the existing API call.
+      res.status(200).json({});
 
-function validateUsername(username) {
-  const re = /^[a-z][a-z0-9_]{3,}$/
-  return (!! username) && re.test(username);
-}
+      var toUser = args[1] || args[0];
 
-function validateAuth(auth) {
-  return (!! auth) && auth.length >= 6;
-}
+      // Tell the user about the password change.
+      email.send('password-changed', toUser, {
+        username: account.userRef
+      });
+
+    })
+    .catch(function(err) {
+      next(err);
+    });
+};
+
+
+exports.requestPasswordChange = function(req, res, next) {
+  var condition = {};
+  if (req.body.username && typeof(req.body.username) === 'string') {
+    condition.userRef = req.body.username;
+  }
+  if (req.body.email && typeof(req.body.email) === 'string') {
+    condition.email = req.body.email;
+  }
+
+  var accountPromise = Account.findOne(condition);
+  var accountResetPromise = accountPromise
+    .then(function(account) {
+      if (! account) {
+        throw errors.resourceNotFound();
+      }
+      return account.resetAuthentication();
+    });
+  var userAccountPromise = accountResetPromise
+    .then(function() {
+      return User.findOne({ username: req.body.username });
+    });
+  Promise
+    .all([accountPromise, userAccount, accountResetPromise])
+    .then(function(args) {
+      var toUser = args[1] || args[0];
+      var resetValues = args[2];
+
+      res.status(200).json(resetValues);
+
+      email.send('reset-password', toUser, {
+        username: req.body.username,
+        resetAuthenticationToken: resetValues.resetAuthenticationToken,
+        resetAuthenticationExpires: resetValues.resetAuthenticationExpires,
+      });
+
+    })
+    .catch(function(err) {
+      next(err);
+    });
+};

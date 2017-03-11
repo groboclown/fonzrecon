@@ -15,5 +15,8 @@ module.exports = function(passport) {
   // alter the user state.
   router.post('/logout', access.findAccount(passport), loginController.logout);
 
+  router.put('/validate', loginController.validate);
+  router.put('/password-change', loginController.requestPasswordChange);
+
   return router;
 };

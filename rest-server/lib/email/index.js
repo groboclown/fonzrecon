@@ -39,11 +39,15 @@ exports.send = function(template, to, data) {
     let email = user;
     let locale = DEFAULT_LOCALE;
     if (typeof(user) !== 'string') {
-      locale = user.locale;
-      email = [];
-      for (let j = 0; j < user.contacts.length; j++) {
-        if (user.contacts[j].type === 'email') {
-          email.push(user.contacts[j].address);
+      if (user.accountEmail) {
+        email = [ user.accountEmail ];
+      } else {
+        locale = user.locale;
+        email = [];
+        for (let j = 0; j < user.contacts.length; j++) {
+          if (user.contacts[j].type === 'email') {
+            email.push(user.contacts[j].address);
+          }
         }
       }
       if (email.length <= 0) {
