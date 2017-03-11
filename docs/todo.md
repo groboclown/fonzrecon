@@ -3,11 +3,10 @@
 
 
 * rest-server:
-  * Permissions
-    * Correctly wire in passport authentication.
   * Bugs:
     * Queries for aaays will not report the points to each user if the
-      user isn't part of the aaay, but gave the thumbs up.
+      user isn't part of the aaay, but gave the thumbs up.  The user should
+      see her own thumbs up points, but not the other points.
     * User authentication - should it be allowed if a user has a pending
       validation token?
     * PUT settings doesn't correctly list out the validation problems.
