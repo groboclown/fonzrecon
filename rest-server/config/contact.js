@@ -2,5 +2,5 @@
 
 
 module.exports = {
-  types: ['email'],
+  types: ['email']
 };

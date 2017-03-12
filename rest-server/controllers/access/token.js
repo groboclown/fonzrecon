@@ -5,11 +5,9 @@ const Account = models.Account;
 
 
 exports.findAccountByToken = function(req) {
-  if (! req.fingerprint) {
+  if (!req.fingerprint) {
     console.error('No browser / request fingerprint. Is express setup?');
-    return new Promise(function(resolve, reject) {
-      reject(new Error('InternalError'));
-    });
+    return Promise.reject(new Error('InternalError'));
   }
 
   return Account
@@ -18,36 +16,32 @@ exports.findAccountByToken = function(req) {
 
 
 exports.removeToken = function(username, authName, req) {
-  if (! req.fingerprint) {
+  if (!req.fingerprint) {
     console.error('No browser / request fingerprint. Is express setup?');
-    return new Promise(function(resolve, reject) {
-      reject(new Error('InternalError'));
-    });
+    return Promise.reject(new Error('InternalError'));
   }
 
 
   var accountPromise;
   if (req.userAccount && req.userAccount.account) {
-    accountPromise = new Promise(function(resolve, reject) {
-      return resolve(req.userAccount.account);
-    });
+    accountPromise Promise.resolve(req.userAccount.account);
   } else if (req.user) {
     accountPromise = Account.findByUserRef(username);
   } else {
-    accountPromise = new Promise(function(resolve, reject) { resolve(null); });
+    accountPromise = Promise.resolve(null);
   }
 
   var authMethodPromise = accountPromise
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         // This is fine.
         return null;
       }
       return account.getAuthenticationNamed(authName);
     });
   var existingTokensForReqPromise = authMethodPromise
-    .then(function(authMethod) {
-      if (! authMethod) {
+    .then((authMethod) => {
+      if (!authMethod) {
         // Does not exist, so there's nothing to do.
         return { browsers: [], browserIndexes: [] };
       }
@@ -58,7 +52,7 @@ exports.removeToken = function(username, authName, req) {
   // If there's an existing browser token, then we either need to delete it.
   return Promise.
     all([accountPromise, authMethodPromise, existingTokensForReqPromise])
-    .then(function(args) {
+    .then((args) => {
       var account = args[0];
       var authMethod = args[1];
       var existingTokens = args[2];
@@ -90,29 +84,21 @@ exports.removeToken = function(username, authName, req) {
 exports.generateToken = function(replaceExistingToken, authName, req) {
   if (! req.fingerprint) {
     console.error('No browser / request fingerprint. Is express setup?');
-    return new Promise(function(resolve, reject) {
-      reject(new Error('InternalError'));
-    });
+    return Promise.reject(new Error('InternalError'));
   }
 
   var accountPromise;
   if (req.userAccount && req.userAccount.account) {
-    accountPromise = new Promise(function(resolve, reject) {
-      return resolve(req.userAccount.account);
-    });
+    accountPromise = Promise.resolve(req.userAccount.account);
   } else if (req.user) {
-    accountPromise = new Promise(function(resolve, reject) {
-      resolve(req.user);
-    });
+    accountPromise = Promise.resolve(req.user);
   } else {
-    return new Promise(function(resolve, reject) {
-      reject(new Error('InternalError'));
-    });
+    return Promise.reject(new Error('InternalError'));
   }
 
   var authMethodPromise = accountPromise
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         var err = new Error('Unauthorized');
         err.status = 401;
         throw err;
@@ -120,8 +106,8 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
       return account.getAuthenticationNamed(authName);
     });
   var existingTokensForReqPromise = authMethodPromise
-    .then(function(authMethod) {
-      if (! authMethod) {
+    .then((authMethod) => {
+      if (!authMethod) {
         // Does not exist, which means the account isn't setup to
         // handle this kind of token authentication.
         var err = new Error('Account cannot login with ' + authName);
@@ -135,12 +121,12 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
   // or raise an error.
   var browserToken = Promise.
     all([accountPromise, authMethodPromise, existingTokensForReqPromise])
-    .then(function(args) {
+    .then((args) => {
       var account = args[0];
       var authMethod = args[1];
       var existingTokens = args[2];
       if (existingTokens.browsers.length > 0) {
-        if (! replaceExistingToken) {
+        if (!replaceExistingToken) {
           var err = new Error('Already authenticated.  Cannot create new token.');
           err.status = 401;
           throw err;
@@ -149,7 +135,7 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
         // that *aren't* a match.
         var newBrowsers = [];
         for (var i = 0; i < authMethod.browsers.length; i++) {
-          if (! existingTokens.browserIndexes.includes(i)) {
+          if (!existingTokens.browserIndexes.includes(i)) {
             newBrowsers.push(auth.browsers[i]);
           }
         }
@@ -164,14 +150,13 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
   // Save the account after the browser token was created.
   var savedAccount = Promise
     .all([accountPromise, browserToken])
-    .then(function(args) {
-      console.log(`Saving account`);
+    .then((args) => {
       return args[0].save();
     });
 
   return Promise
     .all([savedAccount, browserToken])
-    .then(function(args) {
+    .then((args) => {
       return args[1];
     });
 };

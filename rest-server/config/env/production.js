@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  db: require('../settings').database,
+  db: require('../settings').database
 };

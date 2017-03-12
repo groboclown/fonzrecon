@@ -18,7 +18,7 @@ exports.createThumbsUp = function(req, res, next) {
   // This user object is a "lean" object, so we must
   // retrieve it again.
   const fromUser = accessLib.getRequestUser(req);
-  if (! fromUser) {
+  if (!fromUser) {
     return next(errors.notAuthorized());
   }
   const username = fromUser.username;
@@ -44,16 +44,16 @@ exports.createThumbsUp = function(req, res, next) {
 
   // Find the *visible* ack...
   var ackPromise = req.getValidationResult()
-    .then(function (results) {
-      if (! results.isEmpty()) {
+    .then((results) => {
+      if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
       return Acknowledgement
-        // admins follow the same rules as users in the case of creating.
+        // Admins follow the same rules as users in the case of creating.
         .findOneForAddingThumbsUp(req.params.id, fromUser)
         .exec();
     })
-    .then(function(ack) {
+    .then((ack) => {
       var i;
 
       // If the user requesting the thumbs up is in the acknowledgement,
@@ -83,8 +83,8 @@ exports.createThumbsUp = function(req, res, next) {
     });
 
   var updateUserPromise = ackPromise
-    .then(function(ack) {
-      if (! ack) {
+    .then((ack) => {
+      if (!ack) {
         throw errors.resourceNotFound();
       }
 
@@ -121,10 +121,10 @@ exports.createThumbsUp = function(req, res, next) {
           // turned on.  However, "majority" uses the safest means,
           // so it will confirm when the journal is updated if the
           // db has journalling.
-          { multi: false, writeConcern: { w: "majority" } }
+          { multi: false, writeConcern: { w: 'majority' } }
         ).exec();
     })
-    .then(function(numUpdated) {
+    .then((numUpdated) => {
       if (numUpdated > 1) {
         throw new Error('Inconsistent DB state: multiple users with same name');
       }
@@ -147,7 +147,7 @@ exports.createThumbsUp = function(req, res, next) {
 
   var saveThumbsUpPromise = Promise
     .all([ackPromise, updateUserPromise])
-    .then(function(args) {
+    .then((args) => {
       var ack = args[0];
       ack.thumbsUps.push({
         givenByUser: fromUser,
@@ -155,10 +155,10 @@ exports.createThumbsUp = function(req, res, next) {
       });
       return ack.save();
     });
-    // note: failure means fromUser is SOL
+    // Note: failure means fromUser is SOL
   var savedToUsersPromise = Promise
     .all([saveThumbsUpPromise, updateUserPromise])
-    .then(function(args) {
+    .then((args) => {
       // For each user, add in the received points.
       var promises = args[0].awardedToUsers.map(function(toUser) {
         return User.update({ username: toUser.username },

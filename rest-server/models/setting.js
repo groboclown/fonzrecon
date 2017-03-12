@@ -34,17 +34,16 @@ SettingSchema.statics._forKey = function(key) {
 
 SettingSchema.statics._setKey = function(key, description, value) {
   return this._forKey(key)
-    .then(function(val) {
+    .then((val) => {
       if (val) {
         val.value = value;
         return val.save();
-      } else {
-        return new module.exports({
+      }
+      return new module.exports({
           key: key,
           description: description,
           value: value
         }).save();
-      }
     });
 };
 
@@ -54,35 +53,35 @@ SettingSchema.statics._setKey = function(key, description, value) {
 
 
 const ALL_SETTINGS = {
-  'AdminActionNotificationEmails': {
+  AdminActionNotificationEmails: {
     description: 'Who to send emails to when an administration action occurs',
     defaultValue: [],
     validator: [ validate.isArrayOf, validate.isEmailAddress ],
-    templateAccess: 'private',
+    templateAccess: 'private'
   },
-  'SiteUrl': {
+  SiteUrl: {
     description: 'Root url of the site',
     defaultValue: 'http://localhost',
     validator: validate.isURL,
-    templateAccess: 'public',
+    templateAccess: 'public'
   },
-  'EmailTheme': {
+  EmailTheme: {
     description: 'Directory under templates/email to use for formatted emails',
     defaultValue: 'light',
     validator: [ validate.isString, 1 ],
-    templateAccess: 'public',
+    templateAccess: 'public'
   },
-  'SiteFromEmail': {
+  SiteFromEmail: {
     description: 'The `from` line in the emails sent from the site',
     defaultValue: 'no-reply@site.fonzrecon',
     validator: validate.isEmailAddress,
-    templateAccess: 'public',
+    templateAccess: 'public'
   },
-  'SiteName': {
+  SiteName: {
     description: 'How the site self identifies',
     defaultValue: 'FonzRecon For You',
     validator: [ validate.isString, 1 ],
-    templateAccess: 'public',
+    templateAccess: 'public'
   }
 };
 const PUBLIC_TEMPLATE_SETTING_KEYS = [];
@@ -96,7 +95,7 @@ for (var k in ALL_SETTINGS) {
   if (ALL_SETTINGS.hasOwnProperty(k)) {
     ALL_SETTINGS[k].key = k;
     ALL_SETTING_KEYS.push(k);
-    if (! ALL_SETTINGS[k].validator) {
+    if (!ALL_SETTINGS[k].validator) {
       ALL_SETTINGS[k].validatorPromiseFactory = simplePromiseFactory();
     } else if (validate.isArray(ALL_SETTINGS[k].validator)) {
       ALL_SETTINGS[k].validatorPromiseFactory = validate.asValidatePromiseFactory(
@@ -119,7 +118,7 @@ for (var k in ALL_SETTINGS) {
 SettingSchema.statics._settingGetterValue = function(keyDef) {
   keyDef.validatorPromise
   return this._forKey(keyDef.key)
-    .then(function(val) {
+    .then((val) => {
       if (!val) {
         return keyDef.defaultValue;
       }
@@ -128,7 +127,7 @@ SettingSchema.statics._settingGetterValue = function(keyDef) {
 }
 SettingSchema.statics._settingSetter = function(keyDef, value) {
   return keyDef.validatorPromiseFactory(value)
-    .then(function(scrubbed) {
+    .then((scrubbed) => {
       return this._setKey(keyDef.key, keyDef.description, scrubbed);
     });
 }
@@ -153,9 +152,9 @@ for (let k in ALL_SETTINGS) {
 
 
 SettingSchema.statics.findFor = function(keys) {
-  var self = this;
+  var Self = this;
   return this.find({ key: { $in: keys } })
-    .then(function(settings) {
+    .then((settings) => {
       let found = {};
 
       for (let i = 0; i < settings.length; i++) {
@@ -163,11 +162,11 @@ SettingSchema.statics.findFor = function(keys) {
       }
 
       for (let i = 0; i < keys.length; i++) {
-        if (! found[keys[i]] && ALL_SETTINGS[keys[i]]) {
-          settings.push(new self({
+        if (!found[keys[i]] && ALL_SETTINGS[keys[i]]) {
+          settings.push(new Self({
             key: keys[i],
             description: ALL_SETTINGS[keys[i]].description,
-            value: ALL_SETTINGS[keys[i]].defaultValue,
+            value: ALL_SETTINGS[keys[i]].defaultValue
           }));
         }
       }
@@ -184,7 +183,7 @@ SettingSchema.statics.findAll = function() {
 
 SettingSchema.statics.getMappedSettingObjects = function(keys) {
   return this.findFor(keys)
-    .then(function(settings) {
+    .then((settings) => {
       let ret = {};
 
       for (let i = 0; i < settings.length; i++) {
@@ -202,7 +201,7 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
   var validationPromises = [];
   for (let k in keyValueMap) {
     if (keyValueMap.hasOwnProperty(k)) {
-      if (!! ALL_SETTINGS[k]) {
+      if (!!ALL_SETTINGS[k]) {
         keys.push(k);
         validationPromises.push(
           ALL_SETTINGS[k].validatorPromiseFactory(keyValueMap[k]));
@@ -213,17 +212,17 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
     }
   }
   return validate.allValidationPromises(validationPromises)
-    .then(function() {
+    .then(() => {
       return self.getMappedSettingObjects(keys);
     })
-    .then(function(settings) {
+    .then((settings) => {
       var settingObjs = [];
       for (let i = 0; i < keys.length; i++) {
         console.log(`adding ${keys[i]} -> ${JSON.stringify(settings[keys[i]])}`)
         settingObjs.push(settings[keys[i]]);
       }
       return Promise
-        .all(settingObjs.map(function(s) {
+        .all(settingObjs.map((s) => {
           s.value = keyValueMap[s.key];
           return s.save();
         }));
@@ -236,7 +235,7 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
  */
 SettingSchema.statics.getSettingValues = function(keys) {
   return this.getMappedSettingObjects(keys)
-    .then(function(settings) {
+    .then((settings) => {
       let ret = {};
       for (let i = 0; i < settings.length; i++) {
         ret[settings[i].key] = settings[i].value;
@@ -259,7 +258,7 @@ SettingSchema.statics.getEmailSettings = function() {
       this.getSettingValues(PUBLIC_TEMPLATE_SETTING_KEYS),
       this.getSettingValues(PRIVATE_TEMPLATE_SETTING_KEYS)
     ])
-    .then(function(args) {
+    .then((args) => {
       return { public: args[0], private: args[1] };
     });
 };

@@ -23,10 +23,9 @@ module.exports = function(passport) {
  * userAccount object.
  */
 function discoverOnBehalfOfMiddleware(req, res, next) {
-  // req.user is populated by passport to contain
+  // Note: req.user is populated by passport to contain
   // the account object.
-  if (! req.user) {
-    // console.log("No user; forbidden.");
+  if (!req.user) {
     return next(forbidden());
   }
   req.userAccount = null;
@@ -37,11 +36,11 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
   }
 
   findUserAndBehalf(req.user, onBehalfOf)
-    .then(function(userAccount) {
+    .then((userAccount) => {
       req.userAccount = userAccount;
       next();
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 }
@@ -52,7 +51,7 @@ function discoverOnBehalfOfMiddleware(req, res, next) {
  */
 function discoverUserMiddleware(passport) {
   return function(req, res, next) {
-    passport.authenticate(['token', 'local'], function(err, user, info) {
+    passport.authenticate(['token', 'local'], (err, user, info) => {
       if (err) {
         return next(err);
       }

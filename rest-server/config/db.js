@@ -9,7 +9,7 @@ const env = require('./env');
 // Initialize models.
 require('../models');
 
-function connect () {
+function connect() {
   var options = { server: { socketOptions: { keepAlive: 1 } } };
   return mongoose.connect(env.db, options).connection;
 }
@@ -18,6 +18,5 @@ function connect () {
 exports.setup = function() {
   connect()
     .on('error', console.log)
-    .on('disconnected', connect)
-//    .once('open', listen);
+    .on('disconnected', connect);
 };

@@ -9,5 +9,5 @@ module.exports = {
   env: require('./env'),
   http: require('./http'),
   log: require('./log'),
-  routes: require('./routes'),
+  routes: require('./routes')
 };

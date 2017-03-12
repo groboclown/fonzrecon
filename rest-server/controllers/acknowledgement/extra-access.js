@@ -26,11 +26,11 @@ exports.getCanViewAckDetailsFunc = function(req, reqUser) {
 
 exports.canViewPrivate = function(req) {
   const account = req.userAccount.account;
-  if (! account || ! account.role) {
+  if (!account || !account.role) {
     return false;
   }
   const role = roles[account.role];
-  if (! role || ! role.permissions.ACKNOWLEDGEMENT_PRIVATE_VIEW) {
+  if (!role || !role.permissions.ACKNOWLEDGEMENT_PRIVATE_VIEW) {
     console(`no role for account: ${role}`);
     return false;
   }

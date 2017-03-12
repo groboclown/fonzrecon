@@ -10,9 +10,9 @@ exports.pathFromRoot = function(path) {
 }
 
 exports.isFileReadable = function(filename) {
-  return new Promise(function(resolve, reject) {
-    fs.access(filename, fs.constants.R_OK, function(err) {
-      resolve(! err);
+  return new Promise((resolve, reject) => {
+    fs.access(filename, fs.constants.R_OK, (err) => {
+      resolve(!err);
     });
   });
 };
@@ -22,10 +22,10 @@ exports.isFileReadable = function(filename) {
  * input list.
  */
 exports.getFileReadableStatus = function(filenames) {
-  var stats = filenames.map(function(name) { return exports.isFileReadable(name); });
+  var stats = filenames.map((name) => { return exports.isFileReadable(name); });
   return Promise
     .all(stats)
-    .then(function(res) {
+    .then((res) => {
       let ret = [];
       for (let i = 0; i < filenames.length; i++) {
         ret.push([filenames[i], res[i]]);
@@ -36,8 +36,8 @@ exports.getFileReadableStatus = function(filenames) {
 
 
 exports.isDirectory = function(dirname) {
-  return new Promise(function(resolve, reject) {
-    fs.stat(filename, function(err, stats) {
+  return new Promise((resolve, reject) => {
+    fs.stat(filename, (err, stats) => {
       if (err) {
         // Most likely, the location does not exist.
         return resolve(false);

@@ -14,13 +14,13 @@ const localOptions = {
 
 module.exports = new LocalStrategy({
   usernameField: 'username',
-  passwordField: 'password',
-}, function(username, password, done) {
+  passwordField: 'password'
+}, (username, password, done) => {
   accessController.userForUsernamePassword(username, password)
-    .then(function(res) {
+    .then((res) => {
       done(null, res);
     })
-    .catch(function(err) {
+    .catch((err) => {
       done(err);
     });
 });

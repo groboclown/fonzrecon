@@ -6,5 +6,5 @@ module.exports = {
   },
   passport: null,
   permissions: require('./permissions'),
-  roles: require('./roles'),
+  roles: require('./roles')
 };

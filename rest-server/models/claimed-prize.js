@@ -22,7 +22,7 @@ const ClaimedPrizeSchema = new Schema({
     type: Schema.ObjectId,
     ref: 'PrizeChoice',
     required: true
-  },
+  }
 }, {
   timestamps: true
 });

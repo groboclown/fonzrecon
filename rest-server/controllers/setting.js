@@ -3,6 +3,7 @@
 const models = require('../models');
 const Setting = models.Setting;
 const errors = require('./util').errors;
+const email = require('../../lib/email');
 
 
 function mapSettingsList(settings) {
@@ -12,7 +13,7 @@ function mapSettingsList(settings) {
     ret[settings[i].key] = {
       key: settings[i].key,
       description: settings[i].description,
-      value: settings[i].value,
+      value: settings[i].value
     };
   }
 
@@ -23,10 +24,10 @@ function mapSettingsList(settings) {
 exports.get = function(req, res, next) {
   Setting.findAll()
     .then(mapSettingsList)
-    .then(function(results) {
+    .then((results) => {
       res.status(200).json(results);
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -34,19 +35,21 @@ exports.get = function(req, res, next) {
 
 
 exports.set = function(req, res, next) {
-  if (! req.body.settings || typeof(req.body.settings) !== 'object') {
+  if (!req.body.settings || typeof(req.body.settings) !== 'object') {
     return next(
       errors.extraValidationProblem('settings', req.body.settings,
         'must be a key value map.'));
   }
   Setting.setSettings(req.body.settings)
     .then(mapSettingsList)
-    .then(function(results) {
+    .then((results) => {
       res.status(200).json(results);
 
-      // TODO should we send an email to admins?
+      email.sendAdminNotification('settings-updated', {
+        results
+      });
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 }

@@ -16,7 +16,7 @@ exports.setup = function(app, passport) {
   // Compression middleware (should be placed before express.static)
   app.use(compression({
       threshold: 512
-  }));
+    }));
 
   app.use(fingerprint());
   app.use(cors());
@@ -29,7 +29,7 @@ exports.setup = function(app, passport) {
   app.use(validator({
     customValidators: {
       isArrayOfString: function(param, minCount) {
-        if (! Array.isArray(param)) {
+        if (!Array.isArray(param)) {
           return false;
         }
         if (param.length < minCount) {
@@ -41,16 +41,16 @@ exports.setup = function(app, passport) {
           }
         }
         return true;
-      },
-    },
+      }
+    }
   }));
 
 
-  // use passport session
+  // Use passport session
   app.use(passport.initialize());
 
   if (settings.envName !== 'test') {
-    // csrf requires sessions and cookies, which we're not
+    // CSRF requires sessions and cookies, which we're not
     // in any position to use.
     // app.use(csrf());
 

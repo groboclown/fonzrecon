@@ -110,7 +110,7 @@ const AuthenticationMethodSchema = new Schema({
   userInfo: [String],
 
   // Token assigned to the user's "browser".
-  browsers: [BrowserTokenSchema],
+  browsers: [BrowserTokenSchema]
 }, {
   timestamps: true
 });
@@ -122,24 +122,25 @@ AuthenticationMethodSchema.methods.getAuthenticationFunctions = function() {
 };
 
 
-AuthenticationMethodSchema.pre('save', function(next) {
+AuthenticationMethodSchema.pre('save', (next) => {
   const am = this;
-  if  (am.isModified('userInfo')) {
+  if (am.isModified('userInfo')) {
     return am.getAuthenticationFunctions().onUserInfoSaved(am.userInfo)
-      .then(function() {
+      .then(() => {
         next();
       })
-      .catch(function(err) {
+      .catch((err) => {
         next(err);
       });
   }
   return next();
 });
 
-// Populate the AuthenticationMethodSchema methods with the
-// supported authentication method names.
-// This should eventually be auto-constructed.
 /*
+ Populate the AuthenticationMethodSchema methods with the
+ supported authentication method names.
+ This should eventually be auto-constructed.
+
 function genAccountLibMethod(name) {
   return function() {
     return this.getAuthenticationFunctions()[name]
@@ -215,7 +216,7 @@ function normalizeFingerprint(fingerprint) {
  * pure JSon version of the browser token object.
  */
 AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, expirationHours) {
-  if (! expirationHours) {
+  if (!expirationHours) {
     expirationHours = DEFAULT_TOKEN_EXPIRATION_HOURS;
   }
   fingerprint = normalizeFingerprint(fingerprint);
@@ -227,7 +228,7 @@ AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, 
   return new Promise(function(resolve, reject) {
     // "66" means that there isn't the extra "=" at the end of the
     // base64 encoding.
-    crypto.randomBytes(66, function(err, buffer) {
+    crypto.randomBytes(66, (err, buffer) => {
       if (err) {
         return reject(err);
       }
@@ -272,49 +273,48 @@ AuthenticationMethodSchema.methods.generateBrowserEntry = function(fingerprint, 
 
 
 const AccountSchema = new Schema({
-  // identifier
-  id: {
-    type: String,
-    lowercase: true,
-    unique: true,
-    required: true
-  },
+    id: {
+      type: String,
+      lowercase: true,
+      unique: true,
+      required: true
+    },
 
-  // Authentication types allowed for this account.
-  authentications: [AuthenticationMethodSchema],
+    // Authentication types allowed for this account.
+    authentications: [AuthenticationMethodSchema],
 
-  // Access Role.  What the user is allowed to do.
-  role: {
-    type: String,
-    enum: roles.names,
-    default: roles.USER.name
-  },
+    // Access Role.  What the user is allowed to do.
+    role: {
+      type: String,
+      enum: roles.names,
+      default: roles.USER.name
+    },
 
-  // Reference to the linked user account details
-  // Some accounts do not have a user account, so this is
-  // not required.
-  // Note that this is not a 'ref' self-populating object.
-  // Probably would make some parts of the code cleaner if
-  // this was kept as a populating object, though.
-  userRef: {
-    type: String
-  },
+    // Reference to the linked user account details
+    // Some accounts do not have a user account, so this is
+    // not required.
+    // Note that this is not a 'ref' self-populating object.
+    // Probably would make some parts of the code cleaner if
+    // this was kept as a populating object, though.
+    userRef: {
+      type: String
+    },
 
-  accountEmail: {
-    type: String
-  },
+    accountEmail: {
+      type: String
+    },
 
 
-  // Password reset notices
-  resetAuthenticationToken: {
-    type: String
-  },
-  resetAuthenticationExpires: {
-    type: Date
-  },
-}, {
-  timestamps: true,
-});
+    // Password reset notices
+    resetAuthenticationToken: {
+      type: String
+    },
+    resetAuthenticationExpires: {
+      type: Date
+    }
+  }, {
+    timestamps: true
+  });
 
 
 function fingerprintCondition(fingerprint) {
@@ -332,7 +332,7 @@ function fingerprintCondition(fingerprint) {
     'authentications.browsers.fingerprint.acceptHeaders.language': fingerprint.acceptHeaders.language,
     'authentications.browsers.fingerprint.geoip.country': fingerprint.geoip.country,
     'authentications.browsers.fingerprint.geoip.region': fingerprint.geoip.region,
-    'authentications.browsers.fingerprint.geoip.city': fingerprint.geoip.city,
+    'authentications.browsers.fingerprint.geoip.city': fingerprint.geoip.city
   };
 }
 
@@ -359,7 +359,7 @@ AccountSchema.statics.findByUserResetAuthenticationToken = function(username, re
   return this.findOne({
     userRef: username,
     resetAuthenticationToken: resetAuthenticationToken,
-    resetAuthenticationExpires: { $lt: new Date() },
+    resetAuthenticationExpires: { $lt: new Date() }
   });
 };
 
@@ -371,7 +371,7 @@ AccountSchema.statics.findByUserResetAuthenticationToken = function(username, re
 AccountSchema.methods.getAuthenticationNamed = function(authName) {
   var acct = this;
   return new Promise(function(resolve, reject) {
-    if (! accountLib.sourceNames.includes(authName)) {
+    if (!accountLib.sourceNames.includes(authName)) {
       return reject(new Error('Unknown authorization source ' + authName));
     }
     for (var i = 0; i < acct.authentications.length; i++) {
@@ -385,7 +385,7 @@ AccountSchema.methods.getAuthenticationNamed = function(authName) {
 
 
 AccountSchema.methods.resetAuthentication = function(expirationHours) {
-  if (! expirationHours) {
+  if (!expirationHours) {
     expirationHours = DEFAULT_TOKEN_EXPIRATION_HOURS;
   }
   var self = this;
@@ -393,7 +393,7 @@ AccountSchema.methods.resetAuthentication = function(expirationHours) {
   expires.setTime(expires.getTime() + (expirationHours * 3600000));
 
   return new Promise(function(resolve, reject) {
-    crypto.randomBytes(64, function(err, buffer) {
+    crypto.randomBytes(64, (err, buffer) => {
       if (err) {
         return reject(err);
       }
@@ -402,10 +402,10 @@ AccountSchema.methods.resetAuthentication = function(expirationHours) {
       return resolve(self.save());
     });
   })
-  .then(function() {
+  .then(() => {
     return {
       resetAuthenticationToken: self.resetAuthenticationToken,
-      resetAuthenticationExpires: self.resetAuthenticationExpires,
+      resetAuthenticationExpires: self.resetAuthenticationExpires
     }
   });
 };

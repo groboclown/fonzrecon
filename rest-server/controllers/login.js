@@ -31,13 +31,13 @@ exports.login = function(passport) {
     }
 
     cleanupPromise
-      .then(function() {
+      .then(() => {
         return new Promise(function(resolve, reject) {
-          passport.authenticate('local', function(err, user, info) {
+          passport.authenticate('local', (err, user, info) => {
             if (err) {
               return reject(err);
             }
-            if (! user) {
+            if (!user) {
               let err = new Error('Incorrect login');
               err.status = 401;
               return reject(err);
@@ -48,22 +48,22 @@ exports.login = function(passport) {
           })(req, res, next);
         });
       })
-      .then(function(browserToken) {
+      .then((browserToken) => {
         res.status(200).json({
           token: browserToken.token,
           expires: browserToken.expires
         });
       })
-      .catch(function(err) {
+      .catch((err) => {
         next(err);
       });
-   };
+  };
 };
 
 
 exports.logout = function(req, res, next) {
   // Unlike the other APIs, this one needs to be authorized.
-  if (! req.user) {
+  if (!req.user) {
     // Not logged in
     let err = new Error('Not logged in');
     err.status = 400;
@@ -72,10 +72,10 @@ exports.logout = function(req, res, next) {
 
   access.token
     .removeToken(req.user.userRef, 'local', req)
-    .then(function() {
+    .then(() => {
       res.status(200).json({});
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -90,13 +90,13 @@ exports.validate = function(req, res, next) {
   // it should be created here.
 
   req.checkBody({
-    'resetAuthenticationToken': {
+    resetAuthenticationToken: {
       isLength: {
-        options: [{ min: 4, max: 100 }],
+        options: [{ min: 4, max: 100 }]
       },
-      notEmpty: true,
+      notEmpty: true
     },
-    'username': {
+    username: {
       isLength: {
         options: [{ min: 3, max: 100 }],
         errorMessage: 'must be more than 3 characters, and less than 100'
@@ -104,20 +104,20 @@ exports.validate = function(req, res, next) {
       isAlphanumeric: {
         errorMessage: 'must be only alphanumeric characters'
       },
-      notEmpty: true,
+      notEmpty: true
     },
-    'password': {
+    password: {
       isLength: {
         options: [{ min: 6, max: 100 }],
         errorMessage: 'must be more than 3 characters, and less than 100'
       },
-      notEmpty: true,
-    },
+      notEmpty: true
+    }
   });
 
   var accountPromise = req.getValidationResult()
-    .then(function(results) {
-      if (! results.isEmpty()) {
+    .then((results) => {
+      if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
 
@@ -125,18 +125,18 @@ exports.validate = function(req, res, next) {
         .findByUserResetAuthenticationToken(
           req.body.username, req.body.resetAuthenticationToken)
     })
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         throw errors.extraValidationProblem(
           'username and resetAuthenticationToken', [], 'username does not have active token');
       }
     });
   var userPromise = accountPromise
-    .then(function(account) {
+    .then((account) => {
       return User.findOne({ username: account.userRef });
     });
   var savedAccountPromise = accountPromise
-    .then(function(account) {
+    .then((account) => {
       // Update the account entry
       account.resetAuthenticationToken = null;
       account.resetAuthenticationExpires = null;
@@ -148,14 +148,14 @@ exports.validate = function(req, res, next) {
           source: 'local',
           id: account.accountEmail,
           userInfo: [req.body.password],
-          browser: [],
+          browser: []
         });
       }
       return account.save();
     });
   Promise
     .all([accountPromise, userPromise, savedAccountPromise])
-    .then(function(args) {
+    .then((args) => {
       // Do not automatically log the user in.
       // For that, use the existing API call.
       res.status(200).json({});
@@ -168,7 +168,7 @@ exports.validate = function(req, res, next) {
       });
 
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -185,19 +185,19 @@ exports.requestPasswordChange = function(req, res, next) {
 
   var accountPromise = Account.findOne(condition);
   var accountResetPromise = accountPromise
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         throw errors.resourceNotFound();
       }
       return account.resetAuthentication();
     });
   var userAccountPromise = accountResetPromise
-    .then(function() {
+    .then(() => {
       return User.findOne({ username: req.body.username });
     });
   Promise
     .all([accountPromise, userAccount, accountResetPromise])
-    .then(function(args) {
+    .then((args) => {
       var toUser = args[1] || args[0];
       var resetValues = args[2];
 
@@ -206,11 +206,11 @@ exports.requestPasswordChange = function(req, res, next) {
       email.send('reset-password', toUser, {
         username: req.body.username,
         resetAuthenticationToken: resetValues.resetAuthenticationToken,
-        resetAuthenticationExpires: resetValues.resetAuthenticationExpires,
+        resetAuthenticationExpires: resetValues.resetAuthenticationExpires
       });
 
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

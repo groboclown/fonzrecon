@@ -3,16 +3,16 @@
 const permissions = require('./permissions');
 
 // Permission access
-function ALLOW_SELF(self_user, on_behalf_of, affected_users) {
-  return affected_users.includes(self_user);
+function ALLOW_SELF(selfUser, onBehalfOf, affectedUsers) {
+  return affectedUsers.includes(selfUser);
 }
-function ALLOW_ON_BEHALF_OF(self_user, on_behalf_of, affected_users) {
-  return affected_users.includes(on_behalf_of);
+function ALLOW_ON_BEHALF_OF(selfUser, onBehalfOf, affectedUsers) {
+  return affectedUsers.includes(onBehalfOf);
 }
-function ALLOW_ANY(self_user, on_behalf_of, affected_users) {
+function ALLOW_ANY(selfUser, onBehalfOf, affectedUsers) {
   return true;
 }
-function ALLOW_NONE(self_user, on_behalf_of, affected_users) {
+function ALLOW_NONE(selfUser, onBehalfOf, affectedUsers) {
   return false;
 }
 
@@ -52,7 +52,7 @@ module.exports = {
       // be created based on the currently logged-in user, the
       // bot should always be allowed to create.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
-      THUMBSUP_CREATE: ALLOW_ANY,
+      THUMBSUP_CREATE: ALLOW_ANY
     }
   },
 
@@ -80,7 +80,7 @@ module.exports = {
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
       CLAIM_VIEW: ALLOW_ANY,
-      CLAIM_CREATE: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_ANY
     }
   },
 
@@ -107,8 +107,8 @@ module.exports = {
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
       CLAIM_VIEW: ALLOW_ANY,
-      CLAIM_CREATE: ALLOW_NONE, // admins can't claim prizes
-      SITE_SETTINGS: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_NONE, // Admins can't claim prizes
+      SITE_SETTINGS: ALLOW_ANY
     }
-  },
+  }
 };

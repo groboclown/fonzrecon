@@ -10,7 +10,7 @@ const util = require('util');
 function AccountTokenStrategy(options, findByReq) {
   this._tokenFromRequest = options.tokenFromRequest;
   if (!this._tokenFromRequest) {
-      throw new TypeError('AccountTokenStrategy requires a function to retrieve the authentication token from requests (see option tokenFromRequest)');
+    throw new TypeError('AccountTokenStrategy requires a function to retrieve the authentication token from requests (see option tokenFromRequest)');
   }
 
   this._findByReq = findByReq;
@@ -24,21 +24,21 @@ util.inherits(AccountTokenStrategy, passport.Strategy);
 AccountTokenStrategy.prototype.authenticate = function(req, options) {
   var self = this;
 
-  if (! req.fingerprint) {
-    return self.fail(new Error("No fingerprint"));
+  if (!req.fingerprint) {
+    return self.fail(new Error('No fingerprint'));
   }
 
   var token = self._tokenFromRequest(req);
 
   if (!token) {
-      return self.fail(new Error("No auth token"));
+    return self.fail(new Error('No auth token'));
   }
 
   req.token = token;
 
   self._findByReq(req)
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         // TODO pass in the information about the error.
         self.fail();
       } else {
@@ -46,7 +46,7 @@ AccountTokenStrategy.prototype.authenticate = function(req, options) {
         self.success(account, null);
       }
     })
-    .catch(function(err) {
+    .catch((err) => {
       self.error(err);
     })
 };

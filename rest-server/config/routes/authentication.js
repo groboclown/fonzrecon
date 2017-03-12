@@ -7,7 +7,7 @@ const access = require('../../controllers/access');
 module.exports = function(passport) {
   const router = express.Router();
 
-  // login requests MUST be POST requests.
+  // Login requests MUST be POST requests.
   router.post('/login', loginController.login(passport));
 
   // Logout also requires an authenticated session

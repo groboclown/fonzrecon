@@ -25,12 +25,12 @@ exports.getAll = function(req, res, next) {
         },
         errorMessage: 'must be a positive integer.'
       }
-    },
+    }
   });
 
   req.getValidationResult()
-    .then(function(results) {
-      if (! results.isEmpty()) {
+    .then((results) => {
+      if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
 
@@ -43,12 +43,12 @@ exports.getAll = function(req, res, next) {
         .lean()
         .paginate(pagination);
     })
-    .then(function(results) {
+    .then((results) => {
       results.type = 'Prize';
       res.status(200).json(jsonConvert.pagedResults(
         results, jsonConvert.prize));
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -57,13 +57,13 @@ exports.getAll = function(req, res, next) {
 
 exports.getOne = function(req, res, next) {
   PrizeChoice.findOne({ _id: req.params.id })
-    .then(function(prize) {
-      if (! prize) {
+    .then((prize) => {
+      if (!prize) {
         throw errors.resourceNotFound();
       }
       return res.status(200).json(jsonConvert.prize(prize));
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

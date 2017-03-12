@@ -20,74 +20,72 @@ const roles = require('../../config/access/roles');
  * permission or not", the user list should return an empty list.  It must
  * return a non-null array which contains strings of the username.
  */
-module.exports = function(permission, affected_user_list_func) {
-  if (! permissions[permission.key]) {
+module.exports = function(permission, affectedUserListFunc) {
+  if (!permissions[permission.key]) {
     // Program integrety validation; will be thrown at program startup.
     throw new Error('Unknown permission ' + permission.key);
   }
-  if (! affected_user_list_func) {
-    throw new Error('no affected_user_list_func passed in');
+  if (!affectedUserListFunc) {
+    throw new Error('no affectedUserListFunc passed in');
   }
 
   return function(req, res, next) {
     // Look at the user object in the request, and the on-behalf-of
     // user.
-    if (! req.userAccount) {
+    if (!req.userAccount) {
       return next(forbidden());
     }
     var account = req.userAccount.account;
-    var role_permission_func = null;
-    if (!! account) {
-      if (! account.role || ! roles[account.role]) {
+    var rolePermissionFunc = null;
+    if (!!account) {
+      if (!account.role || !roles[account.role]) {
         console.error(`Account ${account.id} has invalid role id ${account.role}`);
         var err = new Error('Invalid account role for ' + account.id);
         err.status = 500;
         return next(err);
       }
       var role = roles[account.role];
-      if (! role.permissions[permission.key]) {
+      if (!role.permissions[permission.key]) {
         // Permission not set, so not available to perform (default permission).
         return next(forbidden());
       }
-      role_permission_func = role.permissions[permission.key];
+      rolePermissionFunc = role.permissions[permission.key];
       var username = (req.userAccount.user
         ? req.userAccount.user.username
         : null);
       var behalf = req.userAccount.behalf;
-      var behalf_username = null;
-      if (!! behalf && behalf.username) {
-        behalf_username = behalf.username;
+      var behalfUsername = null;
+      if (!!behalf && behalf.username) {
+        behalfUsername = behalf.username;
       }
-      var affected_users = affected_user_list_func(req);
-      if (! affected_users) {
+      var affectedUsers = affectedUserListFunc(req);
+      if (!affectedUsers) {
         return next(forbidden());
       }
-      if (affected_users.then && typeof(affected_users.then) === 'function') {
+      if (affectedUsers.then && typeof(affectedUsers.then) === 'function') {
         // Returned a promise.
-        return affected_users
-          .then(function(aff_users) {
-            if (!! aff_users && role_permission_func(username, behalf_username, aff_users)) {
+        return affectedUsers
+          .then((affectedUsers) => {
+            if (!!affectedUsers && rolePermissionFunc(username, behalfUsername, affectedUsers)) {
               // Authenticated!!!
               next();
             } else {
               next(forbidden());
             }
           })
-          .catch(function(err) {
+          .catch((err) => {
             next(err);
           });
-      } else if (role_permission_func(username, behalf_username, affected_users)) {
+      }
+      if (rolePermissionFunc(username, behalfUsername, affectedUsers)) {
         // Authenticated!!!
         return next();
-      } else {
-        if (role_permission_func(username, behalf_username, affected_users)) {
-          // Authenticated!!!
-          next();
-        } else {
-          next(forbidden());
-        }
-        // return next(forbidden());
       }
+      if (rolePermissionFunc(username, behalfUsername, affectedUsers)) {
+        // Authenticated!!!
+        return next();
+      }
+      return next(forbidden());
     } else {
       return next(forbidden());
     }

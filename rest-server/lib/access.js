@@ -1,7 +1,7 @@
 'use strict';
 
 exports.getRequestUser = function(req) {
-  if (! req.userAccount) {
+  if (!req.userAccount) {
     return false;
   }
   if (req.userAccount.behalf) {
@@ -17,7 +17,7 @@ exports.getRequestUser = function(req) {
 
 exports.getRequestUsername = function(req) {
   var user = exports.getRequestUser(req);
-  if (! user) {
+  if (!user) {
     return false;
   }
   return user.username;

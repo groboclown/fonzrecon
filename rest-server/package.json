@@ -74,7 +74,26 @@
         "require",
         "regex"
       ]
-    }
+    },
+    "requireSpaceAfterKeywords": [
+      "do",
+      "for",
+      "if",
+      "else",
+      "switch",
+      "case",
+      "try",
+      "catch",
+      "void",
+      "while",
+      "with",
+      "return"
+    ],
+    "safeContextKeyword": ["self", "Self"],
+    "disallowTrailingComma": true,
+    "requireTrailingComma": false,
+    "requireAnonymousFunctions": false,
+    "requireArrowFunctions": true
   },
   "jshintConfig": {
     "node": true,

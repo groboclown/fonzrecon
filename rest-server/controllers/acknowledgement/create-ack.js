@@ -16,12 +16,12 @@ const email = require('../../lib/email');
 function findUsersReferenced(toUserNames, isBotWithBehalf) {
   return User
     .find()
-    // request is for the name, not username.
+    // Request is for the name, not username.
     .where('names').in(toUserNames)
     .exec()
-    .then(function(toUsers) {
+    .then((toUsers) => {
       // We don't create users if they were requested but don't exist.
-      if (! toUsers || toUsers.length !== toUserNames.length) {
+      if (!toUsers || toUsers.length !== toUserNames.length) {
         // Did not find all the users
         throw errors.extraValidationProblem('to', toUserNames,
           'At least one of the given users does not exist, or there was a duplicate name.');
@@ -35,13 +35,13 @@ function findUsersReferenced(toUserNames, isBotWithBehalf) {
 
 exports.create = function(req, res, next) {
   const fromUser = accessLib.getRequestUser(req);
-  if (! fromUser) {
+  if (!fromUser) {
     return next(errors.notAuthorized());
   }
 
   req.checkBody({
     to: {
-      // list of "names" for the user, not usernames!
+      // List of "names" for the user, not usernames!
       isArrayOfString: {
         options: 1,
         errorMessage: 'Missing "to" list of users'
@@ -80,8 +80,8 @@ exports.create = function(req, res, next) {
   });
 
   var toUsersPromise = req.getValidationResult()
-    .then(function (results) {
-      if (! results.isEmpty()) {
+    .then((results) => {
+      if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
 
@@ -89,12 +89,12 @@ exports.create = function(req, res, next) {
       // accounts with the "bot" role can have the canRunOnBehalfOf
       // flag set, which allows for  the behalf user variable to be
       // set.
-      var isBotWithBehalf = !! req.userAccount.behalf;
+      var isBotWithBehalf = !!req.userAccount.behalf;
       return findUsersReferenced(req.body.to, isBotWithBehalf);
     });
   var saveUserPromise = toUsersPromise
-    .then(function (toUsers) {
-      if (! toUsers || toUsers.length !== req.body.to.length) {
+    .then((toUsers) => {
+      if (!toUsers || toUsers.length !== req.body.to.length) {
         // Did not find all the users
         throw errors.extraValidationProblem('to', req.body.to,
           'At least one of the given users does not exist, or there was a duplicate name.');
@@ -137,11 +137,11 @@ exports.create = function(req, res, next) {
             // turned on.  However, "majority" uses the safest means,
             // so it will confirm when the journal is updated if the
             // db has journalling.
-          { multi: false, writeConcern: { w: "majority" } }
+          { multi: false, writeConcern: { w: 'majority' } }
         )
         .exec();
     })
-    .then(function(numUpdated) {
+    .then((numUpdated) => {
       // Validation of user update
       if (numUpdated > 1) {
         throw new Error('Inconsistent DB state: multiple users with same name');
@@ -165,7 +165,7 @@ exports.create = function(req, res, next) {
   var saveAckPromise = Promise
     // We need the to-users, but we also need to run after the save user.
     .all([toUsersPromise, saveUserPromise])
-    .then(function (args) {
+    .then((args) => {
       var toUsers = args[0];
       var pub = req.body.public;
       if (typeof(req.body.public) === 'undefined') {
@@ -173,7 +173,7 @@ exports.create = function(req, res, next) {
       } else if (typeof(req.body.public) === 'string') {
         pub = req.body.public !== 'false';
       } else {
-        pub = !! req.body.public;
+        pub = !!req.body.public;
       }
       return new Acknowledgement({
         givenByUser: fromUser,
@@ -185,7 +185,7 @@ exports.create = function(req, res, next) {
         thumbsUps: []
       }).save();
     })
-    .catch(function(err) {
+    .catch((err) => {
       // FIXME if the save fails, then the user is SOL - the points
       // are just lost.  Really, we should roll back the lost points.
       console.error(`User ${fromUser.username} deducted points but ack did not save right.`);
@@ -197,12 +197,12 @@ exports.create = function(req, res, next) {
 
   var updatedUsersPromise = Promise
     .all([toUsersPromise, saveAckPromise])
-    .then(function(args) {
+    .then((args) => {
       // For each user, add in the received points.
-      var promises = args[0].map(function(toUser) {
+      var promises = args[0].map((toUser) => {
         return User.update({ username: toUser.username },
           { $inc: { receivedPointsToSpend: req.body.points } },
-          { multi: false, writeConcern: { w: "majority" } }
+          { multi: false, writeConcern: { w: 'majority' } }
         );
       });
       return Promise.all(promises);
@@ -210,7 +210,7 @@ exports.create = function(req, res, next) {
 
   return Promise
     .all([toUsersPromise, saveAckPromise, updatedUsersPromise])
-    .then(function(args) {
+    .then((args) => {
       var toUsers = args[0];
       var ack = args[1];
 
@@ -219,10 +219,10 @@ exports.create = function(req, res, next) {
       res.status(201).json(jsonConvert.acknowledgement(ack._id, false));
 
       email.send('new-aaay', toUsers, {
-        aaay: ack,
+        aaay: ack
       });
     })
-    .catch(function (err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -234,8 +234,8 @@ exports.getUsersInAcknowledgement = function(req) {
 
   return Acknowledgement
     .findOneBrief({ _id: ackId })
-    .then(function(ack) {
-      if (! ack) {
+    .then((ack) => {
+      if (!ack) {
         return [];
       }
       var ret = [ ack.givenByUser.username ];

@@ -14,14 +14,14 @@ exports.createServer = function(app) {
    */
   var server;
   var ssl = settings.ssl;
-  if (! ssl) {
+  if (!ssl) {
     console.log(`HTTP Listening on port ${port}`);
     server = http.createServer(app);
   } else {
     console.log(`HTTPS Listening on port ${port}`);
     server = https.createServer({
       key: fs.readFileSync(ssl.key),
-      cert: fs.readFileSync(ssl.cert),
+      cert: fs.readFileSync(ssl.cert)
     }, app);
   }
   server.on('error', onError);

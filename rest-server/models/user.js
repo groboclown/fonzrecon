@@ -67,13 +67,13 @@ const UserSchema = new Schema({
 
   locale: String,
 
-  organization: String,
+  organization: String
 }, {
   timestamps: true
 });
 
-UserSchema.pre('save', function(next) {
-  if (! this.names.includes(this.username)) {
+UserSchema.pre('save', (next) => {
+  if (!this.names.includes(this.username)) {
     this.names.push(this.username);
   }
   return next();

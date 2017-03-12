@@ -31,10 +31,10 @@ exports.errors = function(paramValues) {
 
 function promiseReflect(p) {
   // Intentionally use the (then, catch) form.
-  return p.then(function(v) {
+  return p.then((v) => {
     return { v: v, status: 'resolved' };
-  }, function(e) {
-    if (! e.details) {
+  }, (e) => {
+    if (!e.details) {
       // A real error.
       throw e;
     }
@@ -48,7 +48,7 @@ function promiseReflect(p) {
 exports.allValidationPromises = function(validations) {
   return Promise
     .all(validations.map(promiseReflect))
-    .then(function(results) {
+    .then((results) => {
       var errors = results.filter(x => x.status === 'rejected');
       if (errors.length > 0) {
         var details = [];
@@ -94,7 +94,7 @@ exports.asValidatePromiseFactory = function(validateFunction, param, options) {
 
 
 exports.isEmailAddress = function(email) {
-  if (! email || typeof(email) !== 'string') {
+  if (!email || typeof(email) !== 'string') {
     return false;
   }
   return EMAIL_VALIDATION_RE.test(email);
@@ -111,18 +111,18 @@ exports.isBoolean = function(value) {
 exports.isArray = function(value, minLength, maxLength) {
   minLength = minLength || 0;
   maxLength = maxLength || 100000000;
-  return (!! value) && Array.isArray(value) &&
+  return (!!value) && Array.isArray(value) &&
     value.length >= minLength && value.length <= maxLength;
 }
 
 
 
 exports.isArrayOf = function(value, elementValidation, minLength, maxLength) {
-  if (! exports.isArray(value, minLength)) {
+  if (!exports.isArray(value, minLength)) {
     return false;
   }
   for (var i = 0; i < value.length; i++) {
-    if (! elementValidation(value[i])) {
+    if (!elementValidation(value[i])) {
       return false;
     }
   }
@@ -141,6 +141,6 @@ exports.isURL = function(value) {
 exports.isString = function(value, minLength, maxLength) {
   minLength = minLength || 0;
   maxLength = maxLength || 100000000;
-  return (!! value) && typeof(value) === 'string' &&
+  return (!!value) && typeof(value) === 'string' &&
     value.length >= minLength && value.length <= maxLength;
 }

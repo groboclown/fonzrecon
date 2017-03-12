@@ -108,7 +108,7 @@ const SORT_BY = [
  * Returns all acknowledgements.
  */
 AcknowledgementSchema.statics.findBrief = function(conditions, sort) {
-  if (! sort || ! SORT_BY.includes(sort)) {
+  if (!sort || !SORT_BY.includes(sort)) {
     sort = '-createdAt';
   }
 
@@ -133,10 +133,10 @@ function conditionForVisibleToUser(userObj) {
         public: true
       },
       {
-        'givenByUser': objId
+        givenByUser: objId
       },
       {
-        'awardedToUsers': objId
+        awardedToUsers: objId
       }
     ]
   };

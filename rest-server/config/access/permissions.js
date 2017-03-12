@@ -23,5 +23,5 @@ module.exports = {
   // This one is called the same, but the result (true or false)
   // means whether the user can view private acknowledgements.  This
   // affects the query made.
-  ACKNOWLEDGEMENT_PRIVATE_VIEW: { key: 'ACKNOWLEDGEMENT_PRIVATE_VIEW' },
+  ACKNOWLEDGEMENT_PRIVATE_VIEW: { key: 'ACKNOWLEDGEMENT_PRIVATE_VIEW' }
 };

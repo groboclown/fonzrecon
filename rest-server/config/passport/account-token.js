@@ -11,7 +11,7 @@ const accountOptions = {
 
       // Not preferred, but for some simplification
       ExtractJwt.fromUrlQueryParameter()
-    ]),
+    ])
 };
 
 

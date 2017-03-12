@@ -22,5 +22,5 @@ module.exports = {
   Acknowledgement: require('./acknowledgement'),
   ClaimedPrize: require('./claimed-prize'),
   PrizeChoice: require('./prize-choice'),
-  Setting: require('./setting'),
+  Setting: require('./setting')
 };

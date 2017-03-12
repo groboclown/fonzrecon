@@ -6,16 +6,16 @@ const Account = require('../../models').Account;
 const settings = require('../settings');
 
 function getPayloadId(payload) {
-  if (!! payload.id) {
+  if (!!payload.id) {
     return payload.id;
   }
-  if (!! payload._id) {
+  if (!!payload._id) {
     return payload._id;
   }
-  if (!! payload.doc_id) {
+  if (!!payload.doc_id) {
     return payload.doc_id;
   }
-  if (!! payload.document && !! payload.document._id) {
+  if (!!payload.document && !!payload.document._id) {
     return payload.document._id;
   }
   return null;
@@ -26,7 +26,7 @@ const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
 
   // Passport secret
-  secretOrKey: settings.secret,
+  secretOrKey: settings.secret
 };
 
 
@@ -34,9 +34,9 @@ const jwtOptions = {
 module.exports = new JwtStrategy(jwtOptions, function(payload, done) {
   // TODO augment as appropriate
   const criteria = {
-    username: getPayloadId(payload),
+    username: getPayloadId(payload)
   }
-  Account.findOne(criteria, function(err, account) {
+  Account.findOne(criteria, (err, account) => {
     if (err) {
       return done(err);
     }

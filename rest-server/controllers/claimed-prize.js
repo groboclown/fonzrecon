@@ -23,8 +23,8 @@ exports.getAll = function(req, res, next) {
       .find({ names: req.query.user })
       .lean()
       .exec()
-      .then(function(users) {
-        if (! users || users.length < 0) {
+      .then((users) => {
+        if (!users || users.length < 0) {
           // No results.
           return false;
         }
@@ -33,13 +33,11 @@ exports.getAll = function(req, res, next) {
         }
       });
   } else {
-    conditionPromise = new Promise(function(resolve, reject) {
-      resolve({});
-    });
+    conditionPromise = Promise.resolve({});
   }
 
   conditionPromise
-    .then(function(condition) {
+    .then((condition) => {
       if (!condition) {
         return util.emptyResults(pagination);
       }
@@ -48,12 +46,12 @@ exports.getAll = function(req, res, next) {
         .lean()
         .paginate(pagination);
     })
-    .then(function(results) {
+    .then((results) => {
       results.type = 'ClaimedPrize';
       res.status(200).json(jsonConvert.pagedResults(
         results, jsonConvert.claimedPrize));
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -65,13 +63,13 @@ exports.getOne = function(req, res, next) {
     .findOneBriefById(req.params.id)
     .lean()
     .exec()
-    .then(function(claimed) {
-      if (! claimed) {
+    .then((claimed) => {
+      if (!claimed) {
         throw errors.resourceNotFound();
       }
       return res.status(200).json(jsonConvert.claimedPrize(claimed));
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     })
   next();
@@ -80,7 +78,7 @@ exports.getOne = function(req, res, next) {
 
 exports.create = function(req, res, next) {
   const fromUser = accessLib.getRequestUser(req);
-  if (! fromUser) {
+  if (!fromUser) {
     return next(errors.notAuthorized());
   }
 
@@ -101,8 +99,8 @@ exports.create = function(req, res, next) {
     .exec();
 
   var userUpdatePromise = prizePromise
-    .then(function(prizeChoice) {
-      if (! prizeChoice) {
+    .then((prizeChoice) => {
+      if (!prizeChoice) {
         throw errors.extraValidationProblem(
           'prizeChoiceId', prizeChoiceId, 'no prize by that ID'
         );
@@ -131,14 +129,14 @@ exports.create = function(req, res, next) {
             // turned on.  However, "majority" uses the safest means,
             // so it will confirm when the journal is updated if the
             // db has journalling.
-          { multi: false, writeConcern: { w: "majority" } }
+          { multi: false, writeConcern: { w: 'majority' } }
         )
         .exec();
     });
 
   Promise
     .all([prizePromise, userUpdatePromise])
-    .then(function(args) {
+    .then((args) => {
       var prize = args[0];
 
       return new ClaimedPrize({
@@ -147,7 +145,7 @@ exports.create = function(req, res, next) {
       })
       .save();
     })
-    .then(function(claimedPrize) {
+    .then((claimedPrize) => {
       console.log(`send request to fulfil prize: ${claimedPrize}`);
       res.status(201).json(jsonConvert.claimedPrize(claimedPrize._id));
 
@@ -158,7 +156,7 @@ exports.create = function(req, res, next) {
         prizeId: claimedPrize._id
       });
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };
