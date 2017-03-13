@@ -12,27 +12,27 @@ module.exports = function(username, password) {
   console.log(`getting account for ${username}`);
   var accountPromise = Account.findOne({ id: username });
   var loginMatchPromise = accountPromise
-    .then(function(account) {
-      if (! account) {
+    .then((account) => {
+      if (!account) {
         return null;
       }
       return account.getAuthenticationNamed('local');
     })
-    .then(function(auth) {
-      if (! auth) {
+    .then((auth) => {
+      if (!auth) {
         return false;
       }
       return auth.onLogin({ password: password });
     });
   return Promise
     .all([accountPromise, loginMatchPromise])
-    .then(function(args) {
+    .then((args) => {
       let account = args[0];
       let isMatch = args[1];
-      if (! account) {
+      if (!account) {
         return false;
       }
-      if (! isMatch) {
+      if (!isMatch) {
         return false;
       }
       return account;

@@ -5,5 +5,5 @@ module.exports = {
   getOneBrief: require('./get-one-brief'),
   getOneDetails: require('./get-one'),
   create: require('./create-user'),
-  update: require('./update'),
+  update: require('./update')
 };

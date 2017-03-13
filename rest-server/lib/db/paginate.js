@@ -12,9 +12,9 @@ const mongoose = require('mongoose');
 
 const defaults = {
   perPage: 10, // Number of items to display on each page.
-  delta  :  5, // Number of page numbers to display before and after the current one.
-  page   :  1, // Initial page number.
-  offset :  0  // Offset number.
+  delta: 5, // Number of page numbers to display before and after the current one.
+  page: 1, // Initial page number.
+  offset: 0  // Offset number.
 };
 
 mongoose.Query.prototype.paginate = function(options) {
@@ -25,30 +25,32 @@ mongoose.Query.prototype.paginate = function(options) {
   options.page = options.page || defaults.page;
   options.offset = options.offset || defaults.offset;
 
-  const query = this;
-  const model = query.model;
-  var countPromise = model.count(query._conditions).exec();
+  const self = this;
+  const model = self.model;
+  var countPromise = model.count(self._conditions).exec();
   var execPromise = countPromise
-    .then(function(count) {
+    .then((count) => {
       let _skip = (options.page - 1) * options.perPage;
       _skip += options.offset;
       if (_skip <= 0) {
-        return query.limit(+options.perPage).exec();
+        return self.limit(+options.perPage).exec();
       }
       if (_skip >= count) {
         return [];
       }
-      return query.skip(_skip).limit(+options.perPage).exec();
+      return self.skip(_skip).limit(+options.perPage).exec();
     });
   // Use the results from both the count and the exec calls.
-  return Promise.all([countPromise, execPromise]).then(function(promiseValues) {
+  return Promise
+    .all([countPromise, execPromise])
+    .then((promiseValues) => {
       let count = promiseValues[0];
       let results = promiseValues[1] || [];
       let page = parseInt(options.page, 10) || 0;
       let delta = options.delta;
-      let offset_count = count - options.offset;
-      offset_count = offset_count > 0 ? offset_count : 0;
-      let last = Math.ceil(offset_count / options.perPage);
+      let offsetCount = count - options.offset;
+      offsetCount = offsetCount > 0 ? offsetCount : 0;
+      let last = Math.ceil(offsetCount / options.perPage);
       let current = page;
       let start = page - delta > 1 ? page - delta : 1;
       let end = current + delta + 1 < last ? current + delta : last;
@@ -60,19 +62,19 @@ mongoose.Query.prototype.paginate = function(options) {
 
       let prev = !count || current == start ? null : current - 1;
       let next = !count || current == end ? null : current + 1;
-      if (!offset_count) {
+      if (!offsetCount) {
         prev = next = last = null;
       }
 
       let pager = {
-        'results': results,
-        'options': options,
-        'current': current,
-        'last': last,
-        'prev': prev,
-        'next': next,
-        'pages': pages,
-        'count': count
+        results: results,
+        options: options,
+        current: current,
+        last: last,
+        prev: prev,
+        next: next,
+        pages: pages,
+        count: count
       };
       return pager;
     });

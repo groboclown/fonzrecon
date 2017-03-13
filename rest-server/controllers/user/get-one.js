@@ -11,14 +11,14 @@ module.exports = function(req, res, next) {
    .findOne({ username: req.params.id })
    .lean()
    .exec()
-   .then(function(user) {
+   .then((user) => {
       if (!user) {
         return next(errors.resourceNotFound());
       }
       user.type = 'User';
       res.status(200).json({ User: jsonConvert.user(user) });
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

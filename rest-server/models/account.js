@@ -56,20 +56,20 @@ const BrowserTokenSchema = new Schema({
 
 
 BrowserTokenSchema.methods.isFingerprintMatch = function(fingerprint) {
-  var b = this;
-  return fingerprint.useragent.browser.family === b.fingerprint.useragent.browser.family
-      && fingerprint.useragent.browser.version === b.fingerprint.useragent.browser.version
-      && fingerprint.useragent.device.family === b.fingerprint.useragent.device.family
-      && fingerprint.useragent.device.version === b.fingerprint.useragent.device.version
-      && fingerprint.useragent.os.family === b.fingerprint.useragent.os.family
-      && fingerprint.useragent.os.major === b.fingerprint.useragent.os.major
-      && fingerprint.useragent.os.minor === b.fingerprint.useragent.os.minor
-      && fingerprint.acceptHeaders.accept === b.fingerprint.acceptHeaders.accept
-      && fingerprint.acceptHeaders.encoding === b.fingerprint.acceptHeaders.encoding
-      && fingerprint.acceptHeaders.language === b.fingerprint.acceptHeaders.language
-      && fingerprint.geoip.country === b.fingerprint.geoip.country
-      && fingerprint.geoip.region === b.fingerprint.geoip.region
-      && fingerprint.geoip.city === b.fingerprint.geoip.city;
+  var self = this;
+  return fingerprint.useragent.browser.family === self.fingerprint.useragent.browser.family
+      && fingerprint.useragent.browser.version === self.fingerprint.useragent.browser.version
+      && fingerprint.useragent.device.family === self.fingerprint.useragent.device.family
+      && fingerprint.useragent.device.version === self.fingerprint.useragent.device.version
+      && fingerprint.useragent.os.family === self.fingerprint.useragent.os.family
+      && fingerprint.useragent.os.major === self.fingerprint.useragent.os.major
+      && fingerprint.useragent.os.minor === self.fingerprint.useragent.os.minor
+      && fingerprint.acceptHeaders.accept === self.fingerprint.acceptHeaders.accept
+      && fingerprint.acceptHeaders.encoding === self.fingerprint.acceptHeaders.encoding
+      && fingerprint.acceptHeaders.language === self.fingerprint.acceptHeaders.language
+      && fingerprint.geoip.country === self.fingerprint.geoip.country
+      && fingerprint.geoip.region === self.fingerprint.geoip.region
+      && fingerprint.geoip.city === self.fingerprint.geoip.city;
 }
 
 
@@ -123,9 +123,9 @@ AuthenticationMethodSchema.methods.getAuthenticationFunctions = function() {
 
 
 AuthenticationMethodSchema.pre('save', (next) => {
-  const am = this;
-  if (am.isModified('userInfo')) {
-    return am.getAuthenticationFunctions().onUserInfoSaved(am.userInfo)
+  const self = this;
+  if (self.isModified('userInfo')) {
+    return self.getAuthenticationFunctions().onUserInfoSaved(self.userInfo)
       .then(() => {
         next();
       })
@@ -160,7 +160,7 @@ AuthenticationMethodSchema.methods.onLogin = function(reqAuthData) {
 
 AuthenticationMethodSchema.methods.findBrowsersForFingerprint = function(fingerprint, allowExpires) {
   fingerprint = normalizeFingerprint(fingerprint);
-  var auth = this;
+  var self = this;
   return new Promise(function(resolve, reject) {
     var ret = {
       browserIndexes: [],
@@ -169,9 +169,9 @@ AuthenticationMethodSchema.methods.findBrowsersForFingerprint = function(fingerp
     var amindex;
     var bindex;
     var b;
-    for (bindex = 0; bindex < auth.browsers.length; bindex++) {
+    for (bindex = 0; bindex < self.browsers.length; bindex++) {
       // Check if matching fingerprint.
-      b = auth.browsers[bindex];
+      b = self.browsers[bindex];
       if ((allowExpires || b.isActive()) && b.isFingerprintMatch(fingerprint)) {
         ret.browserIndexes.push(bindex);
         ret.browsers.push(b);
@@ -369,14 +369,14 @@ AccountSchema.statics.findByUserResetAuthenticationToken = function(username, re
  * with the given name, or null if not found.
  */
 AccountSchema.methods.getAuthenticationNamed = function(authName) {
-  var acct = this;
+  var self = this;
   return new Promise(function(resolve, reject) {
     if (!accountLib.sourceNames.includes(authName)) {
       return reject(new Error('Unknown authorization source ' + authName));
     }
-    for (var i = 0; i < acct.authentications.length; i++) {
-      if (acct.authentications[i].source === authName) {
-        return resolve(acct.authentications[i]);
+    for (var i = 0; i < self.authentications.length; i++) {
+      if (self.authentications[i].source === authName) {
+        return resolve(self.authentications[i]);
       }
     }
     return resolve(null);

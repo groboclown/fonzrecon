@@ -21,12 +21,12 @@ exports.extract = function(req) {
 function setIfInt(value, obj, key) {
   var x;
   if (isNaN(value)) {
-    // do not set
+    // Do not set
     return;
   }
   x = parseFloat(value);
   if ((x | 0) === x) {
-    // it's an integer
+    // It's an integer
     obj[key] = parseInt(value);
   }
 }

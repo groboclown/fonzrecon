@@ -8,7 +8,7 @@
 
 exports.briefUser = function(user) {
   // Note: this must be manually updated along with the model.
-  if (typeof(user) === 'object' && ! user._id && typeof(user.toString) === 'function') {
+  if (typeof(user) === 'object' && !user._id && typeof(user.toString) === 'function') {
     user = user.toString();
   }
   if (typeof(user) === 'string') {
@@ -39,7 +39,7 @@ exports.user = function(_user) {
   ret.updatedAt = _user.updatedAt;
   ret.pointsToAward = _user.pointsToAward;
   ret.receivedPointsToSpend = _user.receivedPointsToSpend;
-  ret.contact = _user.contact.map(function (c) {
+  ret.contact = _user.contact.map((c) => {
     return {
       type: c.type,
       server: c.server,
@@ -58,7 +58,7 @@ exports.briefUserList = function(userList) {
 /**
  */
 exports.acknowledgement = function(ack, canViewDetails) {
-  if (typeof(ack) === 'object' && ! ack._id && typeof(ack.toString) === 'function') {
+  if (typeof(ack) === 'object' && !ack._id && typeof(ack.toString) === 'function') {
     ack = ack.toString();
   }
   if (typeof(ack) === 'string') {
@@ -80,7 +80,7 @@ exports.acknowledgement = function(ack, canViewDetails) {
     comment: ack.comment,
     tags: ack.tags,
     public: ack.public,
-    thumbsUps: ack.thumbsUps.map(function (tu) {
+    thumbsUps: ack.thumbsUps.map((tu) => {
       return {
         id: tu.id,
         updatedAt: tu.updatedAt,
@@ -96,12 +96,14 @@ exports.acknowledgement = function(ack, canViewDetails) {
 
 
 exports.acknowledgementList = function(ackList, canViewDetails) {
-  return ackList.map(function(ack) { exports.acknowledgement(ack, canViewDetails) });
+  return ackList.map((ack) => {
+    return exports.acknowledgement(ack, canViewDetails);
+  });
 };
 
 
 exports.prize = function(prizeObj) {
-  if (typeof(prizeObj) === 'object' && ! prizeObj._id && typeof(prizeObj.toString) === 'function') {
+  if (typeof(prizeObj) === 'object' && !prizeObj._id && typeof(prizeObj.toString) === 'function') {
     prizeObj = prizeObj.toString();
   }
   if (typeof(prizeObj) === 'string') {
@@ -126,7 +128,7 @@ exports.prize = function(prizeObj) {
 
 
 exports.claimedPrize = function(claimed) {
-  if (typeof(claimed) === 'object' && ! claimed._id && typeof(claimed.toString) === 'function') {
+  if (typeof(claimed) === 'object' && !claimed._id && typeof(claimed.toString) === 'function') {
     claimed = claimed.toString();
   }
   if (typeof(claimed) === 'string') {

@@ -15,11 +15,11 @@ module.exports = function(req, res, next) {
   User
     .listBrief(userLike)
     .paginate(pagination)
-    .then(function(users) {
+    .then((users) => {
       users.type = 'UserBrief'
       res.status(200).json(jsonConvert.pagedResults(users, jsonConvert.briefUser));
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

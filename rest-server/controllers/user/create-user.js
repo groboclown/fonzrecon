@@ -16,7 +16,7 @@ const email = require('../../lib/email');
 
 module.exports = function(req, res, next) {
   const fromUser = accessLib.getRequestUser(req);
-  if (! fromUser) {
+  if (!fromUser) {
     return next(errors.notAuthorized());
   }
 
@@ -29,42 +29,42 @@ module.exports = function(req, res, next) {
       isAlphanumeric: {
         errorMessage: 'must be only alphanumeric characters'
       },
-      notEmpty: true,
+      notEmpty: true
     },
     'user.email': {
       isEmail: {
-        errorMessage: 'contact email for validating account',
+        errorMessage: 'contact email for validating account'
       },
-      notEmpty: true,
+      notEmpty: true
     },
     'user.names': {
-      // list of "names" for the user, not usernames!
+      // List of "names" for the user, not usernames!
       isArrayOfString: {
         options: 1,
-        errorMessage: 'list of alternate names',
+        errorMessage: 'list of alternate names'
       },
       notEmpty: true
     },
     'user.pointsToAward': {
       isInt: {
         options: { gt: -1 },
-        errorMessage: 'must be present and non-negative.',
+        errorMessage: 'must be present and non-negative.'
       },
-      notEmpty: true,
+      notEmpty: true
     },
     'user.organization': {
       isLength: {
         options: [{ min: 1, max: 100 }],
-        errorMessage: 'cannot be empty',
+        errorMessage: 'cannot be empty'
       },
       notEmpty: true
     },
     'user.locale': {
       isLength: {
         options: [{min: 2, max: 8 }],
-        errorMessage: 'incorrect locale',
+        errorMessage: 'incorrect locale'
       }
-    },
+    }
   });
 
   const reqUser = req.body.user;
@@ -75,13 +75,13 @@ module.exports = function(req, res, next) {
 
   var accountPromise = req.getValidationResult()
     // Validate that the input
-    .then(function (results) {
-      if (! results.isEmpty()) {
+    .then((results) => {
+      if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
       }
 
       let userMatchCondition = [
-        { username: reqUser.username },
+        { username: reqUser.username }
       ];
       for (let i = 0; i < reqUser.names.length; i++) {
         userMatchCondition.push({ names: reqUser.names[i] });
@@ -93,7 +93,7 @@ module.exports = function(req, res, next) {
     })
 
     // Create the account.
-    .then(function(matchingUsers) {
+    .then((matchingUsers) => {
       if (matchingUsers.length > 0) {
         throw errors.extraValidationProblem(
           'username or names',
@@ -105,13 +105,13 @@ module.exports = function(req, res, next) {
       return Account
         .find({
           // Email does not need to be unique.
-          //$or: [ { id: req.body.username }, { accountEmail: req.body.email }],
-          id: reqUser.username,
+          // $or: [ { id: req.body.username }, { accountEmail: req.body.email }],
+          id: reqUser.username
         })
         .lean()
         .exec();
     })
-    .then(function(matchingAccounts) {
+    .then((matchingAccounts) => {
       if (matchingAccounts.length > 0) {
         throw errors.extraValidationProblem(
           'username or names',
@@ -129,11 +129,11 @@ module.exports = function(req, res, next) {
         authentications: [],
         role: reqUser.role,
         userRef: reqUser.username,
-        accountEmail: reqUser.email,
+        accountEmail: reqUser.email
       }).save();
     });
   var userPromise = accountPromise
-    .then(function(account) {
+    .then((account) => {
       console.log(`creating user account`)
       return new User({
         username: reqUser.username,
@@ -141,24 +141,24 @@ module.exports = function(req, res, next) {
         contacts: [{
           type: 'email',
           server: null,
-          address: reqUser.email,
+          address: reqUser.email
         }],
         pointsToAward: reqUser.pointsToAward,
         receivedPointsToSpend: 0,
         image: false,
-        organization: reqUser.organization,
+        organization: reqUser.organization
       }).save();
     });
 
   var resetValuesPromise = Promise
     .all([accountPromise, userPromise])
-    .then(function(args) {
+    .then((args) => {
       let account = args[0];
       return account.resetAuthentication();
     });
   return Promise
     .all([userPromise, resetValuesPromise])
-    .then(function(args) {
+    .then((args) => {
       var user = args[0];
       var resetValues = args[1];
 
@@ -168,10 +168,10 @@ module.exports = function(req, res, next) {
         username: user.username,
         user: user,
         resetAuthenticationToken: resetValues.resetAuthenticationToken,
-        resetAuthenticationExpires: resetValues.resetAuthenticationExpires,
+        resetAuthenticationExpires: resetValues.resetAuthenticationExpires
       });
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

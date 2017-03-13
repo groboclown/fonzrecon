@@ -6,16 +6,16 @@ const bcrypt = require('bcrypt-nodejs');
 const SALT_FACTOR = 10;
 
 exports.onUserInfoSaved = function(userInfo) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (userInfo.length != 1) {
       reject(new Error('Invalid user info (expected length 1, found ' + userInfo.length + ')'));
     }
-    bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
+    bcrypt.genSalt(SALT_FACTOR, (err, salt) => {
       if (err) {
         userInfo[0] = null;
         return reject(err);
       }
-      bcrypt.hash(userInfo[0], salt, null, function(err, hash) {
+      bcrypt.hash(userInfo[0], salt, null, (err, hash) => {
         if (err) {
           return reject(err);
         }
@@ -28,10 +28,10 @@ exports.onUserInfoSaved = function(userInfo) {
 
 
 exports.onLogin = function(userInfo, reqAuthData) {
-  // reqAuthData is { username, password }
+  // Note: reqAuthData is { username, password }
 
-  return new Promise(function(resolve, reject) {
-    bcrypt.compare(reqAuthData.password, userInfo[0], function(err, isMatch) {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(reqAuthData.password, userInfo[0], (err, isMatch) => {
       if (err) {
         reject(err);
       } else {

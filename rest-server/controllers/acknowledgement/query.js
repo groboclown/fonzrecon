@@ -15,7 +15,7 @@ const extraAccess = require('./extra-access');
 
 exports.getAll = function(req, res, next) {
   const user = accessLib.getRequestUser(req);
-  if (! user) {
+  if (!user) {
     return next(errors.notAuthorized());
   }
 
@@ -37,27 +37,25 @@ exports.getAll = function(req, res, next) {
       .find({ names: reqUsername })
       .lean()
       .exec()
-      .then(function(users) {
-        if (! users || users.length < 0) {
+      .then((users) => {
+        if (!users || users.length < 0) {
           // No results.
           return false;
         }
         condition.$or = [
           { givenByUser: { $in: users } },
-          { awardedToUsers: { $in: users } },
+          { awardedToUsers: { $in: users } }
           // Not including thumbs ups intentionally.
         ];
         return condition;
       });
   } else {
-    // condition isn't augmented with users.
-    queryByUser = new Promise(function(resolve, reject) {
-      return resolve(condition);
-    });
+    // Condition isn't augmented with users.
+    queryByUser = Promise.resolve(condition);
   }
 
   queryByUser
-    .then(function(queryCondition) {
+    .then((queryCondition) => {
       if (!queryCondition) {
         return util.emptyResults(pagination);
       }
@@ -70,12 +68,12 @@ exports.getAll = function(req, res, next) {
         .findDetailsForUser(user, queryCondition)
         .paginate(pagination);
     })
-    .then(function (results) {
+    .then((results) => {
       results.type = 'Aaay';
       res.status(200).json(jsonConvert.pagedResults(
         results, convertAcknowledgement(req, user)));
     })
-    .catch(function (err) {
+    .catch((err) => {
       next(err);
     });
 };
@@ -84,7 +82,7 @@ exports.getAll = function(req, res, next) {
 
 exports.getOne = function(req, res, next) {
   const user = accessLib.getRequestUser(req);
-  if (! user) {
+  if (!user) {
     return next(errors.notAuthorized());
   }
 
@@ -100,13 +98,13 @@ exports.getOne = function(req, res, next) {
   }
 
   return ackPromise
-    .then(function (ack) {
-      if (! ack) {
+    .then((ack) => {
+      if (!ack) {
         throw errors.resourceNotFound();
       }
       res.status(200).json({ Aaay: convertAcknowledgement(req, user)(ack) });
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.log(err.message);
       console.log(err.stack);
       next(err);
@@ -120,8 +118,8 @@ exports.getUsersInAcknowledgement = function(req) {
 
   return Acknowledgement
     .findOneBrief({ _id: ackId })
-    .then(function(ack) {
-      if (! ack) {
+    .then((ack) => {
+      if (!ack) {
         return [];
       }
       var rd = {};

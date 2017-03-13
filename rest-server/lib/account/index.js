@@ -12,11 +12,11 @@ exports.sourceMethodNames = [
   // it is not added to the AuthenticationMethodSchema methods.
   // onUserInfoSaved
 
-  'onLogin',
+  'onLogin'
 ];
 
 exports.sources = {
-  local: require('./local'),
+  local: require('./local')
 };
 
 exports.sourceNames = [];

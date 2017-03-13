@@ -24,7 +24,7 @@ exports.removeToken = function(username, authName, req) {
 
   var accountPromise;
   if (req.userAccount && req.userAccount.account) {
-    accountPromise Promise.resolve(req.userAccount.account);
+    accountPromise = Promise.resolve(req.userAccount.account);
   } else if (req.user) {
     accountPromise = Account.findByUserRef(username);
   } else {
@@ -61,13 +61,13 @@ exports.removeToken = function(username, authName, req) {
         // that *aren't* a match.
         var newBrowsers = [];
         for (var i = 0; i < authMethod.browsers.length; i++) {
-          if (! existingTokens.browserIndexes.includes(i)) {
+          if (!existingTokens.browserIndexes.includes(i)) {
             newBrowsers.push(auth.browsers[i]);
           }
         }
         authMethod.browsers = newBrowsers;
       }
-      // else no existing tokens that match.
+      // Else no existing tokens that match.
 
       if (account) {
         return account.save();
@@ -82,7 +82,7 @@ exports.removeToken = function(username, authName, req) {
  * in the promise the token (string) itself.
  */
 exports.generateToken = function(replaceExistingToken, authName, req) {
-  if (! req.fingerprint) {
+  if (!req.fingerprint) {
     console.error('No browser / request fingerprint. Is express setup?');
     return Promise.reject(new Error('InternalError'));
   }
@@ -141,7 +141,7 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
         }
         authMethod.browsers = newBrowsers;
       }
-      // else no existing tokens that match.
+      // Else no existing tokens that match.
 
       // Create the new token.
       return authMethod.generateBrowserEntry(req.fingerprint);

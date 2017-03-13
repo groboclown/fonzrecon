@@ -154,31 +154,31 @@ exports.createThumbsUp = function(req, res, next) {
         pointsToEachUser: req.body.points
       });
       return ack.save();
+      // Note: failure means fromUser is SOL
     });
-    // Note: failure means fromUser is SOL
   var savedToUsersPromise = Promise
     .all([saveThumbsUpPromise, updateUserPromise])
     .then((args) => {
       // For each user, add in the received points.
-      var promises = args[0].awardedToUsers.map(function(toUser) {
+      var promises = args[0].awardedToUsers.map((toUser) => {
         return User.update({ username: toUser.username },
           { $inc: { receivedPointsToSpend: req.body.points } },
-          { multi: false, writeConcern: { w: "majority" } }
+          { multi: false, writeConcern: { w: 'majority' } }
         );
       });
       return Promise.all(promises);
     });
   return Promise
     .all([saveThumbsUpPromise, savedToUsersPromise])
-    .then(function(args) {
+    .then((args) => {
       // Send status, then perform the sending of values.
       res.sendStatus(201);
 
       email.send('thumbs-up', args[1], {
-        aaay: args[0],
+        aaay: args[0]
       });
     })
-    .catch(function (err) {
+    .catch((err) => {
       next(err);
     });
 };

@@ -24,18 +24,18 @@ const DEFAULT_THEME = 'light';
  */
 exports.send = function(template, to, data) {
   const settingsPromise = Setting.getEmailSettings()
-    .then(function(settings) {
+    .then((settings) => {
       data.siteSettings = settings.public;
       return settings;
     });
 
-  if (! Array.isArray(to)) {
+  if (!Array.isArray(to)) {
     to = [ to ];
   }
 
   // Each user has their own locale, so we send it separately.
 
-  return Promise.all(to.map(function(user) {
+  return Promise.all(to.map((user) => {
     let email = user;
     let locale = DEFAULT_LOCALE;
     if (typeof(user) !== 'string') {
@@ -56,16 +56,16 @@ exports.send = function(template, to, data) {
     }
 
     let templateFilePromise = settingsPromise
-      .then(function(settings) {
+      .then((settings) => {
         return getEmailTemplate(template, locale, settings);
       });
     let subjectFilePromise = settingsPromise
-      .then(function(settings) {
+      .then((settings) => {
         return getEmailTemplate(template + '-subject', locale, settings);
       });
     return Promise
       .all([settingsPromise, templateFilePromise, subjectFilePromise, Promise.resolve(email)])
-      .then(function(args) {
+      .then((args) => {
         let settings = args[0];
         let templateFile = args[1];
         let subjectFile = args[2];
@@ -82,7 +82,7 @@ exports.send = function(template, to, data) {
       // TODO for now, the sending of the email handles its own errors.
       // It's expected to run outside the normal promise world.
       // Is this right?
-      .catch(function(err) {
+      .catch((err) => {
         console.error(`Problem sending ${template} email to ${email}: ${err.message}`);
         console.error(err.stack);
       });
@@ -93,7 +93,7 @@ exports.send = function(template, to, data) {
 
 exports.sendAdminNotification = function(template, data) {
   return Setting.getAdminActionNotificationEmails()
-    .then(function(toEmails) {
+    .then((toEmails) => {
       return exports.send(template, toEmails, data);
     });
 };
@@ -107,12 +107,12 @@ function getEmailTemplate(name, locale, settings) {
   let partial;
   while (dashIndex >= 0) {
     partial = locale.substring(0, dashIndex);
-    if (! locales.includes(partial)) {
+    if (!locales.includes(partial)) {
       locales.push(partial);
     }
     dashIndex = locale.lastIndexOf('-', dashIndex);
   }
-  if (! locales.includes(DEFAULT_LOCALE)) {
+  if (!locales.includes(DEFAULT_LOCALE)) {
     locales.push(DEFAULT_LOCALE);
   }
 
@@ -131,7 +131,7 @@ function getEmailTemplate(name, locale, settings) {
   }
 
   return files.getFileReadableStatus(locationOrder)
-    .then(function(fileStats) {
+    .then((fileStats) => {
       for (let i = 0; i < fileStats.length; i++) {
         if (fileStats[i][1]) {
           return fileStats[i][0];

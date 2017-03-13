@@ -10,13 +10,13 @@ module.exports = function(req, res, next) {
   User
     .findOneBrief({ username: req.params.id })
     .exec()
-    .then(function(user) {
+    .then((user) => {
       if (!user) {
         return next(errors.resourceNotFound());
       }
       res.status(200).json({ UserBrief: jsonConvert.briefUser(user) });
     })
-    .catch(function(err) {
+    .catch((err) => {
       next(err);
     });
 };

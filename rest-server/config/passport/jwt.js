@@ -12,7 +12,9 @@ function getPayloadId(payload) {
   if (!!payload._id) {
     return payload._id;
   }
+  // jscs:disable
   if (!!payload.doc_id) {
+    // jscs:disable
     return payload.doc_id;
   }
   if (!!payload.document && !!payload.document._id) {
