@@ -13,12 +13,12 @@ exports.errDetail = function(value, param, desc) {
     param: param,
     value: value
   };
-}
+};
 
 
 exports.error = function(value, param, desc) {
   return exports.errors([ exports.errDetail(value, param, desc) ])
-}
+};
 
 
 exports.errors = function(paramValues) {
@@ -26,7 +26,7 @@ exports.errors = function(paramValues) {
   err.details = paramValues;
   err.status = 400;
   return err;
-}
+};
 
 
 function promiseReflect(p) {
@@ -89,7 +89,7 @@ exports.asValidatePromiseFactory = function(validateFunction, param, options) {
     }
     return Promise.reject(exports.error(value, param));
   };
-}
+};
 
 
 
@@ -98,13 +98,13 @@ exports.isEmailAddress = function(email) {
     return false;
   }
   return EMAIL_VALIDATION_RE.test(email);
-}
+};
 
 
 
 exports.isBoolean = function(value) {
   return (value === true || value === false);
-}
+};
 
 
 
@@ -113,7 +113,7 @@ exports.isArray = function(value, minLength, maxLength) {
   maxLength = maxLength || 100000000;
   return (!!value) && Array.isArray(value) &&
     value.length >= minLength && value.length <= maxLength;
-}
+};
 
 
 
@@ -127,14 +127,14 @@ exports.isArrayOf = function(value, elementValidation, minLength, maxLength) {
     }
   }
   return true;
-}
+};
 
 
 
 exports.isURL = function(value) {
   // TODO
   return exports.isString(value, 6);
-}
+};
 
 
 
@@ -143,4 +143,16 @@ exports.isString = function(value, minLength, maxLength) {
   maxLength = maxLength || 100000000;
   return (!!value) && typeof(value) === 'string' &&
     value.length >= minLength && value.length <= maxLength;
-}
+};
+
+
+
+exports.isInSet = function(value, validValues) {
+  return !!value && !!validValues.includes(value);
+};
+
+
+
+exports.yes = function(value) {
+  return true;
+};

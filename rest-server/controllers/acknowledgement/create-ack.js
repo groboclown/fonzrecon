@@ -10,7 +10,7 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
-const email = require('../../lib/email');
+const notify = require('../../lib/notify');
 
 
 function findUsersReferenced(toUserNames, isBotWithBehalf) {
@@ -218,7 +218,7 @@ exports.create = function(req, res, next) {
       // Note that this is sending the very specific ID form.
       res.status(201).json(jsonConvert.acknowledgement(ack._id, false));
 
-      email.send('new-aaay', toUsers, {
+      notify.send('new-aaay', toUsers, {
         aaay: ack
       });
     })

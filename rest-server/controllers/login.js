@@ -12,6 +12,8 @@
 const access = require('./access');
 const errors = require('./util').errors;
 const models = require('../models');
+const notify = require('./util').notify;
+const validate = require('../lib/validate');
 const Account = models.Account;
 const User = models.User;
 
@@ -163,7 +165,7 @@ exports.validate = function(req, res, next) {
       var toUser = args[1] || args[0];
 
       // Tell the user about the password change.
-      email.send('password-changed', toUser, {
+      notify.send('password-changed', toUser, {
         username: account.userRef
       });
 
@@ -181,6 +183,10 @@ exports.requestPasswordChange = function(req, res, next) {
   }
   if (req.body.email && typeof(req.body.email) === 'string') {
     condition.email = req.body.email;
+    if (!validate.isEmailAddress(condition.email)) {
+      return next(errors.extraValidationProblem('email', condition.email,
+        'invalid email address format'));
+    }
   }
 
   var accountPromise = Account.findOne(condition);
@@ -203,7 +209,7 @@ exports.requestPasswordChange = function(req, res, next) {
 
       res.status(200).json(resetValues);
 
-      email.send('reset-password', toUser, {
+      notify.send('reset-password', toUser, {
         username: req.body.username,
         resetAuthenticationToken: resetValues.resetAuthenticationToken,
         resetAuthenticationExpires: resetValues.resetAuthenticationExpires

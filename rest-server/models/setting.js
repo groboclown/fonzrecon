@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const validate = require('../lib/validate');
+const contact = require('../config/contact');
 
 // =====================================
 // Schema Definition
@@ -82,6 +83,18 @@ const ALL_SETTINGS = {
     defaultValue: 'FonzRecon For You',
     validator: [ validate.isString, 1 ],
     templateAccess: 'public'
+  },
+  EmailProvider: {
+    description: 'How to send emails, one of ' + contact.emailProviders,
+    defaultValue: contact.emailProviders[0],
+    validator: [ validate.isInSet, contact.emailProviders ],
+    templateAccess: 'private'
+  },
+  EmailProviderConnection: {
+    description: 'How to connect to the email provider',
+    defaultValue: null,
+    validator: validate.yes,
+    templateAccess: 'private'
   }
 };
 const PUBLIC_TEMPLATE_SETTING_KEYS = [];

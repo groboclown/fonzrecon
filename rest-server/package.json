@@ -34,6 +34,7 @@
     "cors": "^2.8.1",
     "crypto": "0.0.3",
     "csurf": "^1.9.0",
+    "emailjs": "^1.0.8",
     "express": "^4.14.1",
     "express-fingerprint": "^1.1.1",
     "express-validator": "^3.1.2",
@@ -45,7 +46,8 @@
     "passport": "^0.3.2",
     "passport-http": "^0.3.0",
     "passport-jwt": "^2.2.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "swig-email-templates": "^4.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -89,7 +91,10 @@
       "with",
       "return"
     ],
-    "safeContextKeyword": ["self", "Self"],
+    "safeContextKeyword": [
+      "self",
+      "Self"
+    ],
     "disallowTrailingComma": true,
     "requireTrailingComma": false,
     "requireAnonymousFunctions": false,

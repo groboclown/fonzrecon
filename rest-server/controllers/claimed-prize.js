@@ -10,7 +10,7 @@ const jsonConvert = util.jsonConvert;
 const errors = util.errors;
 const accessLib = require('../lib/access');
 const roles = require('../config/access/roles');
-const email = require('../lib/email');
+const notify = require('../lib/notify');
 
 
 
@@ -149,11 +149,19 @@ exports.create = function(req, res, next) {
       console.log(`send request to fulfil prize: ${claimedPrize}`);
       res.status(201).json(jsonConvert.claimedPrize(claimedPrize._id));
 
-      // Note that we don't want the email error to be sent to the
+      // Note that we don't want the notify error to be sent to the
       // user.
-      email.send('prize-pending', reqUser, {
+      notify.send('prize-pending', reqUser, {
         username: reqUser.username,
-        prizeId: claimedPrize._id
+        claimedPrizeId: claimedPrize._id,
+        prize: claimedPrize.prize
+      });
+
+      // Tell the admins that this prize is pending the claim.
+      notify.sendAdminNotification('prize-pending-admin', {
+        username: reqUser.username,
+        claimedPrizeId: claimedPrize._id,
+        prize: claimedPrize.prize
       });
     })
     .catch((err) => {

@@ -2,5 +2,6 @@
 
 
 module.exports = {
-  types: ['email']
+  providers: ['email'],
+  emailProviders: ['local-sendmail', 'smtp']
 };

@@ -4,7 +4,6 @@ const models = require('../../models');
 const Setting = models.Setting;
 const files = require('../files');
 
-
 const DEFAULT_LOCALE = 'en';
 const DEFAULT_THEME = 'light';
 
@@ -20,6 +19,9 @@ const DEFAULT_THEME = 'light';
  *
  * The "subject" is implicit in the template name.
  *
+ * TODO for the moment, this only bothers with email.  Eventually, this should
+ * add in other notification methods.
+ *
  * Returns promise that has a return value of null on success.
  */
 exports.send = function(template, to, data) {
@@ -33,50 +35,69 @@ exports.send = function(template, to, data) {
     to = [ to ];
   }
 
+  // Send all the allowable contact types.
+  var destinations = [];
+  for (let i = 0; i < to.length; i++) {
+    var user = to[i];
+    if (typeof(user) === 'string') {
+      // Assume email
+      destinations.push({
+        provider: 'email',
+        locale: DEFAULT_LOCALE,
+        address: user,
+        server: null
+      });
+    } else if (user.accountEmail) {
+      // Account object
+      destinations.push({
+        provider: 'email',
+        locale: DEFAULT_LOCALE,
+        address: user.accountEmail,
+        server: null
+      });
+    } else if (user.contacts) {
+      // User object
+      for (let j = 0; j < user.contacts.length; j++) {
+        destinations.push({
+          locale: user.locale || DEFAULT_LOCALE,
+          provider: user.contacts[j].type,
+          address: user.contacts[j].address,
+          server: user.contacts[j].server
+        });
+      }
+    } else {
+      // Unknown object
+      console.log(`Unknown "to" data type: ${JSON.stringify(user)}`);
+      return Promise.reject(new Error(`Unknown "to" data type: ${JSON.stringify(user)}`));
+    }
+  }
+
   // Each user has their own locale, so we send it separately.
 
-  return Promise.all(to.map((user) => {
-    let email = user;
-    let locale = DEFAULT_LOCALE;
-    if (typeof(user) !== 'string') {
-      if (user.accountEmail) {
-        email = [ user.accountEmail ];
-      } else {
-        locale = user.locale;
-        email = [];
-        for (let j = 0; j < user.contacts.length; j++) {
-          if (user.contacts[j].type === 'email') {
-            email.push(user.contacts[j].address);
-          }
-        }
-      }
-      if (email.length <= 0) {
-        throw new Error(`No email contact for user ${user.username}`);
-      }
-    }
-
-    let templateFilePromise = settingsPromise
+  return Promise.all(destinations.map((destination) => {
+    let templateDirPromise = settingsPromise
       .then((settings) => {
-        return getEmailTemplate(template, locale, settings);
+        return getNotifyTemplateDir(template, destination.locale, settings);
       });
-    let subjectFilePromise = settingsPromise
+    let providerPromise = settingsPromise
       .then((settings) => {
-        return getEmailTemplate(template + '-subject', locale, settings);
+        return require('./providers/' + destination.provider)(settings);
       });
     return Promise
-      .all([settingsPromise, templateFilePromise, subjectFilePromise, Promise.resolve(email)])
+      .all([ settingsPromise, templateDirPromise,
+        Promise.resolve(destination), providerPromise ])
       .then((args) => {
         let settings = args[0];
-        let templateFile = args[1];
-        let subjectFile = args[2];
-        let toEmails = args[3];
-        console.log(`TODO Send email ${templateFile} to ${JSON.stringify(toEmails)}`);
+        let templateDir = args[1];
+        let toDestination = args[2];
+        let provider = args[3];
 
-        // TODO format subject
-        // TODO format body
-
-        // TODO send email
-        return null;
+        return provider.send({
+          settings: settings,
+          templateDir: templateDir,
+          templateName: template,
+          toDestination: toDestination
+        });
       })
 
       // TODO for now, the sending of the email handles its own errors.
@@ -99,7 +120,7 @@ exports.sendAdminNotification = function(template, data) {
 };
 
 
-function getEmailTemplate(name, locale, settings) {
+function getNotifyTemplateDir(provider, locale, settings) {
   let theme = settings.public.EmailTheme || DEFAULT_THEME;
   locale = (locale || DEFAULT_LOCALE).toLowerCase().replace(/_/g, '-');
   let locales = [];
@@ -126,10 +147,11 @@ function getEmailTemplate(name, locale, settings) {
   var locationOrder = [];
   for (let i = 0; i < themeOrder.length; i++) {
     for (let j = 0; j < locales.length; j++) {
-      locationOrder.push(`templates/email/${themeOrder[i]}/${locales[j]}/${name}.txt`);
+      locationOrder.push(`templates/${provider}/${themeOrder[i]}/${locales[j]}`);
     }
   }
 
+  /* This is for checking if it's a readable file.
   return files.getFileReadableStatus(locationOrder)
     .then((fileStats) => {
       for (let i = 0; i < fileStats.length; i++) {
@@ -138,5 +160,16 @@ function getEmailTemplate(name, locale, settings) {
         }
       }
       throw Error(`No file found for template ${name}.`);
+    });
+  */
+
+  return files.getDirectoryStatus(locationOrder)
+    .then((dirStats) => {
+      for (let i = 0; i < dirStats.length; i++) {
+        if (dirStats[i][1]) {
+          return dirStats[i];
+        }
+      }
+      throw Error(`No template directory found for ${provider}.`);
     });
 }

@@ -139,8 +139,8 @@ const SAMPLE_PRIZES = [
 var requests = [];
 
 function saveAccount(accountObj) {
-  return function(account) {
-    if (! account) {
+  return (account) => {
+    if (!account) {
       return new Account(accountObj).save();
     }
     return account;
@@ -154,8 +154,8 @@ for (var i = 0; i < SAMPLE_ACCOUNTS.length; i++) {
 
 
 function saveUser(userObj) {
-  return function(user) {
-    if (! user) {
+  return (user) => {
+    if (!user) {
       return new User(userObj).save();
     }
     return user;
@@ -165,7 +165,7 @@ for (var i = 0; i < SAMPLE_USERS.length; i++) {
   console.log(`${SAMPLE_USERS[i].username}`)
   requests.push(User.findOne({ username: SAMPLE_USERS[i].username })
     .then(saveUser(SAMPLE_USERS[i]))
-    .then(function(user) {
+    .then((user) => {
       console.log('Created user ' + user.username);
     }));
 }
@@ -202,7 +202,7 @@ requests.push(Setting
 
 Promise
   .all(requests)
-  .then(function(results) {
+  .then((results) => {
     console.log('Completed generating data.');
 
     // Make sure we quit, by closing off our connections.
@@ -212,7 +212,7 @@ Promise
     // there's some open socket somewhere.
     process.exit(0);
   })
-  .catch(function(err) {
+  .catch((err) => {
     console.error(err.essage);
     console.error(err.stack);
   });

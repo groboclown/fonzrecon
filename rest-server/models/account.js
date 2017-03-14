@@ -122,10 +122,10 @@ AuthenticationMethodSchema.methods.getAuthenticationFunctions = function() {
 };
 
 
-AuthenticationMethodSchema.pre('save', (next) => {
-  const self = this;
-  if (self.isModified('userInfo')) {
-    return self.getAuthenticationFunctions().onUserInfoSaved(self.userInfo)
+// Must use a "function" here to bind the `this`.
+AuthenticationMethodSchema.pre('save', function(next) {
+  if (this.isModified('userInfo')) {
+    return this.getAuthenticationFunctions().onUserInfoSaved(this.userInfo)
       .then(() => {
         next();
       })

@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const contactTypes = require('../config/contact').types;
+const contactTypes = require('../config/contact').providers;
 
 // =====================================
 // Schema Definition
@@ -72,7 +72,8 @@ const UserSchema = new Schema({
   timestamps: true
 });
 
-UserSchema.pre('save', (next) => {
+// Must use a "function" here to bind the `this`.
+UserSchema.pre('save', function(next) {
   if (!this.names.includes(this.username)) {
     this.names.push(this.username);
   }

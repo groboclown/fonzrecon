@@ -10,7 +10,7 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
 const extraAccess = require('./extra-access');
-const email = require('../../lib/email');
+const notify = require('../../lib/notify');
 
 
 
@@ -174,7 +174,7 @@ exports.createThumbsUp = function(req, res, next) {
       // Send status, then perform the sending of values.
       res.sendStatus(201);
 
-      email.send('thumbs-up', args[1], {
+      notify.send('thumbs-up', args[1], {
         aaay: args[0]
       });
     })

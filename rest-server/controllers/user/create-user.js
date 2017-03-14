@@ -10,7 +10,7 @@ const jsonConvert = util.jsonConvert;
 const errors = util.errors;
 const accessLib = require('../../lib/access');
 const roles = require('../../config/access/roles');
-const email = require('../../lib/email');
+const notify = require('../../lib/notify');
 
 
 
@@ -164,7 +164,7 @@ module.exports = function(req, res, next) {
 
       res.status(201).json(resetValues);
 
-      email.send('new-user', user, {
+      notify.send('new-user', user, {
         username: user.username,
         user: user,
         resetAuthenticationToken: resetValues.resetAuthenticationToken,

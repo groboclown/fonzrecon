@@ -3,7 +3,7 @@
 const models = require('../models');
 const Setting = models.Setting;
 const errors = require('./util').errors;
-const email = require('../../lib/email');
+const notify = require('../lib/notify');
 
 
 function mapSettingsList(settings) {
@@ -45,7 +45,7 @@ exports.set = function(req, res, next) {
     .then((results) => {
       res.status(200).json(results);
 
-      email.sendAdminNotification('settings-updated', {
+      notify.sendAdminNotification('settings-updated', {
         results
       });
     })

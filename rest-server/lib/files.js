@@ -46,3 +46,15 @@ exports.isDirectory = function(dirname) {
     });
   });
 };
+
+
+exports.getDirectoryStatus = function(dirnames) {
+  return Promise
+    .all(dirnames.map((name) => { return exports.isDirectory(name) }))
+    .then((stats) => {
+      let ret = [];
+      for (let i = 0; i < dirnames.length; i++) {
+        ret.push([dirnames[i], stats[i]]);
+      }
+    });
+};
