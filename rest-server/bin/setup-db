@@ -190,14 +190,26 @@ for (var i = 0; i < SAMPLE_PRIZES.length; i++) {
 
 
 // settings
-/*
 requests.push(Setting
-  .setCreateUserOnReference(true)
+  .setEmailProvider('smtp')
   .then(function() {
-    console.log('Created setting CreateUserOnReference');
+    console.log('Created setting EmailProvider');
   })
 );
-*/
+requests.push(Setting
+  .setEmailProviderConnection({
+    user: 'my-username',
+    password: 'my-password',
+    host: 'smtp.hostname.fonzrecon.githu',
+    ssl: true,
+    tls: null,
+    timeout: null, // Defaults to 5000
+    domain: null, // If you need it
+    authentication: 'plain' // Or xoauth2
+  })
+  .then(function() {
+    console.log('Created setting EmailProviderConnection');
+  }));
 
 
 Promise

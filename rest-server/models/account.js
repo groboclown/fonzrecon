@@ -123,7 +123,7 @@ AuthenticationMethodSchema.methods.getAuthenticationFunctions = function() {
 
 
 // Must use a "function" here to bind the `this`.
-AuthenticationMethodSchema.pre('save', function(next) {
+function preSave(next) {
   if (this.isModified('userInfo')) {
     return this.getAuthenticationFunctions().onUserInfoSaved(this.userInfo)
       .then(() => {
@@ -134,7 +134,8 @@ AuthenticationMethodSchema.pre('save', function(next) {
       });
   }
   return next();
-});
+}
+AuthenticationMethodSchema.pre('save', preSave);
 
 /*
  Populate the AuthenticationMethodSchema methods with the

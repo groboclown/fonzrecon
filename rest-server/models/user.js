@@ -73,12 +73,13 @@ const UserSchema = new Schema({
 });
 
 // Must use a "function" here to bind the `this`.
-UserSchema.pre('save', function(next) {
+function preSave(next) {
   if (!this.names.includes(this.username)) {
     this.names.push(this.username);
   }
   return next();
-});
+}
+UserSchema.pre('save', preSave);
 
 UserSchema.statics.findOneByName = function(name) {
   return this

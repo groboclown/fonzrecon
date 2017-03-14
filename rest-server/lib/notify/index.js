@@ -151,18 +151,6 @@ function getNotifyTemplateDir(provider, locale, settings) {
     }
   }
 
-  /* This is for checking if it's a readable file.
-  return files.getFileReadableStatus(locationOrder)
-    .then((fileStats) => {
-      for (let i = 0; i < fileStats.length; i++) {
-        if (fileStats[i][1]) {
-          return fileStats[i][0];
-        }
-      }
-      throw Error(`No file found for template ${name}.`);
-    });
-  */
-
   return files.getDirectoryStatus(locationOrder)
     .then((dirStats) => {
       for (let i = 0; i < dirStats.length; i++) {
