@@ -1,0 +1,4 @@
+--require chai
+--throw-deprecation
+test/unit/*/*.js
+test/integration/*/*.js

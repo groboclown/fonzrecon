@@ -81,9 +81,14 @@ exports.asValidatePromiseFactory = function(validateFunction, param, options) {
   if (typeof(validateFunction) !== 'function') {
     throw new TypeError('validateFunction must be a function');
   }
+  if (typeof(param) !== 'string') {
+    throw new TypeError('param must be a string');
+  }
+  if (!Array.isArray(options)) {
+    throw new TypeError('options must be an array');
+  }
   return function(value) {
-    var args = [value];
-    args.concat(options);
+    let args = ([value]).concat(options);
     if (validateFunction.apply(null, args)) {
       return Promise.resolve(value);
     }
@@ -118,7 +123,8 @@ exports.isArray = function(value, minLength, maxLength) {
 
 
 exports.isArrayOf = function(value, elementValidation, minLength, maxLength) {
-  if (!exports.isArray(value, minLength)) {
+
+  if (!exports.isArray(value, minLength, maxLength)) {
     return false;
   }
   for (var i = 0; i < value.length; i++) {

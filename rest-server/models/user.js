@@ -74,9 +74,11 @@ const UserSchema = new Schema({
 
 // Must use a "function" here to bind the `this`.
 function preSave(next) {
+  /* jshint ignore:start */
   if (!this.names.includes(this.username)) {
     this.names.push(this.username);
   }
+  /* jshint ignore:end */
   return next();
 }
 UserSchema.pre('save', preSave);

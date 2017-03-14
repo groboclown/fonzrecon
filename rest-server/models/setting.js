@@ -55,9 +55,9 @@ SettingSchema.statics._setKey = function(key, description, value) {
 
 const ALL_SETTINGS = {
   AdminActionNotificationEmails: {
-    description: 'Who to send emails to when an administration action occurs',
+    description: 'Who to send emails to when an administration action occurs (list of emails)',
     defaultValue: [],
-    validator: [ validate.isArrayOf, validate.isEmailAddress ],
+    validator: [ validate.isArrayOf, validate.isEmailAddress, 1 ],
     templateAccess: 'private'
   },
   SiteUrl: {
@@ -104,7 +104,7 @@ const ALL_SETTING_KEYS = [];
 function simplePromiseFactory() {
   return function(value) { return Promise.resolve(value); };
 }
-for (var k in ALL_SETTINGS) {
+for (let k in ALL_SETTINGS) {
   if (ALL_SETTINGS.hasOwnProperty(k)) {
     ALL_SETTINGS[k].key = k;
     ALL_SETTING_KEYS.push(k);
@@ -112,8 +112,7 @@ for (var k in ALL_SETTINGS) {
       ALL_SETTINGS[k].validatorPromiseFactory = simplePromiseFactory();
     } else if (validate.isArray(ALL_SETTINGS[k].validator)) {
       ALL_SETTINGS[k].validatorPromiseFactory = validate.asValidatePromiseFactory(
-        ALL_SETTINGS[k].validator[0], k, ALL_SETTINGS[k].validator[1]
-      );
+        ALL_SETTINGS[k].validator[0], k, ALL_SETTINGS[k].validator.slice(1));
     } else {
       ALL_SETTINGS[k].validatorPromiseFactory = validate.asValidatePromiseFactory(
         ALL_SETTINGS[k].validator, k, []);

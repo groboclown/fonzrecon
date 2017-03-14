@@ -7,7 +7,7 @@
     "start": "node ./bin/www",
     "test": "mocha",
     "jscs": "jscs bin config controllers lib models test",
-    "jshint": "jshint",
+    "jshint": "jshint bin config controllers lib models test",
     "pretest": "jscs bin config controllers lib models test && jshint bin config controllers lib models"
   },
   "config": {
@@ -41,6 +41,7 @@
     "helmet": "^3.5.0",
     "jsonwebtoken": "^7.3.0",
     "jwt-simple": "^0.5.1",
+    "mocha-mongoose": "^1.2.0",
     "mongoose": "^4.8.4",
     "morgan": "^1.8.1",
     "passport": "^0.3.2",
