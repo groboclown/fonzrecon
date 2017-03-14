@@ -30,7 +30,7 @@ exports.getAll = function(req, res, next) {
         }
         return {
           redeemedByUser: { $in: users }
-        }
+        };
       });
   } else {
     conditionPromise = Promise.resolve({});
@@ -71,8 +71,7 @@ exports.getOne = function(req, res, next) {
     })
     .catch((err) => {
       next(err);
-    })
-  next();
+    });
 };
 
 
@@ -151,15 +150,16 @@ exports.create = function(req, res, next) {
 
       // Note that we don't want the notify error to be sent to the
       // user.
-      notify.send('prize-pending', reqUser, {
-        username: reqUser.username,
+      notify.send('prize-pending', fromUser, {
+        username: fromUser.username,
         claimedPrizeId: claimedPrize._id,
         prize: claimedPrize.prize
       });
 
       // Tell the admins that this prize is pending the claim.
       notify.sendAdminNotification('prize-pending-admin', {
-        username: reqUser.username,
+        username: fromUser.username,
+        names: fromUser.names,
         claimedPrizeId: claimedPrize._id,
         prize: claimedPrize.prize
       });

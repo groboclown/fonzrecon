@@ -132,7 +132,7 @@ exports.getUsersInAcknowledgement = function(req) {
       }
       return ret;
     });
-}
+};
 
 
 

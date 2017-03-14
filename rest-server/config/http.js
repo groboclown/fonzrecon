@@ -5,6 +5,7 @@ const log = require('./log');
 const http = require('http');
 const https = require('https');
 const settings = require('./settings');
+const fs = require('fs');
 
 const port = settings.port;
 

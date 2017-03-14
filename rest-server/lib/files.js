@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
@@ -6,8 +6,8 @@ const path = require('path');
 
 exports.ROOT_DIR = path.resolve(__dirname + '../..') + '/';
 exports.pathFromRoot = function(path) {
-  return path.resolve(ROOT_DIR + path);
-}
+  return path.resolve(exports.ROOT_DIR + path);
+};
 
 exports.isFileReadable = function(filename) {
   return new Promise((resolve, reject) => {
@@ -37,7 +37,7 @@ exports.getFileReadableStatus = function(filenames) {
 
 exports.isDirectory = function(dirname) {
   return new Promise((resolve, reject) => {
-    fs.stat(filename, (err, stats) => {
+    fs.stat(dirname, (err, stats) => {
       if (err) {
         // Most likely, the location does not exist.
         return resolve(false);
@@ -50,7 +50,7 @@ exports.isDirectory = function(dirname) {
 
 exports.getDirectoryStatus = function(dirnames) {
   return Promise
-    .all(dirnames.map((name) => { return exports.isDirectory(name) }))
+    .all(dirnames.map((name) => { return exports.isDirectory(name); }))
     .then((stats) => {
       let ret = [];
       for (let i = 0; i < dirnames.length; i++) {

@@ -21,7 +21,7 @@ module.exports = function(account, behalfOfName) {
           account: account,
           user: user,
           behalf: null
-        }
+        };
       }
       // Search by name, not username.
       var behalfPromise = User
@@ -53,7 +53,7 @@ module.exports = function(account, behalfOfName) {
             user: user,
             behalfAcount: behalfAcct,
             behalf: behalfUser
-          }
+          };
         });
     });
 };

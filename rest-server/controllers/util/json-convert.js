@@ -1,6 +1,5 @@
 'use strict';
 
-
 // Helper functions to convert queried objects into a correctly
 // consumable format.
 // Hopefully, the model can be fixed so that the virtual versions
@@ -92,7 +91,7 @@ exports.acknowledgement = function(ack, canViewDetails) {
       };
     })
   };
-}
+};
 
 
 exports.acknowledgementList = function(ackList, canViewDetails) {
@@ -122,7 +121,7 @@ exports.prize = function(prizeObj) {
     expires: prizeObj.expires,
     uri: '/api/v1/prizes/' + prizeObj._id,
     type: 'Prize'
-  }
+  };
 };
 
 
@@ -145,7 +144,7 @@ exports.claimedPrize = function(claimed) {
     uri: '/api/v1/claimed-prizes/' + claimed._id,
     createdAt: claimed.createdAt,
     type: 'ClaimedPrize'
-  }
+  };
 };
 
 
@@ -153,4 +152,4 @@ exports.claimedPrize = function(claimed) {
 exports.pagedResults = function(pagedResults, converterFunc) {
   pagedResults.results = pagedResults.results.map(converterFunc);
   return pagedResults;
-}
+};

@@ -70,7 +70,7 @@ BrowserTokenSchema.methods.isFingerprintMatch = function(fingerprint) {
       && fingerprint.geoip.country === self.fingerprint.geoip.country
       && fingerprint.geoip.region === self.fingerprint.geoip.region
       && fingerprint.geoip.city === self.fingerprint.geoip.city;
-}
+};
 
 
 BrowserTokenSchema.methods.isActive = function() {
@@ -82,7 +82,7 @@ BrowserTokenSchema.methods.isActive = function() {
 BrowserTokenSchema.methods.isExpired = function() {
   var now = new Date();
   return now >= this.expires;
-}
+};
 
 
 // Keeps track of one kind of authentication
@@ -208,7 +208,7 @@ function normalizeFingerprint(fingerprint) {
   fingerprint.geoip.region = fingerprint.geoip.region || null;
   fingerprint.geoip.city = fingerprint.geoip.city || null;
   return fingerprint;
-};
+}
 
 
 /**
@@ -407,7 +407,7 @@ AccountSchema.methods.resetAuthentication = function(expirationHours) {
     return {
       resetAuthenticationToken: self.resetAuthenticationToken,
       resetAuthenticationExpires: self.resetAuthenticationExpires
-    }
+    };
   });
 };
 

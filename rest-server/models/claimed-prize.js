@@ -44,7 +44,7 @@ ClaimedPrizeSchema.statics.findOneBrief = function(condition) {
   return this.findOne(condition)
   .populate('prize')
   .populate('claimedByUser', 'username names organization');
-}
+};
 
 
 ClaimedPrizeSchema.statics.findOneBriefById = function(id) {

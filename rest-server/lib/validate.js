@@ -17,7 +17,7 @@ exports.errDetail = function(value, param, desc) {
 
 
 exports.error = function(value, param, desc) {
-  return exports.errors([ exports.errDetail(value, param, desc) ])
+  return exports.errors([ exports.errDetail(value, param, desc) ]);
 };
 
 

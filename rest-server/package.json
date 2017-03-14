@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha",
-    "jscs": "jscs bin config controllers lib models",
+    "jscs": "jscs bin config controllers lib models test",
     "jshint": "jshint",
-    "pretest": "jscs bin config controllers lib models"
+    "pretest": "jscs bin config controllers lib models test && jshint bin config controllers lib models"
   },
   "config": {
     "port": "3000"

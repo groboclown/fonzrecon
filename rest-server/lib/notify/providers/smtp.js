@@ -5,7 +5,7 @@ const emailjs = require('emailjs');
 module.exports = function(connectionSettings) {
   return {
     send: (args) => { return sendEmail(connectionSettings, args); }
-  }
+  };
 };
 
 

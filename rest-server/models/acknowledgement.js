@@ -186,7 +186,7 @@ AcknowledgementSchema.statics.findOneForAddingThumbsUp = function(ackId, userObj
     .populate('givenByUser')
     .populate('awardedToUsers')
     .populate('thumbsUps')
-    .populate('thumbsUps.givenByUser')
+    .populate('thumbsUps.givenByUser');
 };
 
 

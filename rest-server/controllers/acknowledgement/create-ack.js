@@ -155,8 +155,8 @@ exports.create = function(req, res, next) {
           param: 'points',
           msg: 'insufficient points',
           value: req.body.points,
-          quantity: toUsers.length,
-          total: totalGivenPoints
+          quantity: req.body.to.length,
+          total: req.body.points * req.body.to.length
         }]);
       }
       // Nothing to return.
@@ -244,4 +244,4 @@ exports.getUsersInAcknowledgement = function(req) {
       }
       return ret;
     });
-}
+};

@@ -129,7 +129,6 @@ for (var k in ALL_SETTINGS) {
 
 
 SettingSchema.statics._settingGetterValue = function(keyDef) {
-  keyDef.validatorPromise
   return this._forKey(keyDef.key)
     .then((val) => {
       if (!val) {
@@ -137,20 +136,20 @@ SettingSchema.statics._settingGetterValue = function(keyDef) {
       }
       return val.value;
     });
-}
+};
 SettingSchema.statics._settingSetter = function(keyDef, value) {
   return keyDef.validatorPromiseFactory(value)
     .then((scrubbed) => {
       return this._setKey(keyDef.key, keyDef.description, scrubbed);
     });
-}
+};
 function createSettingGetterSetter(keyDef) {
   SettingSchema.statics['get' + keyDef.key] = function() {
-    return this._settingGetterValue(keydef);
+    return this._settingGetterValue(keyDef);
   };
   SettingSchema.statics['set' + keyDef.key] = function(value) {
     return this._settingSetter(keyDef, value);
-  }
+  };
 }
 for (let k in ALL_SETTINGS) {
   if (ALL_SETTINGS.hasOwnProperty(k)) {
@@ -231,7 +230,6 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
     .then((settings) => {
       var settingObjs = [];
       for (let i = 0; i < keys.length; i++) {
-        console.log(`adding ${keys[i]} -> ${JSON.stringify(settings[keys[i]])}`)
         settingObjs.push(settings[keys[i]]);
       }
       return Promise

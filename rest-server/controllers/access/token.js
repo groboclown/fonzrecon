@@ -62,7 +62,7 @@ exports.removeToken = function(username, authName, req) {
         var newBrowsers = [];
         for (var i = 0; i < authMethod.browsers.length; i++) {
           if (!existingTokens.browserIndexes.includes(i)) {
-            newBrowsers.push(auth.browsers[i]);
+            newBrowsers.push(authMethod.browsers[i]);
           }
         }
         authMethod.browsers = newBrowsers;
@@ -74,7 +74,7 @@ exports.removeToken = function(username, authName, req) {
       }
       return null;
     });
-}
+};
 
 
 /**
@@ -136,7 +136,7 @@ exports.generateToken = function(replaceExistingToken, authName, req) {
         var newBrowsers = [];
         for (var i = 0; i < authMethod.browsers.length; i++) {
           if (!existingTokens.browserIndexes.includes(i)) {
-            newBrowsers.push(auth.browsers[i]);
+            newBrowsers.push(authMethod.browsers[i]);
           }
         }
         authMethod.browsers = newBrowsers;

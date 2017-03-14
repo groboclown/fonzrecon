@@ -134,7 +134,6 @@ module.exports = function(req, res, next) {
     });
   var userPromise = accountPromise
     .then((account) => {
-      console.log(`creating user account`)
       return new User({
         username: reqUser.username,
         names: reqUser.names,

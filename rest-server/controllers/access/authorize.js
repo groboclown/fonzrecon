@@ -88,7 +88,7 @@ module.exports = function(permission, affectedUserListFunc) {
       return next(forbidden());
     }
     return next(forbidden());
-  }
+  };
 };
 
 

@@ -125,7 +125,7 @@ exports.validate = function(req, res, next) {
 
       return Account
         .findByUserResetAuthenticationToken(
-          req.body.username, req.body.resetAuthenticationToken)
+          req.body.username, req.body.resetAuthenticationToken);
     })
     .then((account) => {
       if (!account) {
@@ -166,7 +166,7 @@ exports.validate = function(req, res, next) {
 
       // Tell the user about the password change.
       notify.send('password-changed', toUser, {
-        username: account.userRef
+        username: args[0].userRef
       });
 
     })
@@ -202,7 +202,7 @@ exports.requestPasswordChange = function(req, res, next) {
       return User.findOne({ username: req.body.username });
     });
   Promise
-    .all([accountPromise, userAccount, accountResetPromise])
+    .all([accountPromise, userAccountPromise, accountResetPromise])
     .then((args) => {
       var toUser = args[1] || args[0];
       var resetValues = args[2];

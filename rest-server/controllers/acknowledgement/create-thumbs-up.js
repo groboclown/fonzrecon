@@ -94,9 +94,7 @@ exports.createThumbsUp = function(req, res, next) {
         throw errors.validationProblems([{
           param: 'points',
           msg: 'insufficient points',
-          value: req.body.points,
-          quantity: toUsers.length,
-          total: totalGivenPoints
+          value: req.body.points
         }]);
       }
 
@@ -136,9 +134,7 @@ exports.createThumbsUp = function(req, res, next) {
         throw errors.validationProblems([{
           param: 'points',
           msg: 'insufficient points',
-          value: req.body.points,
-          quantity: toUsers.length,
-          total: totalGivenPoints
+          value: req.body.points
         }]);
       }
       // Nothing to return.

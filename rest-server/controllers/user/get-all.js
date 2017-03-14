@@ -16,7 +16,7 @@ module.exports = function(req, res, next) {
     .listBrief(userLike)
     .paginate(pagination)
     .then((users) => {
-      users.type = 'UserBrief'
+      users.type = 'UserBrief';
       res.status(200).json(jsonConvert.pagedResults(users, jsonConvert.briefUser));
     })
     .catch((err) => {

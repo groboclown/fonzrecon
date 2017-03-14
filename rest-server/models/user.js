@@ -94,7 +94,7 @@ UserSchema.statics.findOneBrief = function(condition) {
     .findOne(condition)
     .lean()
     .select(BRIEF_SELECTION);
-}
+};
 
 UserSchema.statics.listBrief = function(userLike) {
   return this

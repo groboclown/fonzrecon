@@ -15,7 +15,7 @@ module.exports = function(settings) {
     }
 
     // Create our own setting object.
-    settings.private.EmailProviderImpl = provider(
+    settings.private.EmailProviderImpl = emailProvider(
       settings.private.EmailProviderConnection);
   }
 

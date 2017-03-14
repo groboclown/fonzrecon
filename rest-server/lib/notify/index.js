@@ -104,10 +104,10 @@ exports.send = function(template, to, data) {
       // It's expected to run outside the normal promise world.
       // Is this right?
       .catch((err) => {
-        console.error(`Problem sending ${template} email to ${email}: ${err.message}`);
+        console.error(`Problem sending ${template} email to ${to}: ${err.message}`);
         console.error(err.stack);
       });
-  }))
+  }));
 
 };
 

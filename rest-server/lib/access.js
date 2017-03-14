@@ -21,4 +21,4 @@ exports.getRequestUsername = function(req) {
     return false;
   }
   return user.username;
-}
+};

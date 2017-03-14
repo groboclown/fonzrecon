@@ -48,7 +48,7 @@ AccountTokenStrategy.prototype.authenticate = function(req, options) {
     })
     .catch((err) => {
       self.error(err);
-    })
+    });
 };
 
 
