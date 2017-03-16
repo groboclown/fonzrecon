@@ -13,12 +13,14 @@ module.exports = function(username, password) {
   var loginMatchPromise = accountPromise
     .then((account) => {
       if (!account) {
+        console.log(`DEBUG did not find account for ${username}`);
         return null;
       }
       return account.getAuthenticationNamed('local');
     })
     .then((auth) => {
       if (!auth) {
+        console.log(`DEBUG did not find auth for ${username}`);
         return false;
       }
       return auth.onLogin({ password: password });
@@ -32,6 +34,7 @@ module.exports = function(username, password) {
         return false;
       }
       if (!isMatch) {
+        console.log(`DEBUG password did not match for ${username}`);
         return false;
       }
       return account;

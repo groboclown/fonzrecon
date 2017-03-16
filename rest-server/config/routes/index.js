@@ -36,10 +36,10 @@ exports.setup = function(app, passport) {
     // TODO make this part of the environment object.
     if (settings.envName === 'development') {
       console.error(err.stack);
-      // FIXME remove next block
-    } else if (settings.envName === 'test') {
-      if (err.details) { console.error(JSON.stringify(err.details)); }
-      console.error(err.stack);
+      // Debug code
+      // } else if (settings.envName === 'test') {
+      //  if (err.details) { console.error(JSON.stringify(err.details)); }
+      //  console.error(err.stack);
     }
 
 

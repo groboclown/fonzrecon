@@ -16,7 +16,7 @@ describe('Authentication', () => {
       let tokenPromise = testSetup
         .getLoginToken('initialadmin', 'sekret')
         .then((token) => {
-          console.log(`1. logged in as initial admin`);
+          debug(`1. logged in as initial admin`);
           return testSetup.request()
             .post('/api/v1/users')
             .set('Authorization', 'JWT ' + token)
@@ -32,12 +32,12 @@ describe('Authentication', () => {
             });
         })
         .then((res) => {
-          console.log(`1a. - Done`);
+          debug(`1a. - Done`);
           assert.equal(res.status, 201, 'create user status');
           assert.isString(res.body.resetAuthenticationToken, 'token');
           assert.isString(res.body.resetAuthenticationExpires, 'expires');
 
-          console.log(`2. validate with ${JSON.stringify(res.body)}`);
+          debug(`2. validate with ${JSON.stringify(res.body)}`);
           return testSetup.request()
             .put('/auth/validate')
             .send({
@@ -47,36 +47,36 @@ describe('Authentication', () => {
             });
         })
         .then((res) => {
-          console.log(`2a. - Done`);
+          debug(`2a. - Done`);
           assert.equal(res.status, 200, 'validate status');
 
           // Attempt login with given password.
-          console.log(`3. Logging in`);
+          debug(`3. Logging in`);
           return testSetup.getLoginToken('user1', 'user1password');
         });
 
       let p1 = tokenPromise
         .then((token) => {
-          console.log(`3a. - Done`);
+          debug(`3a. - Done`);
 
           // Attempt a request that should work.
-          console.log(`4. Get users`);
+          debug(`4. Get users with token ${token}`);
           return testSetup.request()
             .get('/api/v1/users')
-            .set('Authentication', 'JWT ' + token)
+            .set('Authorization', 'JWT ' + token)
         });
 
       // Request a password change
       let passwordChangeTokenPromise = Promise
         .all([tokenPromise, p1])
         .then((args) => {
-          console.log(`4a. - Done`);
+          debug(`4a. - Done`);
           assert.equal(args[1].status, 200, 'get users status');
 
-          console.log(`5. Requesting password change`);
+          debug(`5. Requesting password change`);
           return testSetup.request()
             .put('/auth/password-change')
-            .set('Authentication', 'JWT ' + args[0])
+            // Can be done without authorization
             .send({ email: 'user1@some.place' });
         });
 
@@ -84,43 +84,48 @@ describe('Authentication', () => {
       let p2 = Promise
         .all([tokenPromise, passwordChangeTokenPromise])
         .then((args) => {
-          console.log(`5a. - Done`);
+          debug(`5a. - Done`);
           assert.equal(args[1].status, 200, 'password change request status');
 
-          console.log(`6. Getting users`);
+          debug(`6. Getting users`);
           return testSetup.request()
             .get('/api/v1/users')
-            .set('Authentication', 'JWT ' + args[0])
+            .set('Authorization', 'JWT ' + args[0])
         });
 
       // Attempt the password change
       return Promise
         .all([passwordChangeTokenPromise, p2])
         .then((args) => {
-          console.log(`6a. - Done`);
+          debug(`6a. - Done`);
           assert.equal(args[1].status, 200, 'get users 2 status');
 
-          console.log(`7. Validating password change`);
+          debug(`7. Validating password change`);
           return testSetup.request()
             .put('/auth/validate')
             .send({
-              username: 'user1`',
+              username: 'user1',
               password: 'user1password-2',
               resetAuthenticationToken: args[0].body.resetAuthenticationToken
             });
         })
         .then((res) => {
-          console.log(`7a. - Done`);
+          debug(`7a. - Done`);
           assert.equal(res.status, 200, 'validate status');
 
           // Attempt login with given password.
-          console.log(`8. Logging in w/ new password`);
+          debug(`8. Logging in w/ new password`);
           return testSetup.getLoginToken('user1', 'user1password-2');
         })
         .catch((err) => {
-          console.log(err.message + '\n' + err.stack);
+          debug(err.message + '\n' + err.stack);
           assert.fail(err.message);
         });
     });
   });
 });
+
+
+function debug(arg) {
+  // DEBUG console.log(arg);
+}

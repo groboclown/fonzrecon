@@ -138,12 +138,18 @@ exports.validate = function(req, res, next) {
     .then((account) => {
       return User.findOne({ username: account.userRef });
     });
-  var savedAccountPromise = accountPromise
+  var authPromise = accountPromise
     .then((account) => {
       // Update the account entry
       account.resetAuthenticationToken = null;
       account.resetAuthenticationExpires = null;
-      let auth = account.getAuthenticationNamed('local');
+      return account.getAuthenticationNamed('local');
+    });
+  var savedAccountPromise = Promise
+    .all([accountPromise, authPromise])
+    .then((args) => {
+      let account = args[0];
+      let auth = args[1];
       if (auth) {
         auth.userInfo = [req.body.password];
         // Reset any existing tokens.
@@ -185,9 +191,9 @@ exports.requestPasswordChange = function(req, res, next) {
     condition.userRef = req.body.username;
   }
   if (req.body.email && typeof(req.body.email) === 'string') {
-    condition.email = req.body.email;
-    if (!validate.isEmailAddress(condition.email)) {
-      return next(errors.extraValidationProblem('email', condition.email,
+    condition.accountEmail = req.body.email;
+    if (!validate.isEmailAddress(condition.accountEmail)) {
+      return next(errors.extraValidationProblem('email', condition.accountEmail,
         'invalid email address format'));
     }
   }
@@ -198,6 +204,7 @@ exports.requestPasswordChange = function(req, res, next) {
       if (!account) {
         throw errors.resourceNotFound();
       }
+      // This does the save for us.
       return account.resetAuthentication();
     });
   var userAccountPromise = accountResetPromise
