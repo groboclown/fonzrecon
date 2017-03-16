@@ -33,7 +33,15 @@ exports.setup = function(app, passport) {
       return next();
     }
 
-    console.error(err.stack);
+    // TODO make this part of the environment object.
+    if (settings.envName === 'development') {
+      console.error(err.stack);
+      // FIXME remove next block
+    } else if (settings.envName === 'test') {
+      if (err.details) { console.error(JSON.stringify(err.details)); }
+      console.error(err.stack);
+    }
+
 
     var status = 500;
     // Only send stacktrace back if not in production mode.
@@ -41,7 +49,9 @@ exports.setup = function(app, passport) {
     if (typeof(err) === 'string') {
       payload.message = err;
     }
-    if (settings.envName !== 'production') {
+    if (settings.envName === 'production') {
+      payload.stack = null;
+    } else {
       payload.stack = err.stack;
     }
     if (err.details) {

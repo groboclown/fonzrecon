@@ -1,11 +1,12 @@
 'use strict';
 
 const assert = require('chai').assert;
-const mongooseTesting = require('../../util/mongoose-testing');
-const Setting = mongooseTesting.models.Setting;
+const testSetup = require('../../util/test-setup');
+const Setting = testSetup.models.Setting;
+
 
 describe('Setting setters and getters', () => {
-  before(mongooseTesting.before);
+  before(testSetup.beforeDb);
 
   it('get and set valid', () => {
     return Setting

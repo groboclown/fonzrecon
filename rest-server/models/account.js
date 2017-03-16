@@ -15,7 +15,9 @@ const BrowserTokenSchema = new Schema({
   token: {
     type: String,
     required: true,
-    unique: true
+
+    // Sparse index means we can have empty browser lists.
+    sparse: true
   },
   expires: {
     type: Date,
@@ -362,7 +364,7 @@ AccountSchema.statics.findByUserResetAuthenticationToken = function(username, re
   return this.findOne({
     userRef: username,
     resetAuthenticationToken: resetAuthenticationToken,
-    resetAuthenticationExpires: { $lt: new Date() }
+    resetAuthenticationExpires: { $gt: new Date() }
   });
 };
 
@@ -396,7 +398,7 @@ AccountSchema.methods.resetAuthentication = function(expirationHours) {
   expires.setTime(expires.getTime() + (expirationHours * 3600000));
 
   return new Promise(function(resolve, reject) {
-    crypto.randomBytes(64, (err, buffer) => {
+    crypto.randomBytes(66, (err, buffer) => {
       if (err) {
         return reject(err);
       }

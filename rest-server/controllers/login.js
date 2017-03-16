@@ -12,7 +12,7 @@
 const access = require('./access');
 const errors = require('./util').errors;
 const models = require('../models');
-const notify = require('./util').notify;
+const notify = require('../lib/notify');
 const validate = require('../lib/validate');
 const Account = models.Account;
 const User = models.User;
@@ -130,8 +130,9 @@ exports.validate = function(req, res, next) {
     .then((account) => {
       if (!account) {
         throw errors.extraValidationProblem(
-          'username and resetAuthenticationToken', [], 'username does not have active token');
+          'username and resetAuthenticationToken', [], 'username does not have matching active token');
       }
+      return account;
     });
   var userPromise = accountPromise
     .then((account) => {
@@ -145,6 +146,8 @@ exports.validate = function(req, res, next) {
       let auth = account.getAuthenticationNamed('local');
       if (auth) {
         auth.userInfo = [req.body.password];
+        // Reset any existing tokens.
+        auth.browser = [];
       } else {
         account.authentications.push({
           source: 'local',

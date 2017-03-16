@@ -1,5 +1,6 @@
 'use strict';
 
+const envName = require('../../config/settings').envName;
 const models = require('../../models');
 const Setting = models.Setting;
 const files = require('../files');
@@ -25,7 +26,7 @@ const DEFAULT_THEME = 'light';
  * Returns promise that has a return value of null on success.
  */
 exports.send = function(template, to, data) {
-  const settingsPromise = Setting.getEmailSettings()
+  const settingsPromise = Setting.getTemplateSettings()
     .then((settings) => {
       data.siteSettings = settings.public;
       return settings;
@@ -77,7 +78,7 @@ exports.send = function(template, to, data) {
   return Promise.all(destinations.map((destination) => {
     let templateDirPromise = settingsPromise
       .then((settings) => {
-        return getNotifyTemplateDir(template, destination.locale, settings);
+        return getNotifyTemplateDir(destination.provider, destination.locale, settings);
       });
     let providerPromise = settingsPromise
       .then((settings) => {
@@ -92,12 +93,16 @@ exports.send = function(template, to, data) {
         let toDestination = args[2];
         let provider = args[3];
 
-        return provider.send({
-          settings: settings,
-          templateDir: templateDir,
-          templateName: template,
-          toDestination: toDestination
-        });
+        // Do not send to provider if we're running tests!
+        // TODO this should be part of the env object.
+        if (envName !== 'test') {
+          return provider.send({
+            settings: settings,
+            templateDir: templateDir,
+            templateName: template,
+            toDestination: toDestination
+          });
+        }
       })
 
       // TODO for now, the sending of the email handles its own errors.
@@ -147,12 +152,13 @@ function getNotifyTemplateDir(provider, locale, settings) {
   var locationOrder = [];
   for (let i = 0; i < themeOrder.length; i++) {
     for (let j = 0; j < locales.length; j++) {
-      locationOrder.push(`templates/${provider}/${themeOrder[i]}/${locales[j]}`);
+      locationOrder.push(files.pathFromRoot(`templates/${provider}/${themeOrder[i]}/${locales[j]}`));
     }
   }
 
   return files.getDirectoryStatus(locationOrder)
     .then((dirStats) => {
+      console.log(`DEBUG checking directories: ${JSON.stringify(dirStats)}`);
       for (let i = 0; i < dirStats.length; i++) {
         if (dirStats[i][1]) {
           return dirStats[i];

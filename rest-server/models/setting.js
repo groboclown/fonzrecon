@@ -250,6 +250,16 @@ SettingSchema.statics.getSettingValues = function(keys) {
       for (let i = 0; i < settings.length; i++) {
         ret[settings[i].key] = settings[i].value;
       }
+      for (let i = 0; i < keys.length; i++) {
+        let k = keys[i];
+        if (!ret[k]) {
+          if (ALL_SETTINGS.hasOwnProperty(k)) {
+            ret[k] = ALL_SETTINGS[k].defaultValue;
+          } else {
+            ret[k] = null;
+          }
+        }
+      }
       return ret;
     });
 };
@@ -261,7 +271,7 @@ SettingSchema.statics.getSettingValues = function(keys) {
  * Retrieve a single object with all the settings used by email.
  */
 
-SettingSchema.statics.getEmailSettings = function() {
+SettingSchema.statics.getTemplateSettings = function() {
   // Shallow clone of the dictionaries above.
   return Promise
     .all([

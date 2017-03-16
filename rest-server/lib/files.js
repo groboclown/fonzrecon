@@ -4,9 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 
-exports.ROOT_DIR = path.resolve(__dirname + '../..') + '/';
-exports.pathFromRoot = function(path) {
-  return path.resolve(exports.ROOT_DIR + path);
+exports.ROOT_DIR = path.resolve(path.join(__dirname, '..'));
+exports.pathFromRoot = function(name) {
+  return path.resolve(path.join(exports.ROOT_DIR, name));
 };
 
 exports.isFileReadable = function(filename) {
@@ -56,5 +56,6 @@ exports.getDirectoryStatus = function(dirnames) {
       for (let i = 0; i < dirnames.length; i++) {
         ret.push([dirnames[i], stats[i]]);
       }
+      return ret;
     });
 };

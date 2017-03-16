@@ -22,7 +22,6 @@ exports.setup = function(app, passport) {
   app.use(cors());
   app.use(helmet());
 
-  app.use(logger('dev'));
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
@@ -50,6 +49,7 @@ exports.setup = function(app, passport) {
   app.use(passport.initialize());
 
   if (settings.envName !== 'test') {
+    app.use(logger('dev'));
     // CSRF requires sessions and cookies, which we're not
     // in any position to use.
     // app.use(csrf());

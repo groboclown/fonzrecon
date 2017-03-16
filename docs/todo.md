@@ -25,6 +25,8 @@
       to update their account.
     * Allow for prize creation, editing, and expiring.
     * Allow for claimed prize pending state and corresponding interactions.
+    * Better utilize the "env" structure, rather than doing checks on the
+      envName variable.
 * bot:
   * MS Teams:
     * access through MS Teams
