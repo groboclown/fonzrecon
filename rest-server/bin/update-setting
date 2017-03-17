@@ -10,9 +10,9 @@ var argv = process.argv;
 var changes = {};
 var errors = [];
 var keys = [];
+// TODO allow for reading JSON from stdin.
 for (var i = 2; i < argv.length; i++) {
   if (argv[i] === '-h' || argv[i] === '-H' || argv[i] === '/?' || argv[i] === '/h' || argv[i] === '/H') {
-    // TODO allow for reading JSON from stdin.
     console.log(`Usage: ${argv[0]} [key=value] ...`);
     console.log('where `key` is the setting key to affect, and `value` is what to set it to.  If the value starts with a JSON character (number, [, ", {), then it will be parsed as JSON data');
     console.log('Valid keys:');
