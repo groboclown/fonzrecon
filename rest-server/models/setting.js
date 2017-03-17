@@ -286,3 +286,14 @@ SettingSchema.statics.getTemplateSettings = function() {
 
 
 module.exports = mongoose.model('Setting', SettingSchema);
+module.exports.ALL_SETTINGS = [];
+module.exports.ALL_SETTINGS_MAP = {};
+for (let i = 0; i < ALL_SETTING_KEYS.length; i++) {
+  let k = ALL_SETTING_KEYS[i];
+
+  module.exports.ALL_SETTINGS_MAP[k] = {
+    key: ALL_SETTINGS[k].key,
+    description: ALL_SETTINGS[k].description
+  };
+  module.exports.ALL_SETTINGS.push(module.exports.ALL_SETTINGS_MAP[k]);
+}
