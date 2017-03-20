@@ -87,35 +87,37 @@ module.exports = function(req, res, next) {
         userMatchCondition.push({ names: reqUser.names[i] });
       }
 
+      // Find if there's an existing user account with the username
+      // or any of the names in the lists.
       return User
         .find({ $or: userMatchCondition })
         .exec();
     })
 
-    // Create the account.
     .then((matchingUsers) => {
       if (matchingUsers.length > 0) {
+        let names = ([reqUser.username, reqUser.email]).concat(reqUser.names);
         throw errors.extraValidationProblem(
-          'username or names',
-          [ reqUser.username, reqUser.names ],
+          'username, email, or names',
+          names,
           'One of these values is already in use'
         );
       }
 
+      // Find if there's an account with the username or email.
       return Account
         .find({
-          // Email does not need to be unique.
-          // $or: [ { id: req.body.username }, { accountEmail: req.body.email }],
-          id: reqUser.username
+          $or: [ { id: reqUser.username }, { accountEmail: reqUser.email }]
         })
         .lean()
         .exec();
     })
     .then((matchingAccounts) => {
       if (matchingAccounts.length > 0) {
+        let names = ([reqUser.username, reqUser.email]).concat(reqUser.names);
         throw errors.extraValidationProblem(
-          'username or names',
-          [ reqUser.username, reqUser.names ],
+          'username, email, or names',
+          names,
           'One of these values is already in use'
         );
       }

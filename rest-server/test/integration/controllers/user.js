@@ -57,7 +57,6 @@ describe('Create User', () => {
         }
       })
       .then((res) => {
-        console.log(`DEBUG generated ${JSON.stringify(res)}`);
         assert.isTrue(res.next, 'next');
         assert.isOk(res.error, 'Must have generated error');
         assert.equal(res.status, 400, 'status');
@@ -65,10 +64,75 @@ describe('Create User', () => {
         assert.deepEqual(res.errorDetails, [
           {
             msg: 'One of these values is already in use',
-            param: 'username or names',
-            value: ['testuser', ['b']]
+            param: 'username, email, or names',
+            value: ['testuser', '11@abc.def', 'b']
           }
         ], 'error details');
       });
   });
+
+  it('Existing name', () => {
+    return mockControllerRunner.run(userController.create, {
+        username: 'initialadmin',
+        body: {
+          user: {
+            username: 'testuser2',
+            email: '112@abc.def',
+            names: ['n'],
+            pointsToAward: 0,
+            organization: 'b',
+            locale: 'es'
+          }
+        }
+      })
+      .then((res) => {
+        assert.isTrue(res.next, 'next');
+        assert.isOk(res.error, 'Must have generated error');
+        assert.equal(res.status, 400, 'status');
+        assert.equal(res.errorMessage, 'ValidationError', 'message');
+        assert.deepEqual(res.errorDetails, [
+          {
+            msg: 'One of these values is already in use',
+            param: 'username, email, or names',
+            value: ['testuser2', '112@abc.def', 'n']
+          }
+        ], 'error details');
+      });
+  });
+
+  it('Existing email', () => {
+    return mockControllerRunner.run(userController.create, {
+        username: 'initialadmin',
+        body: {
+          user: {
+            username: 'testuser2',
+            email: 'eat@joes.com',
+            names: ['b'],
+            pointsToAward: 0,
+            organization: 'b',
+            locale: 'es'
+          }
+        }
+      })
+      .then((res) => {
+        assert.isTrue(res.next, 'next');
+        assert.isOk(res.error, 'Must have generated error');
+        assert.equal(res.status, 400, 'status');
+        assert.equal(res.errorMessage, 'ValidationError', 'message');
+        assert.deepEqual(res.errorDetails, [
+          {
+            msg: 'One of these values is already in use',
+            param: 'username, email, or names',
+            value: ['testuser2', 'eat@joes.com', 'b']
+          }
+        ], 'error details');
+      });
+  });
+});
+
+
+describe('Get All', () => {
+  before(testSetup.beforeDb);
+
+  // TODO add tests
 });
