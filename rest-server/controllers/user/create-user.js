@@ -83,7 +83,7 @@ exports.import = function(req, res, next) {
 
 
 
-function createOneUser(reqUser) {
+function createOneUser(reqUser, dontSendEmail) {
   // Because of the way this is done, it must be a manual check.
   let errors = [];
   if (!reqUser) {
@@ -220,6 +220,9 @@ function createOneUser(reqUser) {
       var user = args[0];
       var resetValues = args[1];
 
+      if (dontSendEmail) {
+        return null;
+      }
       return notify.send('new-user', user, {
         username: user.username,
         user: user,

@@ -63,9 +63,9 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-createOneUser(reqUser)
+createOneUser(reqUser, true)
   .then((args) => {
-    console.log(`Created admin username ${args[0].username}.  Use this token to set the password: "${args[1].resetAuthenticationToken}"`);
+    console.log(`Created admin with username ${args[0].username}.\nUse this token to set the password (without the quotes):\n"${args[1].resetAuthenticationToken}"`);
 
     // Make sure we quit, by closing off our connections.
     require('mongoose').disconnect();
