@@ -20,6 +20,7 @@ function ALLOW_NONE(selfUser, onBehalfOf, affectedUsers) {
 
 module.exports = {
   names: ['BOT', 'USER', 'ADMIN'],
+  userRoles: ['USER', 'ADMIN'],
 
   // Can view basic user info, can award on users' behalf, can view
   // basic public award info.  Even if the user is an admin, the user
@@ -97,6 +98,7 @@ module.exports = {
       ACCOUNT_VIEW: ALLOW_ANY,
       ACCOUNT_EDIT: ALLOW_SELF,
       ACCOUNT_CREATE: ALLOW_ANY,
+      ACCOUNT_IMPORT: ALLOW_ANY,
       ACCOUNT_VALIDATE: ALLOW_SELF,
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,

@@ -61,5 +61,12 @@ module.exports = function() {
           })
           .save();
         })
+    })
+    .then(() => {
+      return Setting
+        .setSettings({
+          AdminActionNotificationEmails: ['initialadmin@fonzrecon.github'],
+          EmailTheme: 'json'
+        });
     });
 };

@@ -377,6 +377,64 @@ empty JSON object (`{}`).
 
 
 
+## PUT `/auth/validate`
+
+Validates a user's request for a password change.  This should be called after
+a new user is created, or if the user requested the change in password.
+
+**Access**: all users.
+
+**JSON Body**:
+
+```json
+{
+  "resetAuthenticationToken": "very-long-token-sent-through-email",
+  "username": "yourusername",
+  "password": "New Password"
+}
+```
+
+**Returns**:
+
+```json
+{}
+```
+
+Also, sends an email to the user's account indicating a password change event
+occurred.
+
+
+## PUT `/auth/password-change`
+
+Requests a password change.  The request will send a link to the user through
+email to allow the user to reset the account's password.
+
+**Access**: all users.
+
+**JSON Body**:
+
+```json
+{
+  "username": "myusername",
+  "email": "my@email"
+}
+```
+
+You can pass in either username or email; both are not required.
+
+**Returns**:
+
+```json
+{}
+```
+
+The user will receive an email with the details to reset the password.
+
+Note: there is no error reported if the user or email specified are not
+registered.
+
+
+
 # User Access API
 
 ## GET `/api/v1/users`
@@ -404,7 +462,7 @@ Retrieve the details of the user.
 
 **Access**: all authenticated users.
 
-**Returns:**
+**Returns**:
 
 ```json
 {
@@ -432,7 +490,7 @@ value before it expires in order to set a password and be able to log in.
 the situation where a user is sending to a known user in the external system
 (say, the LDAP server), but the user hasn't been created in the site.
 
-**JSON Body:**
+**JSON Body**:
 
 ```json
 {
@@ -453,10 +511,57 @@ user can give.
 **Returns:**
 
 ```json
+{}
+```
+
+
+## POST `api/v1/users/import`
+
+Imports a list of users into the system.
+
+**Access**: Administrators only.
+
+**JSON Body:**
+
+```json
 {
-  "resetAuthenticationToken": "very-long-token-used-in-calls-to-validate-the-user-email",
-  "resetAuthenticationExpires": "2013-04-08T21:31:03.818Z"
+  "users": [
+    {
+      "username": "uniqueusername",
+      "email": "my.name@somewhere",
+      "names": ["Alias 1", "One, Alias"],
+      "pointsToAward": 0,
+      "organization": "Sales",
+      "locale": "en",
+      "role": "USER"
+    }
+  ]
 }
+```
+
+The `pointsToAward` value determines the starting number of points the
+user can give.
+
+**Returns:**
+
+```json
+[
+  {
+    "username": "uniqueusername",
+    "status": "created"
+  },
+  {
+    "username": "bad-user",
+    "status": "rejected",
+    "details": [
+      {
+        "param": "username",
+        "value": "bad-user",
+        "details": "can contain only numbers and lowercase letters"
+      }
+    ]
+  }
+]
 ```
 
 

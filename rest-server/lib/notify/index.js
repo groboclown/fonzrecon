@@ -26,6 +26,7 @@ const DEFAULT_THEME = 'light';
  * Returns promise that has a return value of null on success.
  */
 exports.send = function(template, to, data) {
+  const when = new Date();
   const settingsPromise = Setting.getTemplateSettings()
     .then((settings) => {
       data.siteSettings = settings.public;
@@ -36,85 +37,120 @@ exports.send = function(template, to, data) {
     to = [ to ];
   }
 
+  var dests = {
+    settingsPromise: settingsPromise,
+
+    // Each index is the provider ';' locale
+    templateDirPromises: {},
+
+    // Each index is the provider
+    providerPromises: {},
+
+    destPromises: [],
+
+    destinations: []
+  };
+
+  // FIXME this hangs right now, looks like because of a cycle in the
+  // promises.
+
   // Send all the allowable contact types.
-  var destinations = [];
   for (let i = 0; i < to.length; i++) {
-    var user = to[i];
+    let user = to[i];
     if (typeof(user) === 'string') {
       // Assume email
-      destinations.push({
+      addDestination(dests, {
         provider: 'email',
         locale: DEFAULT_LOCALE,
         address: user,
-        server: null
+        server: null,
+        data: data,
+        template: template,
+        when: when
       });
     } else if (user.accountEmail) {
       // Account object
-      destinations.push({
+      addDestination(dests, {
         provider: 'email',
         locale: DEFAULT_LOCALE,
         address: user.accountEmail,
-        server: null
+        server: null,
+        data: data,
+        template: template,
+        when: when
       });
     } else if (user.contacts) {
       // User object
       for (let j = 0; j < user.contacts.length; j++) {
-        destinations.push({
+        addDestination(dests, {
           locale: user.locale || DEFAULT_LOCALE,
           provider: user.contacts[j].type,
           address: user.contacts[j].address,
-          server: user.contacts[j].server
+          server: user.contacts[j].server,
+          data: data,
+          template: template,
+          when: when
         });
       }
     } else {
       // Unknown object
       console.log(`Unknown "to" data type: ${JSON.stringify(user)}`);
-      return Promise.reject(new Error(`Unknown "to" data type: ${JSON.stringify(user)}`));
+      dests.destPromises.push(Promise.reject(new Error(`Unknown "to" data type: ${JSON.stringify(user)}`)));
     }
   }
 
-  // Each user has their own locale, so we send it separately.
+  return Promise.all(dests.destPromises);
+};
 
-  return Promise.all(destinations.map((destination) => {
-    let templateDirPromise = settingsPromise
+
+
+function addDestination(dests, destination) {
+  dests.destinations.push(destination);
+
+  const templatePromiseKey = destination.provider + ';' + destination.locale;
+  if (!dests.templateDirPromises[templatePromiseKey]) {
+    dests.templateDirPromises[templatePromiseKey] = dests.settingsPromise
       .then((settings) => {
         return getNotifyTemplateDir(destination.provider, destination.locale, settings);
       });
-    let providerPromise = settingsPromise
+  }
+  const templateDirPromise = dests.templateDirPromises[templatePromiseKey];
+
+  const providerPromiseKey = destination.provider;
+  if (!dests.providerPromises[providerPromiseKey]) {
+    dests.providerPromises[providerPromiseKey] = dests.settingsPromise
       .then((settings) => {
         return require('./providers/' + destination.provider)(settings);
       });
-    return Promise
-      .all([ settingsPromise, templateDirPromise,
-        Promise.resolve(destination), providerPromise ])
-      .then((args) => {
-        let settings = args[0];
-        let templateDir = args[1];
-        let toDestination = args[2];
-        let provider = args[3];
+  }
+  const providerPromise = dests.providerPromises[providerPromiseKey];
 
-        // Do not send to provider if we're running tests!
-        // TODO this should be part of the env object.
-        if (envName !== 'test') {
-          return provider.send({
-            settings: settings,
-            templateDir: templateDir,
-            templateName: template,
-            toDestination: toDestination
-          });
-        }
-      })
+  dests.destPromises.push(Promise
+    .all([dests.settingsPromise, templateDirPromise, providerPromise])
+    .then((args) => {
+      let settings = args[0];
+      let templateDir = args[1];
+      let provider = args[2];
 
-      // TODO for now, the sending of the email handles its own errors.
-      // It's expected to run outside the normal promise world.
-      // Is this right?
-      .catch((err) => {
-        console.error(`Problem sending ${template} email to ${to}: ${err.message}`);
-        console.error(err.stack);
+      return provider.send({
+        settings: settings,
+        notifyData: destination.data,
+        templateDir: templateDir,
+        templateName: destination.template,
+        toDestination: destination,
+        when: destination.when
       });
-  }));
+    })
+    // TODO for now, the sending of the email handles its own errors.
+    // It's expected to run outside the normal promise world.
+    // Is this right?
+    .catch((err) => {
+      console.error(`Problem sending ${destination.template} message to ${destination.address}: ${err.message}`);
+      console.error(err.stack);
+    })
+  );
+}
 
-};
 
 
 exports.sendAdminNotification = function(template, data) {
@@ -158,10 +194,9 @@ function getNotifyTemplateDir(provider, locale, settings) {
 
   return files.getDirectoryStatus(locationOrder)
     .then((dirStats) => {
-      console.log(`DEBUG checking directories: ${JSON.stringify(dirStats)}`);
       for (let i = 0; i < dirStats.length; i++) {
         if (dirStats[i][1]) {
-          return dirStats[i];
+          return dirStats[i][0];
         }
       }
       throw Error(`No template directory found for ${provider}.`);

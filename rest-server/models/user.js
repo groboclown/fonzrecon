@@ -72,6 +72,17 @@ const UserSchema = new Schema({
   timestamps: true
 });
 
+
+UserSchema.methods.bestName = function() {
+  for (let i = 0; i < this.names.length; i++) {
+    if (this.names[i] !== this.username) {
+      return this.names[i];
+    }
+  }
+  return this.username;
+};
+
+
 // Must use a "function" here to bind the `this`.
 function preSave(next) {
   /* jshint ignore:start */
@@ -83,13 +94,16 @@ function preSave(next) {
 }
 UserSchema.pre('save', preSave);
 
+
 UserSchema.statics.findOneByName = function(name) {
   return this
     .findOne({ names: name })
     .lean();
 };
 
+
 const BRIEF_SELECTION = 'username names organization';
+
 
 UserSchema.statics.findOneBrief = function(condition) {
   return this
@@ -97,6 +111,7 @@ UserSchema.statics.findOneBrief = function(condition) {
     .lean()
     .select(BRIEF_SELECTION);
 };
+
 
 UserSchema.statics.listBrief = function(userLike) {
   return this

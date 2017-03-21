@@ -244,22 +244,14 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
  * Loads all the values
  */
 SettingSchema.statics.getSettingValues = function(keys) {
-  return this.getMappedSettingObjects(keys)
+  return this.findFor(keys)
     .then((settings) => {
       let ret = {};
+
       for (let i = 0; i < settings.length; i++) {
         ret[settings[i].key] = settings[i].value;
       }
-      for (let i = 0; i < keys.length; i++) {
-        let k = keys[i];
-        if (!ret[k]) {
-          if (ALL_SETTINGS.hasOwnProperty(k)) {
-            ret[k] = ALL_SETTINGS[k].defaultValue;
-          } else {
-            ret[k] = null;
-          }
-        }
-      }
+
       return ret;
     });
 };

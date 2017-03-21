@@ -202,7 +202,9 @@ exports.requestPasswordChange = function(req, res, next) {
   var accountResetPromise = accountPromise
     .then((account) => {
       if (!account) {
-        throw errors.resourceNotFound();
+        // Just report an OK.  Otherwise, this is a method
+        // for discovering registered user names.
+        return null;
       }
       // This does the save for us.
       return account.resetAuthentication();
@@ -217,14 +219,21 @@ exports.requestPasswordChange = function(req, res, next) {
       var toUser = args[1] || args[0];
       var resetValues = args[2];
 
-      res.status(200).json(resetValues);
+      // For security reasons, the reset values should only be sent through
+      // email.  Otherwise, anyone who has the security token can reset
+      // a password, making this security feature moot.
 
-      notify.send('reset-password', toUser, {
-        username: req.body.username,
-        resetAuthenticationToken: resetValues.resetAuthenticationToken,
-        resetAuthenticationExpires: resetValues.resetAuthenticationExpires
-      });
+      res.status(200).json({});
 
+      // Only send an email if we have a user to send, and we have
+      // reset values to send.
+      if (!!toUser && !!resetValues) {
+        notify.send('reset-password', toUser, {
+          username: req.body.username,
+          resetAuthenticationToken: resetValues.resetAuthenticationToken,
+          resetAuthenticationExpires: resetValues.resetAuthenticationExpires
+        });
+      }
     })
     .catch((err) => {
       next(err);

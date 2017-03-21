@@ -19,9 +19,11 @@ the method `send`:
 ```javascript
 return provider.send({
   settings: settings,
+  notifyData: notifyData,
   templateDir: templateDir,
   templateName: template,
-  toDestination: toDestination
+  toDestination: toDestination,
+  when: new Date()
 });
 ```
 This returns a `Promise`.

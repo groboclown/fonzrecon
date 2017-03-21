@@ -10,6 +10,7 @@ const USER_BRIEF_VIEW = access.authorize(permissions.USER_BRIEF_VIEW, authAffect
 const USER_DETAILS_VIEW = access.authorize(permissions.USER_DETAILS_VIEW, authAffectedUsersId);
 const ACCOUNT_CREATE = access.authorize(permissions.ACCOUNT_CREATE, authAffectedUsersNone);
 const ACCOUNT_EDIT = access.authorize(permissions.ACCOUNT_EDIT, authAffectedUsersId);
+const ACCOUNT_IMPORT = access.authorize(permissions.ACCOUNT_IMPORT, authAffectedUsersNone);
 
 
 router.get('/', USER_BRIEF_VIEW, controller.getAllBrief);
@@ -18,6 +19,7 @@ router.get('/:id/details', USER_DETAILS_VIEW, controller.getOneDetails);
 
 router.post('/', ACCOUNT_CREATE, controller.create);
 router.put('/:id', ACCOUNT_EDIT, controller.update);
+router.post('/import', ACCOUNT_IMPORT, controller.import);
 
 // ================================================================
 // Authentication functions

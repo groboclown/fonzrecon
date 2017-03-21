@@ -26,7 +26,7 @@ describe('Create User', () => {
       .then(() => {
         return new User({
             username: 'testuser',
-            names: ['n'],
+            names: ['nnn'],
             contacts: [{
               type: 'email',
               server: null,
@@ -49,9 +49,9 @@ describe('Create User', () => {
           user: {
             username: 'testuser',
             email: '11@abc.def',
-            names: ['b'],
+            names: ['bbb'],
             pointsToAward: 0,
-            organization: 'b',
+            organization: 'bb',
             locale: 'es'
           }
         }
@@ -65,7 +65,7 @@ describe('Create User', () => {
           {
             msg: 'One of these values is already in use',
             param: 'username, email, or names',
-            value: ['testuser', '11@abc.def', 'b']
+            value: ['testuser', '11@abc.def', 'bbb']
           }
         ], 'error details');
       });
@@ -78,9 +78,9 @@ describe('Create User', () => {
           user: {
             username: 'testuser2',
             email: '112@abc.def',
-            names: ['n'],
+            names: ['nnn'],
             pointsToAward: 0,
-            organization: 'b',
+            organization: 'bb',
             locale: 'es'
           }
         }
@@ -94,7 +94,7 @@ describe('Create User', () => {
           {
             msg: 'One of these values is already in use',
             param: 'username, email, or names',
-            value: ['testuser2', '112@abc.def', 'n']
+            value: ['testuser2', '112@abc.def', 'nnn']
           }
         ], 'error details');
       });
@@ -107,9 +107,9 @@ describe('Create User', () => {
           user: {
             username: 'testuser2',
             email: 'eat@joes.com',
-            names: ['b'],
+            names: ['bbb'],
             pointsToAward: 0,
-            organization: 'b',
+            organization: 'bb',
             locale: 'es'
           }
         }
@@ -123,10 +123,31 @@ describe('Create User', () => {
           {
             msg: 'One of these values is already in use',
             param: 'username, email, or names',
-            value: ['testuser2', 'eat@joes.com', 'b']
+            value: ['testuser2', 'eat@joes.com', 'bbb']
           }
         ], 'error details');
       });
+  });
+
+  it('Simple create', () => {
+    return mockControllerRunner.run(userController.create, {
+      username: 'initialadmin',
+      body: {
+        user: {
+          username: 'testuser3',
+          email: 'testuser3@fonzrecon.github',
+          names: ['testuser3a'],
+          pointsToAward: 0,
+          organization: 'bb',
+          locale: 'zn'
+        }
+      }
+    })
+    .then((res) => {
+      assert.isFalse(res.next, 'next');
+      assert.equal(res.status, 201, 'status');
+      assert.deepEqual(res.json, {}, 'json');
+    });
   });
 });
 
@@ -135,4 +156,11 @@ describe('Get All', () => {
   before(testSetup.beforeDb);
 
   // TODO add tests
+  it('Bot not returned', () => {});
+
+  it('Get Create Get', () => {});
+
+  it('Empty list', () => {});
+
+  it('Paging', () => {});
 });
