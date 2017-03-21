@@ -447,7 +447,7 @@ Retrieves the paged list of users, with brief details.
 
 * Paging:
   * Accepts the standard [paging](#paging) parameters.
-* *TODO this API needs ways to search the list of users.*
+* `like` - a regular expression for matching the username or names.
 
 **Returns:**
 

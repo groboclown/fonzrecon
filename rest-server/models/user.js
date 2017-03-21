@@ -115,7 +115,10 @@ UserSchema.statics.findOneBrief = function(condition) {
 
 UserSchema.statics.listBrief = function(userLike) {
   return this
-    .find({ username: { $regex: new RegExp(userLike, 'i') } })
+    .find({ $or: {
+      username: { $regex: new RegExp(userLike, 'i') } },
+      names: { $regex: new RegExp(userLike, 'i') } }
+    })
     .lean()
     .select(BRIEF_SELECTION);
 };
