@@ -9,18 +9,17 @@
       see her own thumbs up points, but not the other points.
     * User authentication - should it be allowed if a user has a pending
       validation token?
-    * PUT settings doesn't correctly list out the validation problems.
   * Future Features:
     * Allow a user who received an aaay to thumb up the aaay, if there were
       additional people who received the aaay.  The user who gives the
       thumbs up should not be awarded the points, though.
     * Add query parameters for listing users.
-    * Implement general notification framework.
-    * Properly implement email sending.
+    * Properly implement email sending (needs testing).
     * Allow users to upload an image.
     * Allow for account creation for special user types (bots & admins).
       * account must have unique email and username.
       * accounts can only be created by admins.
+      * add a special cli to get it going.
     * Allow for users to update their user and limited rights
       to update their account.
     * Allow for prize creation, editing, and expiring.

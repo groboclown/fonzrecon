@@ -237,3 +237,6 @@ function createOneUser(reqUser) {
       return [args[0], args[1]];
     });
 }
+
+// Make available for other scripts to use.
+exports.createOneUser = createOneUser;

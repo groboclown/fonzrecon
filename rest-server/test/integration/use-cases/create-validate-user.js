@@ -72,6 +72,15 @@ describe('Authentication', () => {
           debug(`2a. - Done`);
           assert.equal(res.status, 200, 'validate status');
 
+          let adminEmails = emailBox.pullMailFor('initialadmin@fonzrecon.github');
+          assert.deepEqual(adminEmails, [], 'admin emails');
+          let userEmails = emailBox.pullMailFor('user1@some.place');
+          assert.equal(userEmails.length, 1, 'user email count');
+          assert.equal(userEmails[0].subject, 'Password Changed FonzRecon For You', 'password change email subject');
+          let emailData = JSON.parse(userEmails[0].html);
+          assert.equal(emailData.type, 'password-changed', 'password changed email data type');
+          assert.equal(emailData.username, 'user1', 'password changed email data username');
+
           // Attempt login with given password.
           debug(`3. Logging in`);
           return testSetup.getLoginToken('user1', 'user1password');
@@ -149,6 +158,15 @@ describe('Authentication', () => {
           debug(`7a. - Done`);
           assert.equal(res.status, 200, 'validate status');
 
+          let adminEmails = emailBox.pullMailFor('initialadmin@fonzrecon.github');
+          assert.deepEqual(adminEmails, [], 'admin emails');
+          let userEmails = emailBox.pullMailFor('user1@some.place');
+          assert.equal(userEmails.length, 1, 'user email count');
+          assert.equal(userEmails[0].subject, 'Password Changed FonzRecon For You', 'password change email subject');
+          let emailData = JSON.parse(userEmails[0].html);
+          assert.equal(emailData.type, 'password-changed', 'password changed email data type');
+          assert.equal(emailData.username, 'user1', 'password changed email data username');
+
           // Attempt login with given password.
           debug(`8. Logging in w/ new password`);
           return testSetup.getLoginToken('user1', 'user1password-2');
@@ -160,5 +178,4 @@ describe('Authentication', () => {
 
 function debug(arg) {
   // DEBUG console.log(arg);
-  console.log(arg);
 }

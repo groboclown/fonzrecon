@@ -25,7 +25,6 @@ module.exports.pullMailFor = function(emailAddress) {
 
 
 module.exports.send = function(args) {
-  console.log(`DEBUG simulating send to ${args.to}`);
   let to = args.to;
   if (!module.exports.outbox[to]) {
     module.exports.outbox[to] = [];

@@ -175,17 +175,18 @@ exports.validate = function(req, res, next) {
   Promise
     .all([accountPromise, userPromise, savedAccountPromise])
     .then((args) => {
-      // Do not automatically log the user in.
-      // For that, use the existing API call.
-      res.status(200).json({});
-
       var toUser = args[1] || args[0];
 
       // Tell the user about the password change.
-      notify.send('password-changed', toUser, {
+      return notify.send('password-changed', toUser, {
         username: args[0].userRef
       });
 
+    })
+    .then(() => {
+      // Do not automatically log the user in.
+      // For that, use the existing API call.
+      res.status(200).json({});
     })
     .catch((err) => {
       next(err);
@@ -227,16 +228,10 @@ exports.requestPasswordChange = function(req, res, next) {
       var toUser = args[1] || args[0];
       var resetValues = args[2];
 
-      // For security reasons, the reset values should only be sent through
-      // email.  Otherwise, anyone who has the security token can reset
-      // a password, making this security feature moot.
-
-      res.status(200).json({});
-
       // Only send an email if we have a user to send, and we have
       // reset values to send.
       if (!!toUser && !!resetValues) {
-        notify.send('reset-password', toUser, {
+        return notify.send('reset-password', toUser, {
           username: req.body.username,
           name: toUser.bestName ? toUser.bestName() : req.body.username,
           reset: {
@@ -245,6 +240,13 @@ exports.requestPasswordChange = function(req, res, next) {
           }
         });
       }
+    })
+    .then(() => {
+      // For security reasons, the reset values should only be sent through
+      // email.  Otherwise, anyone who has the security token can reset
+      // a password, making this security feature moot.
+
+      res.status(200).json({});
     })
     .catch((err) => {
       next(err);
