@@ -51,6 +51,11 @@ exports.login = function(passport) {
         });
       })
       .then((browserToken) => {
+        // TODO if we *really* wanted to be good, we could detect if this
+        // was the first login for this specific browser (a new browser
+        // record was created).  If so, we could send an email letting the
+        // user know that the login from a new location happened.
+
         res.status(200).json({
           token: browserToken.token,
           expires: browserToken.expires
@@ -72,6 +77,9 @@ exports.logout = function(req, res, next) {
     return next(err);
   }
 
+  // TODO to support the login from new location detection, this
+  // should instead just null out the token rather than delete the
+  // browser reference.
   access.token
     .removeToken(req.user.userRef, 'local', req)
     .then(() => {
@@ -230,8 +238,11 @@ exports.requestPasswordChange = function(req, res, next) {
       if (!!toUser && !!resetValues) {
         notify.send('reset-password', toUser, {
           username: req.body.username,
-          resetAuthenticationToken: resetValues.resetAuthenticationToken,
-          resetAuthenticationExpires: resetValues.resetAuthenticationExpires
+          name: toUser.bestName ? toUser.bestName() : req.body.username,
+          reset: {
+            resetAuthenticationToken: resetValues.resetAuthenticationToken,
+            resetAuthenticationExpires: resetValues.resetAuthenticationExpires
+          }
         });
       }
     })

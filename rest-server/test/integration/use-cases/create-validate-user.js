@@ -107,16 +107,16 @@ describe('Authentication', () => {
 
           // The password change request does not pass back the token.
           // The token is sent through email for security reasons.
-          // So, we simulate the email collection by directly getting the
-          // token from the db.
+          // Pull the token from the test email outbox.
 
-          debug(`5b. Find the token`);
-          return Account.findByUserRef('user1');
-        })
-        .then((account) => {
-          debug(`5c. - Done`);
-          assert.isString(account.resetAuthenticationToken, 'token');
-          return account.resetAuthenticationToken;
+          let adminEmails = emailBox.pullMailFor('initialadmin@fonzrecon.github');
+          assert.deepEqual(adminEmails, [], 'admin emails');
+          let userEmails = emailBox.pullMailFor('user1@some.place');
+          assert.equal(userEmails.length, 1, 'number of user emails');
+          let emailData = JSON.parse(userEmails[0].html);
+          assert.isString(emailData.reset.resetAuthenticationToken, 'email resetAuthenticationToken');
+
+          return emailData.reset.resetAuthenticationToken;
         });
 
       // Attempt another valid request with a pending password change.
