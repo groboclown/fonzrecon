@@ -6,5 +6,7 @@ module.exports = {
   getOneDetails: require('./get-one'),
   create: require('./create-user').create,
   import: require('./create-user').import,
-  update: require('./update')
+  update: require('./update').update,
+  delete: require('./update').delete,
+  setRole: require('./update').setRole
 };

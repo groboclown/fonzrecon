@@ -316,6 +316,16 @@ const AccountSchema = new Schema({
     },
     resetAuthenticationExpires: {
       type: Date
+    },
+
+    active: {
+      type: Boolean,
+      default: true
+    },
+
+    banExpires: {
+      type: Date,
+      default: null
     }
   }, {
     timestamps: true
@@ -342,8 +352,18 @@ function fingerprintCondition(fingerprint) {
 }
 
 
+
+function activeCondition(condition) {
+  condition = condition || {};
+  condition.active = true;
+  condition.banExpires = { $or: [  null, { $lt: new Date() } ] };
+  return condition;
+}
+
+
+
 AccountSchema.statics.findByBrowser = function(token, fingerprint) {
-  var condition = fingerprintCondition(fingerprint);
+  var condition = activeCondition(fingerprintCondition(fingerprint));
   condition['authentications.browsers.token'] = token;
   condition['authentications.browsers.expires'] = {
     $gt: new Date()
@@ -356,16 +376,21 @@ AccountSchema.statics.findByUserRef = function(username) {
   if (username.username) {
     username = username.username;
   }
-  return this.findOne({ userRef: username });
+  return this.findOne(activeCondition({ userRef: username }));
+};
+
+
+AccountSchema.statics.findById = function(id) {
+  return this.findOne(activeCondition({ id: id }));
 };
 
 
 AccountSchema.statics.findByUserResetAuthenticationToken = function(username, resetAuthenticationToken) {
-  return this.findOne({
+  return this.findOne(activeCondition({
     userRef: username,
     resetAuthenticationToken: resetAuthenticationToken,
     resetAuthenticationExpires: { $gt: new Date() }
-  });
+  }));
 };
 
 

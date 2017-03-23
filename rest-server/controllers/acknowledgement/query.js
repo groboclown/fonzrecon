@@ -34,7 +34,7 @@ exports.getAll = function(req, res, next) {
   var queryByUser;
   if (reqUsername) {
     queryByUser = User
-      .find({ names: reqUsername })
+      .findActive({ names: reqUsername })
       .lean()
       .exec()
       .then((users) => {

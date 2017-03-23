@@ -20,7 +20,7 @@ exports.getAll = function(req, res, next) {
   var conditionPromise;
   if (req.query.user) {
     conditionPromise = User
-      .find({ names: req.query.user })
+      .findActive({ names: req.query.user })
       .lean()
       .exec()
       .then((users) => {

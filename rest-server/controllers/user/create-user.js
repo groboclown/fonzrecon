@@ -151,6 +151,8 @@ function createOneUser(reqUser, dontSendEmail) {
   // Find if there's an existing user account with the username
   // or any of the names in the lists.
   var accountPromise = User
+    // Because we're creating a user, use the raw find without active checks.
+    // User names must be unique!
     .find({ $or: userMatchCondition })
     .exec()
     .then((matchingUsers) => {
@@ -163,7 +165,10 @@ function createOneUser(reqUser, dontSendEmail) {
       }
 
       // Find if there's an account with the username or email.
+      // This must match ANY account, whether it's disabled or not.
       return Account
+        // Do not limit account search by active, because, like username,
+        // it must be unique.
         .find({
           $or: [ { id: reqUser.username }, { accountEmail: reqUser.email }]
         })
@@ -188,7 +193,8 @@ function createOneUser(reqUser, dontSendEmail) {
         authentications: [],
         role: reqUser.role,
         userRef: reqUser.username,
-        accountEmail: reqUser.email
+        accountEmail: reqUser.email,
+        active: true
       }).save();
     });
   var userPromise = accountPromise
@@ -204,7 +210,8 @@ function createOneUser(reqUser, dontSendEmail) {
         pointsToAward: reqUser.pointsToAward,
         receivedPointsToSpend: 0,
         image: false,
-        organization: reqUser.organization
+        organization: reqUser.organization,
+        active: true
       }).save();
     });
 

@@ -9,7 +9,7 @@ const Account = models.Account;
 const BAD_LOGIN_TEXT = 'Authentication required';
 
 module.exports = function(username, password) {
-  var accountPromise = Account.findOne({ id: username });
+  var accountPromise = Account.findById(username);
   var loginMatchPromise = accountPromise
     .then((account) => {
       if (!account) {

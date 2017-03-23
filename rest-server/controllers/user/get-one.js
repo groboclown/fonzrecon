@@ -8,7 +8,7 @@ const errors = util.errors;
 
 module.exports = function(req, res, next) {
   User
-   .findOne({ username: req.params.id })
+   .findOneByUsername(req.params.id)
    .lean()
    .exec()
    .then((user) => {

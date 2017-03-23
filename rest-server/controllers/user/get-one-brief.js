@@ -8,7 +8,7 @@ const errors = util.errors;
 
 module.exports = function(req, res, next) {
   User
-    .findOneBrief({ username: req.params.id })
+    .findOneBrief({ username: req.params.id }, true)
     .exec()
     .then((user) => {
       if (!user) {

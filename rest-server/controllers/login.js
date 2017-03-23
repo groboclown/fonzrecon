@@ -144,7 +144,7 @@ exports.validate = function(req, res, next) {
     });
   var userPromise = accountPromise
     .then((account) => {
-      return User.findOne({ username: account.userRef });
+      return User.findOneByUsername(account.userRef);
     });
   var authPromise = accountPromise
     .then((account) => {
@@ -195,7 +195,7 @@ exports.validate = function(req, res, next) {
 
 
 exports.requestPasswordChange = function(req, res, next) {
-  var condition = {};
+  var condition = { disabled: false };
   if (req.body.username && typeof(req.body.username) === 'string') {
     condition.userRef = req.body.username;
   }
@@ -220,7 +220,7 @@ exports.requestPasswordChange = function(req, res, next) {
     });
   var userAccountPromise = accountResetPromise
     .then(() => {
-      return User.findOne({ username: req.body.username });
+      return User.findOneByUsername(req.body.username);
     });
   Promise
     .all([accountPromise, userAccountPromise, accountResetPromise])

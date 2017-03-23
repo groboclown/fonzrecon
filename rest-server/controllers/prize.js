@@ -67,3 +67,15 @@ exports.getOne = function(req, res, next) {
       next(err);
     });
 };
+
+
+
+exports.create = function(req, res, next) {
+
+};
+
+
+
+exports.update = function(req, res, next) {
+
+};

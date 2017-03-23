@@ -15,7 +15,7 @@ const notify = require('../../lib/notify');
 
 function findUsersReferenced(toUserNames, isBotWithBehalf) {
   return User
-    .find()
+    .findActive()
     // Request is for the name, not username.
     .where('names').in(toUserNames)
     .exec()

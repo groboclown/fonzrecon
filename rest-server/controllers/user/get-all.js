@@ -12,6 +12,10 @@ const errors = util.errors;
 module.exports = function(req, res, next) {
   var pagination = paging(req);
   var userLike = req.query.like || req.body.like || '.*';
+  var includeInactive = false;
+  if (req.query.all === 'true') {
+    includeInactive = true;
+  }
   User
     .listBrief(userLike)
     .paginate(pagination)

@@ -67,7 +67,12 @@ const UserSchema = new Schema({
 
   locale: String,
 
-  organization: String
+  organization: String,
+
+  active: {
+    type: Boolean,
+    default: true
+  }
 }, {
   timestamps: true
 });
@@ -95,17 +100,39 @@ function preSave(next) {
 UserSchema.pre('save', preSave);
 
 
+UserSchema.stataics.findActive = function(condition) {
+  condition = condition || {};
+  condition.active = true;
+  return this.find(condition);
+}
+
+
+UserSchema.stataics.findOneActive = function(condition) {
+  condition = condition || {};
+  condition.active = true;
+  return this.findOne(condition);
+}
+
+
 UserSchema.statics.findOneByName = function(name) {
   return this
-    .findOne({ names: name })
-    .lean();
+    .findOne({ names: name, active: true });
 };
 
 
-const BRIEF_SELECTION = 'username names organization';
+UserSchema.statics.findOneByUsername = function(username) {
+  return this
+    .findOne({ username: username, active: true });
+};
 
 
-UserSchema.statics.findOneBrief = function(condition) {
+const BRIEF_SELECTION = 'username names organization active';
+
+
+UserSchema.statics.findOneBrief = function(condition, includeInactive) {
+  if (!includeInactive) {
+    condition.active = true;
+  }
   return this
     .findOne(condition)
     .lean()
@@ -113,12 +140,18 @@ UserSchema.statics.findOneBrief = function(condition) {
 };
 
 
-UserSchema.statics.listBrief = function(userLike) {
+UserSchema.statics.listBrief = function(userLike, includeInactive) {
+  var condition = {
+    $or: {
+      username: { $regex: new RegExp(userLike, 'i') },
+      names: { $regex: new RegExp(userLike, 'i') }
+    }
+  };
+  if (!includeInactive) {
+    condition.active = true;
+  }
   return this
-    .find({ $or: {
-      username: { $regex: new RegExp(userLike, 'i') } },
-      names: { $regex: new RegExp(userLike, 'i') } }
-    })
+    .find(condition)
     .lean()
     .select(BRIEF_SELECTION);
 };

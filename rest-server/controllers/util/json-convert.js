@@ -23,6 +23,7 @@ exports.briefUser = function(user) {
     names: user.names,
     uri: '/api/v1/users/' + user.username,
     imageUri:  (user.image ? `/images/users/${user.username}.png` : null),
+    active: user.active || false,
     type: 'UserBrief'
   };
 };

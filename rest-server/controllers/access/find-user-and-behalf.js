@@ -13,7 +13,8 @@ module.exports = function(account, behalfOfName) {
     // user object.
     behalfOfName = null;
   }
-  return User.findOne({ username: account.userRef })
+  return User
+    .findOneByUsername(account.userRef)
     .then((user) => {
       // User might be null, and that's fine.
       if (!behalfOfName || behalfOfName.length <= 0) {
@@ -33,7 +34,7 @@ module.exports = function(account, behalfOfName) {
             return null;
           }
           return Account
-            .findOne({ userRef: behalfUser.username });
+            .findByUserRef(behalfUser.username);
         });
       return Promise
         .all([behalfPromise, behalfAcctPromise])
