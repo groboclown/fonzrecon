@@ -5,6 +5,7 @@ const testSetup = require('../../util/test-setup');
 const initializeDb = require('../../util/initialize-db');
 const mockControllerRunner = require('../../util/mock-controller');
 const userController = require('../../../controllers/user');
+const createUserApi = require('../../../lib/create-user-api');
 const models = require('../../../models');
 const Account = models.Account;
 const User = models.User;
@@ -15,29 +16,12 @@ describe('Create User', () => {
 
   // Create a test user as a fixture
   beforeEach(() => {
-    return new Account({
-        id: 'testuser',
-        authentications: [],
-        role: 'USER',
-        userRef: 'testuser',
-        accountEmail: 'eat@joes.com'
-      })
-      .save()
-      .then(() => {
-        return new User({
-            username: 'testuser',
-            names: ['nnn'],
-            contacts: [{
-              type: 'email',
-              server: null,
-              address: 'eat@joes.com'
-            }],
-            pointsToAward: 0,
-            receivedPointsToSpend: 0,
-            image: false,
-            organization: 'org'
-          })
-          .save();
+    return createUserApi.createUser({
+        username: 'testuser',
+        names: ['nnn'],
+        email: 'eat@joes.com',
+        pointsToAward: 0,
+        organization: 'org'
       })
       .then(initializeDb);
   });
@@ -155,12 +139,236 @@ describe('Create User', () => {
 describe('Get All', () => {
   before(testSetup.beforeDb);
 
-  // TODO add tests
-  it('Bot not returned', () => {});
+  // Create a test user as a fixture
+  beforeEach(() => {
+    return createUserApi.createUser({
+        username: 'testuser',
+        names: ['nnn'],
+        email: 'eat@joes.com',
+        pointsToAward: 0,
+        organization: 'org'
+      });
+  });
 
-  it('Get Create Get', () => {});
+  it('Bot not returned', () => {
+    // Create a bot
+    return createUserApi.createBot({
+        username: 'bot1',
+        email: 'bot1@fonzrecon.github',
+        password: 'sekret'
+      })
+      .then(() => {
+        return mockControllerRunner.run(userController.getAllBrief, {});
+      })
+      .then((res) => {
+        assert.isFalse(res.next, 'next');
+        assert.equal(res.status, 200, 'status');
+        assert.deepEqual(res.json, pageSimpleUser(), 'json');
+      });
+  });
 
-  it('Empty list', () => {});
+  it('Get Create Get', () => {
+    return mockControllerRunner.run(userController.getAllBrief, {})
+    .then((res) => {
+      assert.isFalse(res.next, 'next');
+      assert.equal(res.status, 200, 'status');
+      assert.deepEqual(res.json, pageSimpleUser(), 'json');
+    })
+    .then(() => {
+      return createUserApi.createUser({
+        username: 'user2',
+        email: 'user2@fonzrecon.github',
+        names: ['Two, User'],
+        pointsToAward: 0,
+        organization: 'org'
+      });
+    })
+    .then(() => {
+      return mockControllerRunner.run(userController.getAllBrief, {});
+    })
+    .then((res) => {
+      assert.isFalse(res.next, 'next');
+      assert.equal(res.status, 200, 'status');
+      var paged = pageSimpleUser();
+      paged.count = 2;
+      paged.results.push({
+        username: 'user2',
+        names: ['Two, User', 'user2'],
+        organization: 'org',
+        active: true,
+        type: 'UserBrief',
+        uri: '/api/v1/users/user2',
+        imageUri: null
+      });
+      assert.deepEqual(res.json, paged, 'json');
+    });
+  });
 
-  it('Paging', () => {});
+  it('Empty list', () => {
+    return User.remove({})
+      .then(() => {
+        return Account.remove({});
+      })
+      .then(() => {
+        return mockControllerRunner.run(userController.getAllBrief, {});
+      })
+      .then((res) => {
+        assert.isFalse(res.next, 'next');
+        assert.equal(res.status, 200, 'status');
+        var paged = pageSimpleUser();
+        paged.count = 0;
+        paged.last = null;
+        paged.pages = [];
+        paged.results = [];
+        assert.deepEqual(res.json, paged, 'json');
+      });
+  });
+
+  it('Paging', () => {
+    var userList = [];
+    for (let i = 0; i < 100; i++) {
+      userList.push({
+        username: `auser${i}`,
+        email: `auser${i}@fonzrecon.github`,
+        names: [`${i}, A. User`],
+        pointsToAward: 0,
+        organization: 'org'
+      });
+    }
+    return mockControllerRunner.run(userController.import, { body: { users: userList } })
+      .then((res) => {
+        assert.equal(res.status, 201, 'status');
+
+        return mockControllerRunner.run(userController.getAllBrief, {
+          query: {
+            page: 2,
+            perPage: 5
+          }
+        });
+      })
+      .then((res) => {
+        assert.isFalse(res.next, 'next');
+        assert.equal(res.status, 200, 'status');
+        assert.equal(res.json.type, 'UserBrief', 'type')
+        assert.equal(res.json.results.length, 5, 'result length');
+        assert.equal(res.json.count, 101, 'count');
+        assert.equal(res.json.current, 2, 'current');
+        assert.equal(res.json.last, 21, 'last page');
+        assert.equal(res.json.prev, 1, 'prev page');
+        assert.equal(res.json.next, 3, 'next page');
+        assert.deepEqual(res.json.pages, [1, 2, 3, 4, 5, 6, 7], 'pages');
+        assert.deepEqual(res.json.options, {
+          delta: 5,
+          offset: 0,
+          page: 2,
+          perPage: 5
+        }, 'options');
+      });
+  });
+
+  it('Deleted User', () => {
+    return mockControllerRunner.run(userController.delete, { params: { id: 'testuser' } })
+    .then((res) => {
+      assert.equal(res.status, 200, 'delete status');
+
+      return mockControllerRunner.run(userController.getAllBrief, {});
+    })
+    .then((res) => {
+      assert.isFalse(res.next, 'next');
+      assert.equal(res.status, 200, 'status');
+      var paged = pageSimpleUser();
+      paged.count = 0;
+      paged.last = null;
+      paged.pages = [];
+      paged.results = [];
+      assert.deepEqual(res.json, paged, 'json');
+    });
+  });
+
+  it('Query Params', () => {
+    var userList = [];
+    for (let i = 0; i < 4; i++) {
+      userList.push({
+        username: `auser${i}`,
+        email: `auser${i}@fonzrecon.github`,
+        names: [`${i}, A. User`],
+        pointsToAward: 0,
+        organization: 'org'
+      });
+    }
+    for (let i = 0; i < 2; i++) {
+      userList.push({
+        username: `buser${i}`,
+        email: `buser${i}@fonzrecon.github`,
+        names: [`${i}, B. User`],
+        pointsToAward: 0,
+        organization: 'org'
+      });
+    }
+    return mockControllerRunner.run(userController.import, { body: { users: userList } })
+      .then((res) => {
+        assert.equal(res.status, 201, 'status');
+        return mockControllerRunner.run(userController.delete, { params: { id: 'auser0' } });
+      })
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+
+        return mockControllerRunner.run(userController.getAllBrief, {
+          query: {
+            like: '.*?A. User'
+          }
+        });
+      })
+      .then((res) => {
+        assert.isFalse(res.next, 'next');
+        assert.equal(res.status, 200, 'status');
+        assert.equal(res.json.type, 'UserBrief', 'type')
+        assert.equal(res.json.results.length, 3, 'result length');
+        assert.equal(res.json.count, 3, 'count');
+
+        return mockControllerRunner.run(userController.getAllBrief, {
+          query: {
+            like: '.*?A. User',
+            all: 'true'
+          }
+        });
+      })
+      .then((res) => {
+        assert.isFalse(res.next, 'next');
+        assert.equal(res.status, 200, 'status');
+        assert.equal(res.json.type, 'UserBrief', 'type')
+        assert.equal(res.json.results.length, 4, 'result length');
+        assert.equal(res.json.count, 4, 'count');
+      });
+  });
 });
+
+
+function pageSimpleUser() {
+  return {
+    count: 1,
+    current: 1,
+    last: 1,
+    next: null,
+    prev: null,
+    pages: [1],
+    options: {
+      delta: 5,
+      offset: 0,
+      page: 1,
+      perPage: 10
+    },
+    type: 'UserBrief',
+    results: [
+      {
+        username: 'testuser',
+        names: ['nnn', 'testuser'],
+        organization: 'org',
+        active: true,
+        type: 'UserBrief',
+        uri: '/api/v1/users/testuser',
+        imageUri: null
+      }
+    ]
+  };
+}

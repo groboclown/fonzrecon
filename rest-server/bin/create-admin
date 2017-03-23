@@ -4,14 +4,13 @@
 // Setup the database
 require('../config/db').setup();
 const roles = require('../config/access/roles');
-const createOneUser = require('../controllers/user/create-user').createOneUser;
+const createAdmin = require('../lib/create-user-api').createAdmin;
 
 const HELP_ARGS = ['-h', '-H', '-?', '/h', '/H', '/?'];
 
 var errors = [];
 var argv = process.argv;
 var reqUser = {
-  role: roles.ADMIN.name,
   locale: 'en',
   organization: 'Administrators'
 };
@@ -63,7 +62,7 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-createOneUser(reqUser, true)
+createAdmin(reqUser, true)
   .then((args) => {
     console.log(`Created admin with username ${args[0].username}.\nUse this token to set the password (without the quotes):\n"${args[1].resetAuthenticationToken}"`);
 

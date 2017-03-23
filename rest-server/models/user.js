@@ -142,10 +142,7 @@ UserSchema.statics.findOneBrief = function(condition, includeInactive) {
 
 UserSchema.statics.listBrief = function(userLike, includeInactive) {
   var condition = {
-    $or: [
-      { username: { $regex: new RegExp(userLike, 'i') } },
-      { names: { $regex: new RegExp(userLike, 'i') } }
-    ]
+    names: { $regex: userLike, $options: 'i' }
   };
   if (!includeInactive) {
     condition.active = true;

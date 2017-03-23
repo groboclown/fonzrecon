@@ -51,6 +51,23 @@ query parameters and response formats.
     the page numbers *delta* before and *delta* after this returned page.
     Defaults to 5.
 
+**JSON Body:**
+
+If the request allows for a JSON body to be used, then the parameters are passed
+in the `page` key of the JSON body.
+
+```json
+{
+  "page": {
+    "page": 1,
+    "perPage": 100,
+    "offset": 16,
+    "delta": 2
+  }
+}
+```
+
+
 **Returns:**
 
 ```json
@@ -221,7 +238,7 @@ Aaay.  It does not have a URI to reference it.*
   "pointsToAward": 40,
   "organization": "Engineering",
   "receivedPointsToSpend": 30,
-  "contact": [
+  "contacts": [
     {
       "type": "email",
       "server": null,
@@ -248,7 +265,7 @@ Aaay.  It does not have a URI to reference it.*
 * `receivedPointsToSpend` - integer; the number of points available for
   the user to spend on prizes.  If the requesting user does not have
   permissions to view this value, then it will be `null`.
-* `contact` - how to reach the user.  If the requesting user does not have
+* `contacts` - how to reach the user.  If the requesting user does not have
   permissions to view this value, then it will be `null`.
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
@@ -347,7 +364,7 @@ the headers as:
 Authorization: JWT (token string)
 ```
 
-**Access**: all requests.
+**Access:** all requests.
 
 **JSON Body:**
 
@@ -384,9 +401,9 @@ empty JSON object (`{}`).
 Validates a user's request for a password change.  This should be called after
 a new user is created, or if the user requested the change in password.
 
-**Access**: all users.
+**Access:** all users.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -396,7 +413,7 @@ a new user is created, or if the user requested the change in password.
 }
 ```
 
-**Returns**:
+**Returns:**
 
 ```json
 {}
@@ -411,9 +428,9 @@ occurred.
 Requests a password change.  The request will send a link to the user through
 email to allow the user to reset the account's password.
 
-**Access**: all users.
+**Access:** all users.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -424,7 +441,7 @@ email to allow the user to reset the account's password.
 
 You can pass in either username or email; both are not required.
 
-**Returns**:
+**Returns:**
 
 ```json
 {}
@@ -443,7 +460,7 @@ registered.
 
 Retrieves the paged list of users, with brief details.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Query Parameters:**
 
@@ -464,9 +481,9 @@ returned is [UserBrief](#userbrief).
 
 Retrieve the details of the user.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
-**Returns**:
+**Returns:**
 
 ```json
 {
@@ -490,11 +507,11 @@ After creation, the user will not be able to log into the account until the
 account is verified.  The user must use the returned `resetAuthenticationToken`
 value before it expires in order to set a password and be able to log in.
 
-**Access**: Administrators and bots only.  Bots are allowed to create users in
+**Access:** Administrators and bots only.  Bots are allowed to create users in
 the situation where a user is sending to a known user in the external system
 (say, the LDAP server), but the user hasn't been created in the site.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -523,7 +540,7 @@ user can give.
 
 Imports a list of users into the system.
 
-**Access**: Administrators only.
+**Access:** Administrators only.
 
 **JSON Body:**
 
@@ -575,9 +592,9 @@ Updates the role of the account associated with the given username.  The
 user can only be switched between `USER` and `ADMIN` roles, and cannot be
 made into a `BOT` account.
 
-**Access**: Administrators only.
+**Access:** Administrators only.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -587,7 +604,7 @@ made into a `BOT` account.
 
 * `role` - must be one of `"USER"` or `"ADMIN"`.
 
-**Returns**:
+**Returns:**
 
 ```json
 {}
@@ -598,9 +615,9 @@ made into a `BOT` account.
 
 Updates all active users to have a specific number of points to award.
 
-**Access**: Administrators only.
+**Access:** Administrators only.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -608,7 +625,7 @@ Updates all active users to have a specific number of points to award.
 }
 ```
 
-**Returns**:
+**Returns:**
 
 ```json
 {
@@ -621,9 +638,9 @@ Updates all active users to have a specific number of points to award.
 
 Updates the given user to have a specific number of points to award.
 
-**Access**: Administrators only.
+**Access:** Administrators only.
 
-**JSON Body**:
+**JSON Body:**
 
 ```json
 {
@@ -631,7 +648,7 @@ Updates the given user to have a specific number of points to award.
 }
 ```
 
-**Returns**:
+**Returns:**
 
 ```json
 {
@@ -646,11 +663,11 @@ Marks the account with the given username as disabled.  The account cannot
 be logged into, and cannot be found through searching, but it still exists
 in the database.
 
-**Access**: Administrators only.
+**Access:** Administrators only.
 
-**JSON Body**: None
+**JSON Body:** None
 
-**Returns**:
+**Returns:**
 
 ```json
 {}
@@ -663,7 +680,7 @@ in the database.
 
 Retrieve the paged list of Aaay awards, with a brief description.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Query Parameters:**
 
@@ -683,7 +700,7 @@ returned is [Aaay](#aaay).
 
 Retrieve a brief description of the Aaay award.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Returns:**
 
@@ -702,9 +719,9 @@ Retrieve a brief description of the Aaay award.
 Create a new award.  The award will be given by the currently authenticated
 user, or the user requested from a bot.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
-**Body Schema**:
+**Body Schema:**
 
 ```json
 {
@@ -725,7 +742,7 @@ user, or the user requested from a bot.
   the award.
 * `tags` - array of strings describing the category of the award.
 
-**Returns**:
+**Returns:**
 
 An `AaayRef` that describes the ID of the created Aaay.
 
@@ -736,9 +753,9 @@ An `AaayRef` that describes the ID of the created Aaay.
 Create a new thumbs up for this award.  The award will be given by the
 currently authenticated user, or the user requested through a bot.
 
-**Access**: all authenticated users who have visibility into the Aaay.
+**Access:** all authenticated users who have visibility into the Aaay.
 
-**Body Schema**:
+**Body Schema:**
 
 ```json
 {
@@ -758,7 +775,7 @@ currently authenticated user, or the user requested through a bot.
 
 Returns a list of prizes that the user can claim for awarded points.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Query Parameters:**
 
@@ -766,7 +783,7 @@ Returns a list of prizes that the user can claim for awarded points.
   * Accepts the standard [paging](#paging) parameters.
 * **`maximum`** - maximum number of points.
 
-**Returns**:
+**Returns:**
 
 The returned value conforms to the [paging](#paging) results.  The type
 returned is [Prize](#prize) objects.
@@ -779,7 +796,7 @@ returned is [Prize](#prize) objects.
 
 Retrieve all the prizes claimed by users.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Query Parameters:**
 
@@ -798,7 +815,7 @@ returned is [ClaimedPrize](#claimedprize) objects.
 
 Retrieve the single claimed prize with the given id.
 
-**Access**: all authenticated users.
+**Access:** all authenticated users.
 
 **Query Parameters:** None.
 
@@ -812,7 +829,7 @@ A [ClaimedPrize](#claimedprize) object.
 
 Claims a prize for the requesting user.
 
-**Access**: Users with the `USER` role.  Administrators cannot claim prizes!
+**Access:** Users with the `USER` role.  Administrators cannot claim prizes!
 
 **Request Body:**
 
@@ -846,7 +863,7 @@ Claims a prize for the requesting user.
 
 Retrieves a map of all the site-wide settings.
 
-**Access**: Only viewable by administrators.  Bots cannot access it.
+**Access:** Only viewable by administrators.  Bots cannot access it.
 
 **Query Parameters:** None.
 
@@ -869,7 +886,7 @@ Retrieves a map of all the site-wide settings.
 
 Updates one or more site-wide setting values.
 
-**Access**: Only administrators.
+**Access:** Only administrators.
 
 **Request Body:**
 

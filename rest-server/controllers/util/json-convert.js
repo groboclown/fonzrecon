@@ -39,7 +39,7 @@ exports.user = function(_user) {
   ret.updatedAt = _user.updatedAt;
   ret.pointsToAward = _user.pointsToAward;
   ret.receivedPointsToSpend = _user.receivedPointsToSpend;
-  ret.contact = _user.contact.map((c) => {
+  ret.contacts = _user.contacts.map((c) => {
     return {
       type: c.type,
       server: c.server,

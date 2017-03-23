@@ -29,7 +29,7 @@ exports.setRole = function(req, res, next) {
     return next(errors.extraValidationProblem('role', newRole, 'invalid role`'));
   }
 
-  Account
+  return Account
     .findByUserRef(username)
     .exec()
     .then((account) => {
@@ -52,7 +52,7 @@ exports.setRole = function(req, res, next) {
 exports.delete = function(req, res, next) {
   const username = req.params.id;
 
-  Account
+  return Account
     .findByUserRef(username)
     .exec()
     .then((account) => {
@@ -97,7 +97,7 @@ exports.resetAllPointsToAward = function(req, res, next) {
     }
   });
 
-  req.getValidationResult()
+  return req.getValidationResult()
     .then((results) => {
       if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());
@@ -142,7 +142,7 @@ exports.resetOnePointsToAward = function(req, res, next) {
     }
   });
 
-  req.getValidationResult()
+  return req.getValidationResult()
     .then((results) => {
       if (!results.isEmpty()) {
         throw errors.validationProblems(results.array());

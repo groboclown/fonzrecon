@@ -5,8 +5,7 @@
 require('../config/db').setup();
 const roles = require('../config/access/roles');
 const validate = require('../lib/validate');
-const models = require('../models');
-const Account = models.Account;
+const createBot = require('../lib/create-user-api').createBot;
 
 const HELP_ARGS = ['-h', '-H', '-?', '/h', '/H', '/?'];
 
@@ -51,68 +50,7 @@ for (let i = 2; i < argv.length; i += 2) {
   }
 }
 
-if (!validate.isAlphanumericName(reqUser.username)
-    || reqUser.username.length < 3
-    || reqUser.username.length > 100) {
-  errors.push(
-    'Username must be a string of no less than 3 characters, no more than 100 characters, and contain only numbers and lowercase letters');
-}
-
-if (!validate.isEmailAddress(reqUser.email) || reqUser.email.length > 120) {
-  errors.push(
-    'Email must be a valid email address no longer than 120 characters');
-}
-
-if (!validate.isString(reqUser.password, 6, 100)) {
-  errors.push(
-    'Password must be a string with length between 6 and 100 characters');
-}
-
-if (errors.length > 0) {
-  console.log('Problems found during processing:\n    ' +
-    errors.join('\n    '));
-  process.exit(1);
-}
-
-Account
-  .find({
-    $or: [ { id: reqUser.username }, { accountEmail: reqUser.email }]
-  })
-  .lean()
-  .exec()
-  .then((matchingAccounts) => {
-    if (matchingAccounts.length > 0) {
-      let names = ([reqUser.username, reqUser.email]).concat(reqUser.names);
-      throw validate.error(names,
-        'username, email, or names',
-        'One of these values is already in use'
-      );
-    }
-
-    // Create the account.  This might fail due to a duplicate
-    // username, which is fine.
-    return new Account({
-        id: reqUser.username,
-        authentications: [
-          {
-            source: 'local',
-            id: reqUser.email,
-            userInfo: [reqUser.password],
-            browser: [],
-          }
-        ],
-        role: roles.BOT.name,
-        accountEmail: reqUser.email,
-        resetAuthenticationToken: null,
-        resetAuthenticationExpires: null,
-
-        // cannot act as a user, meaning no one
-        // can assign it stuff or send it stuff,
-        // so it has no user.
-        userRef: null
-      })
-      .save();
-  })
+createBot(reqUser)
   .then((account) => {
     console.log(`Created bot with username ${account.id}.`);
 
@@ -124,15 +62,15 @@ Account
     process.exit(0);
   })
   .catch((err) => {
-    console.error(err.message);
+    console.log('Problems found during processing:'
     if (err.details) {
       for (let i = 0; i < err.details.length; i++) {
-        console.error(`  ${err.details[i].param}: ${err.details[i].msg}`);
+        console.log('    * ' + err.details[i].msg);
       }
     } else {
-      console.error(err.stack);
+      console.log(err.stack);
     }
-
+    
     // Make sure we quit, by closing off our connections.
     require('mongoose').disconnect();
 

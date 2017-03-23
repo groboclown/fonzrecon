@@ -16,8 +16,8 @@ module.exports = function(req, res, next) {
   if (req.query.all === 'true') {
     includeInactive = true;
   }
-  User
-    .listBrief(userLike)
+  return User
+    .listBrief(userLike, includeInactive)
     .paginate(pagination)
     .then((users) => {
       users.type = 'UserBrief';

@@ -24,15 +24,17 @@ const User = models.User;
  * }
  * ```
  *
- * @parameters {Object} reqData a set of the request information.
- * @parameters {String} reqData.username (optional) username making the request
- * @parameters {User} reqData.user (optional) user making the request
- * @parameters {Account} reqData.account (optional)
- * @parameters {String} reqData.behalf
- * @parameters {User} reqData.behalfUser (optional) user making the request
- * @parameters {Account} reqData.behalfAccount (optional)
- * @parameters {Object} body json parsed body
- * @parameters {function} controller the controller function to run
+ * @param {Object} reqData a set of the request information.
+ * @param {String} reqData.username (optional) username making the request
+ * @param {User} reqData.user (optional) user making the request
+ * @param {Account} reqData.account (optional)
+ * @param {String} reqData.behalf
+ * @param {User} reqData.behalfUser (optional) user making the request
+ * @param {Account} reqData.behalfAccount (optional)
+ * @param {Object} body json parsed body (optional)
+ * @param {Object} query parsed out query parameters (optional)
+ * @param {Object} params parsed URL parameters (optional)
+ * @param {function} controller the controller function to run
  */
 exports.run = function(controller, reqData) {
   let accountPromise;
@@ -137,7 +139,9 @@ function createRequest(account, user, behalfAccount, behalfUser, reqData) {
       behalfAccount: behalfAccount || null,
       behalf: behalfUser || null
     },
-    body: reqData.body
+    body: reqData.body || {},
+    query: reqData.query || {},
+    params: reqData.params || {}
   };
 
   // Simulate express setup stuff that the controllers need.

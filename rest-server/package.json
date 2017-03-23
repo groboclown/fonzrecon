@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha",
+    "test": "mocha --trace-warnings",
     "jscs": "jscs bin config controllers lib models test",
     "jshint": "jshint bin config controllers lib models test",
     "pretest": "jscs bin config controllers lib models test && jshint bin config controllers lib models"

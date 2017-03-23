@@ -11,6 +11,8 @@ const clearDb = require('mocha-mongoose')(dbUri);
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 exports.server = require('../../app');
+const createUserApi = require('../../lib/create-user-api');
+const roles = require('../../config/access/roles');
 
 chai.use(chaiHttp);
 
@@ -24,6 +26,78 @@ exports.beforeDb = function(done) {
     return done();
   }
   mongoose.connect(dbUri, done);
+};
+
+
+exports.createOrGetUserAccount = function(userData) {
+  return exports.models.User
+    .findOneByUsername(userData.username)
+    .then((user) => {
+      if (user) {
+        return user;
+      }
+      let userAccountPromise = createUserApi.createUserAccount(userData, true);
+      if (!userData.password) {
+        return userAccountPromise.then((args) => { return args[0]; });
+      }
+
+      let authPromise = userAccountPromise
+        .then((args) => {
+          return args[2].getAuthenticationNamed('local');
+        });
+      let accountPromise = Promise
+        .all([authPromise, userAccountPromise])
+        .then((args) => {
+          let auth = args[0];
+          let user = args[1][0];
+          let account = args[1][2];
+          account.resetAuthenticationToken = null;
+          account.resetAuthenticationExpires = null;
+          if (auth) {
+            auth.userInfo = [req.body.password];
+            // Reset any existing tokens.
+            auth.browser = [];
+          } else {
+            account.authentications.push({
+              source: 'local',
+              id: account.accountEmail,
+              userInfo: [userData.password],
+              browser: []
+            });
+          }
+          return account.save();
+        });
+      return Promise
+        .all([userAccountPromise, accountPromise])
+        .then((args) => {
+          return args[0][0];
+        });
+    });
+};
+
+
+exports.createOrGetUser = function(userData) {
+  userData.role = roles.USER.name;
+  return exports.createOrGetUserAccount(userData);
+};
+
+
+exports.createOrGetAdmin = function(userData) {
+  userData.role = roles.ADMIN.name;
+  return exports.createOrGetUserAccount(userData);
+};
+
+
+exports.createOrGetBot = function(botData) {
+  botData.role = roles.BOT.name;
+  return exports.models.Account
+    .findByUserRef(botData.username)
+    .then((account) => {
+      if (account) {
+        return account;
+      }
+      return createUserApi.createBot(botData);
+    });
 };
 
 
