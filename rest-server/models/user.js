@@ -100,18 +100,18 @@ function preSave(next) {
 UserSchema.pre('save', preSave);
 
 
-UserSchema.stataics.findActive = function(condition) {
+UserSchema.statics.findActive = function(condition) {
   condition = condition || {};
   condition.active = true;
   return this.find(condition);
-}
+};
 
 
-UserSchema.stataics.findOneActive = function(condition) {
+UserSchema.statics.findOneActive = function(condition) {
   condition = condition || {};
   condition.active = true;
   return this.findOne(condition);
-}
+};
 
 
 UserSchema.statics.findOneByName = function(name) {
@@ -142,10 +142,10 @@ UserSchema.statics.findOneBrief = function(condition, includeInactive) {
 
 UserSchema.statics.listBrief = function(userLike, includeInactive) {
   var condition = {
-    $or: {
-      username: { $regex: new RegExp(userLike, 'i') },
-      names: { $regex: new RegExp(userLike, 'i') }
-    }
+    $or: [
+      { username: { $regex: new RegExp(userLike, 'i') } },
+      { names: { $regex: new RegExp(userLike, 'i') } }
+    ]
   };
   if (!includeInactive) {
     condition.active = true;

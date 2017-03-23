@@ -51,9 +51,6 @@ exports.send = function(template, to, data) {
     destinations: []
   };
 
-  // FIXME this hangs right now, looks like because of a cycle in the
-  // promises.
-
   // Send all the allowable contact types.
   for (let i = 0; i < to.length; i++) {
     let user = to[i];

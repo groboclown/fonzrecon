@@ -38,8 +38,8 @@ exports.setup = function(app, passport) {
       console.error(err.stack);
       // Debug code
       // } else if (settings.envName === 'test') {
-      //  if (err.details) { console.error(JSON.stringify(err.details)); }
-      //  console.error(err.stack);
+      //   if (err.details) { console.error(JSON.stringify(err.details)); }
+      //   console.error(err.stack);
     }
 
 
@@ -49,6 +49,7 @@ exports.setup = function(app, passport) {
     if (typeof(err) === 'string') {
       payload.message = err;
     }
+    // TODO use env instead of envName
     if (settings.envName === 'production') {
       payload.stack = null;
     } else {

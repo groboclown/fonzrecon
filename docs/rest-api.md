@@ -232,6 +232,7 @@ Aaay.  It does not have a URI to reference it.*
     "username1",
     "Name1, User"
   ],
+  "active": true,
   "type": "User"
 }
 ```
@@ -251,6 +252,7 @@ Aaay.  It does not have a URI to reference it.*
   permissions to view this value, then it will be `null`.
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
+* `active` - whether the user account is active (enabled for login).
 * `type` - constant `"User"` string.
 
 
@@ -448,6 +450,8 @@ Retrieves the paged list of users, with brief details.
 * Paging:
   * Accepts the standard [paging](#paging) parameters.
 * `like` - a regular expression for matching the username or names.
+* `all` - if set to `true`, then the list will include active and
+  inactive users.
 
 **Returns:**
 
@@ -562,6 +566,94 @@ user can give.
     ]
   }
 ]
+```
+
+
+## PATCH `api/v1/:id/role`
+
+Updates the role of the account associated with the given username.  The
+user can only be switched between `USER` and `ADMIN` roles, and cannot be
+made into a `BOT` account.
+
+**Access**: Administrators only.
+
+**JSON Body**:
+
+```json
+{
+  "role": "USER or ADMIN"
+}
+```
+
+* `role` - must be one of `"USER"` or `"ADMIN"`.
+
+**Returns**:
+
+```json
+{}
+```
+
+
+## PATCH `api/v1/reset-points-to-award`
+
+Updates all active users to have a specific number of points to award.
+
+**Access**: Administrators only.
+
+**JSON Body**:
+
+```json
+{
+  "points": 100
+}
+```
+
+**Returns**:
+
+```json
+{
+  "updateCount": 3
+}
+```
+
+
+## PATCH `api/v1/:id/reset-points-to-award`
+
+Updates the given user to have a specific number of points to award.
+
+**Access**: Administrators only.
+
+**JSON Body**:
+
+```json
+{
+  "points": 100
+}
+```
+
+**Returns**:
+
+```json
+{
+  "updateCount": 1
+}
+```
+
+
+## DELETE `api/v1/:id`
+
+Marks the account with the given username as disabled.  The account cannot
+be logged into, and cannot be found through searching, but it still exists
+in the database.
+
+**Access**: Administrators only.
+
+**JSON Body**: None
+
+**Returns**:
+
+```json
+{}
 ```
 
 

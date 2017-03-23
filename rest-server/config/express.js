@@ -48,6 +48,7 @@ exports.setup = function(app, passport) {
   // Use passport session
   app.use(passport.initialize());
 
+  // TODO use env instead of envName
   if (settings.envName !== 'test') {
     app.use(logger('dev'));
     // CSRF requires sessions and cookies, which we're not

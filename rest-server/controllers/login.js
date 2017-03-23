@@ -195,7 +195,7 @@ exports.validate = function(req, res, next) {
 
 
 exports.requestPasswordChange = function(req, res, next) {
-  var condition = { disabled: false };
+  var condition = {};
   if (req.body.username && typeof(req.body.username) === 'string') {
     condition.userRef = req.body.username;
   }
@@ -207,7 +207,7 @@ exports.requestPasswordChange = function(req, res, next) {
     }
   }
 
-  var accountPromise = Account.findOne(condition);
+  var accountPromise = Account.findOneActive(condition);
   var accountResetPromise = accountPromise
     .then((account) => {
       if (!account) {

@@ -8,5 +8,7 @@ module.exports = {
   import: require('./create-user').import,
   update: require('./update').update,
   delete: require('./update').delete,
-  setRole: require('./update').setRole
+  setRole: require('./update').setRole,
+  resetAllPointsToAward: require('./update').resetAllPointsToAward,
+  resetOnePointsToAward: require('./update').resetOnePointsToAward
 };

@@ -8,10 +8,13 @@ const controller = require('../../controllers/user');
 
 const USER_BRIEF_VIEW = access.authorize(permissions.USER_BRIEF_VIEW, authAffectedUsersNone);
 const USER_DETAILS_VIEW = access.authorize(permissions.USER_DETAILS_VIEW, authAffectedUsersId);
+const USER_DETAILS_EDIT = access.authorize(permissions.USER_DETAILS_EDIT, authAffectedUsersId);
 const ACCOUNT_CREATE = access.authorize(permissions.ACCOUNT_CREATE, authAffectedUsersNone);
 const ACCOUNT_EDIT = access.authorize(permissions.ACCOUNT_EDIT, authAffectedUsersId);
 const ACCOUNT_IMPORT = access.authorize(permissions.ACCOUNT_IMPORT, authAffectedUsersNone);
+const ACCOUNT_DELETE = access.authorize(permissions.ACCOUNT_DELETE, authAffectedUsersId);
 const ADMIN_ROLE_SET = access.authorize(permissions.ADMIN_ROLE_SET, authAffectedUsersId);
+const CHANGE_USER_POINTS_TO_AWARD = access.authorize(permissions.CHANGE_USER_POINTS_TO_AWARD, authAffectedUsersNone);
 
 
 router.get('/', USER_BRIEF_VIEW, controller.getAllBrief);
@@ -25,7 +28,9 @@ router.post('/import', ACCOUNT_IMPORT, controller.import);
 
 // Not a proper rest API style call, but it allows for easy permission
 // checking.
-router.put('/:id/role', ADMIN_ROLE_SET, controller.setRole)
+router.patch('/:id/role', ADMIN_ROLE_SET, controller.setRole);
+router.patch('/reset-points-to-award', CHANGE_USER_POINTS_TO_AWARD, controller.resetAllPointsToAward);
+router.patch('/:id/reset-points-to-award', CHANGE_USER_POINTS_TO_AWARD, controller.resetOnePointsToAward);
 
 // ================================================================
 // Authentication functions

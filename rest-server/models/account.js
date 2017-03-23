@@ -355,10 +355,25 @@ function fingerprintCondition(fingerprint) {
 
 function activeCondition(condition) {
   condition = condition || {};
-  condition.active = true;
-  condition.banExpires = { $or: [  null, { $lt: new Date() } ] };
-  return condition;
+  var next = {
+    $and: [
+      { active: true },
+      { $or: [
+        { banExpires: null },
+        { banExpires: { $lt: new Date() }}
+      ] }
+    ]
+  };
+  if (condition) {
+    next.$and.push(condition);
+  }
+  return next;
 }
+
+
+AccountSchema.statics.findOneActive = function(condition) {
+  return this.findOne(activeCondition(condition));
+};
 
 
 
