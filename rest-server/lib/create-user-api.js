@@ -14,14 +14,18 @@ const DEFAULT_LOCALE = 'en';
 
 
 exports.createUser = function(reqUser) {
-  reqUser.role = roles.USER.name;
+  if (reqUser) {
+    reqUser.role = roles.USER.name;
+  }
   return exports.createUserAccount(reqUser, false);
 };
 
 
 
 exports.createAdmin = function(reqUser) {
-  reqUser.role = roles.ADMIN.name;
+  if (reqUser) {
+    reqUser.role = roles.ADMIN.name;
+  }
   return exports.createUserAccount(reqUser, false);
 };
 
@@ -85,7 +89,7 @@ exports.createBot = function(data) {
 exports.createUserAccount = function(reqUser, dontSendEmail) {
   // Because of the way this is done, it must be a manual check.
   if (!reqUser) {
-    return Promise.resolve(null);
+    return Promise.reject(validate.error(null, 'user', 'null user'));
   }
 
   let errors = validateAccountInput(reqUser);

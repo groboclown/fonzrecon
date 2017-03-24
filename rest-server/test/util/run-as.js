@@ -13,11 +13,14 @@ exports.admin = function(username) {
 
 exports.bot = function() {
   return {
-    forUser: function(username) {
+    forUser: (username) => {
       return structForBotWithRole('User', username);
     },
-    forAdmin: function(username) {
+    forAdmin: (username) => {
       return structForBotWithRole('Admin', username);
+    },
+    forSelf: () => {
+      return structForBotWithRole(null, null);
     }
   };
 };
@@ -86,7 +89,14 @@ function structForBotWithRole(role, username) {
 
 
 function runAnonymousAction(methodName, uri, data) {
-  return testSetup.request()[methodName](uri).send(data);
+  return testSetup.request()[methodName](uri).send(data)
+    .then((res) => {
+      // Unify errors
+      if (res.error) {
+        throw res.error;
+      }
+      return res;
+    });
 }
 
 
@@ -99,22 +109,35 @@ function runActionAs(roleName, methodName, username, uri, data) {
       return testSetup.request()[methodName](uri)
         .set('Authorization', 'JWT ' + token)
         .send(data);
+    })
+    .then((res) => {
+      // Unify errors
+      if (res.error) {
+        throw res.error;
+      }
+      return res;
     });
 }
 
 
 function runActionAsBotWith(roleName, methodName, username, uri, data) {
-  if (methodName == 'get') {
-    if (uri.indexOf('?') < 0) {
-      uri = uri + '?';
+  var userPromise;
+  if (username) {
+    if (methodName == 'get') {
+      if (uri.indexOf('?') < 0) {
+        uri = uri + '?';
+      } else {
+        uri = uri + '&';
+      }
+      uri = uri + 'behalf=' + username;
     } else {
-      uri = uri + '&';
+      data.behalf = username;
     }
-    uri = uri + 'behalf=' + username;
+    userPromise = testSetup['createOrGet' + roleName](createUserData(username));
   } else {
-    data.behalf = username;
+    userPromise = Promise.resolve(null);
   }
-  return testSetup['createOrGet' + roleName](createUserData(username))
+  return userPromise
     .then((user) => {
       return testSetup.createOrGetBot(createBotData('bot'));
     })
@@ -125,6 +148,13 @@ function runActionAsBotWith(roleName, methodName, username, uri, data) {
       return testSetup.request()[methodName](uri)
         .set('Authorization', 'JWT ' + token)
         .send(data);
+    })
+    .then((res) => {
+      // Unify errors
+      if (res.error) {
+        throw res.error;
+      }
+      return res;
     });
 }
 

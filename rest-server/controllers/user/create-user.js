@@ -75,7 +75,6 @@ exports.import = function(req, res, next) {
       }
     })
     .catch((err) => {
-      console.log(`DEBUG error ${err}\n${err.stack}`);
       next(err);
     });
 };
