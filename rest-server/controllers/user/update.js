@@ -11,12 +11,66 @@ const roles = require('../../config/access/roles');
 const notify = require('../../lib/notify');
 
 
+/**
+ * Extremely limited user modification API.  Usable by the
+ * end user and administrators.
+ */
 exports.update = function(req, res, next) {
   const username = req.params.id;
 
-  // FIXME implement
+  req.checkBody({
+    locale: {
+      isLength: {
+        options: {
+          gt: 1,
+          lt: 11
+        },
+        errorMessage: 'must be between 2 and 10 characters (inclusive)'
+      },
+      optional: true
+    },
+    organization: {
+      isLength: {
+        options: {
+          gt: 1,
+          lt: 101
+        },
+        errorMessage: 'must be between 2 and 100 characters (inclusive)'
+      },
+      optional: true
+    }
+  });
 
-  next();
+  return req.getValidationResult()
+    .then((results) => {
+      if (!results.isEmpty()) {
+        throw errors.validationProblems(results.array());
+      }
+      if (!/[a-z][a-z](-[a-z][a-z])*/i.test(req.body.locale)) {
+        throw errors.extraValidationProblem('locale', req.body.locale,
+          'locale be in the form `AB` or `AB-CD` or `AB-CD-EF` (case insensitive)');
+      }
+
+      return User.findOneByName(username);
+    })
+    .then((user) => {
+      if (!user) {
+        throw errors.resourceNotFound();
+      }
+      if (req.body.locale) {
+        user.locale = req.body.locale;
+      }
+      if (req.body.organization) {
+        user.organization = req.body.organization;
+      }
+      return user.save();
+    })
+    .then((user) => {
+      res.status(200).json({ UserBrief: jsonConvert.briefUser(user) });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 

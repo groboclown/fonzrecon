@@ -25,6 +25,8 @@ This token can then be passed in the Authorization header like so:
 Authorization: JWT (token)
 ```
 
+Alternatively, the token can be stored in a cookie named `authorization`.
+
 ## Token-less Requests
 
 To make requests without tokens, you must pass, either as
@@ -495,6 +497,31 @@ Retrieve the details of the user.
 
 
 
+## GET `/api/v1/users/about-me`
+
+Retrieve the details of the current user with additional information useful
+for interface rendering.
+
+**Access:** all authenticated users.
+
+**Returns:**
+
+```json
+{
+  "User": { ... },
+  "isAdmin": true,
+  "hasPendingVerification": false
+}
+```
+
+* `User` - a [User](#user) object for the current user.
+* `isAdmin` - boolean declaring whether the current user has administrative
+    access or not.
+* `hasPendingVerification` - boolean indicating whether there's a pending
+    request to reset the user's password.
+
+
+
 ## POST `/api/v1/users`
 
 Create a new user.
@@ -536,9 +563,17 @@ user can give.
 ```
 
 
-## POST `api/v1/users/import`
+## POST `api/v1/users/batch-import`
 
 Imports a list of users into the system.
+
+If the request is a multi-part file upload, then the import will attempt
+to load the `csvUsers` named file as a csv file.  The mime type of the
+file must be `text/csv`.  The csv file must have column names that match
+up with the JSON body key names.
+
+If the request is not a multi-part file upload, then the users to import
+must be in the JSON-formatted body text.
 
 **Access:** Administrators only.
 
@@ -586,7 +621,32 @@ user can give.
 ```
 
 
-## PATCH `api/v1/:id/role`
+## PUT `api/v1/:id`
+
+Updates a select number of fields for the user with the given ID.
+
+**Access:** Administrators and the user with the given ID.
+
+**JSON Body:**
+
+```json
+{
+  "locale": "en-us",
+  "organization": "HR"
+}
+```
+
+* `locale` (optional) - the user's locale for sending contact information.
+* `organization` (optional) - the organization the user is associated with.
+
+**Returns:**
+
+```json
+{}
+```
+
+
+## PUT `api/v1/:id/role`
 
 Updates the role of the account associated with the given username.  The
 user can only be switched between `USER` and `ADMIN` roles, and cannot be
@@ -611,7 +671,7 @@ made into a `BOT` account.
 ```
 
 
-## PATCH `api/v1/reset-points-to-award`
+## PUT `api/v1/reset-points-to-award`
 
 Updates all active users to have a specific number of points to award.
 
@@ -634,7 +694,7 @@ Updates all active users to have a specific number of points to award.
 ```
 
 
-## PATCH `api/v1/:id/reset-points-to-award`
+## PUT `api/v1/:id/reset-points-to-award`
 
 Updates the given user to have a specific number of points to award.
 

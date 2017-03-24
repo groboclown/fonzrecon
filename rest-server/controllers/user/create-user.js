@@ -8,6 +8,8 @@ const errors = util.errors;
 const accessLib = require('../../lib/access');
 const validate = require('../../lib/validate');
 const createUser = require('../../lib/create-user-api').createUser;
+const csvtojson = require('csvtojson');
+const stream = require('stream');
 
 
 exports.create = function(req, res, next) {
@@ -30,12 +32,22 @@ exports.create = function(req, res, next) {
 
 
 exports.import = function(req, res, next) {
-  if (!validate.isArray(req.body.users)) {
-    return next(validate.error(null, 'users', 'user body not defined'));
+  var importUserListPromise = null;
+
+  if (req.files && req.files.csvUsers) {
+    // Uses express-fileupload parsing of multipart files
+    importUserListPromise = exports.importUserListFile(req.files.csvUsers);
+  } else if (validate.isArray(req.body.users)) {
+    // Simple JSON input.
+    importUserListPromise = Promise.resolve(req.body.users);
   }
 
-  return Promise
-    .all(req.body.users.map(createUser).map(validate.promiseReflect))
+  if (!importUserListPromise) {
+    return next(validate.error(null, 'users', 'user body not defined or csvUsers multipart file not given'));
+  }
+
+  return importUserListPromise
+    .then((users) => { return Promise.all(users.map(createUser).map(validate.promiseReflect)); })
     .then((results) => {
       let ret = [];
       let anyRejected = false;
@@ -49,6 +61,10 @@ exports.import = function(req, res, next) {
           });
           anyRejected = true;
         } else {
+          if (!results[i].v) {
+            console.log(`DEBUG bad created results ${i}: ${JSON.stringify(results[i])}`);
+            console.log(`DEBUG all results: ${JSON.stringify(results)}`);
+          }
           ret.push({
             username: results[i].v[0].username,
             // Do not send the validation code.
@@ -77,4 +93,31 @@ exports.import = function(req, res, next) {
     .catch((err) => {
       next(err);
     });
+};
+
+
+
+exports.importUserListFile = function(uploadedFile) {
+  if (uploadedFile.mimetype !== 'text/csv') {
+    return Promise.reject(validate.error(uploadedFile.mimetype,
+      'csvUsers mimetype', 'mimetype must be `text/csv`'));
+  }
+
+  return new Promise((resolve, reject) => {
+    let bufferStream = new stream.PassThrough();
+    bufferStream.end(uploadedFile.data);
+    var ret = [];
+    csvtojson({ checkColumn: true })
+      .fromStream(bufferStream)
+      .on('json', (row) => {
+        ret.push(row);
+      })
+      .on('done', (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(ret);
+        }
+      });
+  });
 };

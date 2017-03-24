@@ -34,6 +34,9 @@ module.exports = {
     // then "user" to see who the requestor is.
     canRunOnBehalfOf: true,
 
+    // Doesn't really have admin access
+    hasAdminAccess: false,
+
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
@@ -63,6 +66,7 @@ module.exports = {
   USER: {
     name: 'USER',
     canRunOnBehalfOf: false,
+    hasAdminAccess: false,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
@@ -90,12 +94,13 @@ module.exports = {
   ADMIN: {
     name: 'ADMIN',
     canRunOnBehalfOf: false,
+    hasAdminAccess: true,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ANY,
       USER_DETAILS_EDIT: ALLOW_ANY,
       ACCOUNT_VIEW: ALLOW_ANY,
-      ACCOUNT_EDIT: ALLOW_SELF,
+      ACCOUNT_EDIT: ALLOW_SELF, // !!!
       ACCOUNT_CREATE: ALLOW_ANY,
       ACCOUNT_DELETE: ALLOW_ANY,
       ACCOUNT_IMPORT: ALLOW_ANY,

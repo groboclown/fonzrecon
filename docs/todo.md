@@ -15,15 +15,13 @@
       thumbs up should not be awarded the points, though.
     * Properly implement email sending (needs testing).
     * Allow users to upload an image.
-    * Allow for account creation for special user types (bots & admins).
-      * account must have unique email and username.
-      * accounts can only be created by admins.
     * Allow for users to update their user and limited rights
       to update their account.
     * Allow for prize creation, editing, and expiring.
     * Allow for claimed prize pending state and corresponding interactions.
     * Better utilize the "env" structure, rather than doing checks on the
       envName variable.
+    * Allow user to view and remove browser entries (not tokens themselves directly).
 * bot:
   * MS Teams:
     * access through MS Teams

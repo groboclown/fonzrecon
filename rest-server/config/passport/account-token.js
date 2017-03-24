@@ -9,11 +9,24 @@ const accountOptions = {
   tokenFromRequest: ExtractJwt.fromExtractors([
       ExtractJwt.fromAuthHeader(),
 
+      fromCookie(),
+
       // Not preferred, but for some simplification
       ExtractJwt.fromUrlQueryParameter()
     ])
 };
 
+
+function fromCookie(cookieName) {
+  cookieName = cookieName || 'authorization';
+  return (request) => {
+    var token = null;
+    if (request.cookies && request.cookies[cookieName]) {
+      token = request.cookies[cookieName];
+    }
+    return token;
+  };
+}
 
 
 module.exports = new AccountTokenStrategy(accountOptions, findAccountByToken);

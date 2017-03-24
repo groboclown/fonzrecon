@@ -122,6 +122,10 @@ exports.createUserAccount = function(reqUser, dontSendEmail) {
     errors.push(validate.errDetail(reqUser.locale, 'locale',
       'locale must be a string between 2 and 10 characters long'));
   }
+  if (!/[a-z][a-z](-[a-z][a-z])*/i.test(reqUser.locale)) {
+    errors.push(validate.errDetail(reqUser.locale, 'locale',
+      'locale be in the form `AB` or `AB-CD` or `AB-CD-EF` (case insensitive)'));
+  }
 
   if (!validate.isInSet(reqUser.role, roles.userRoles)) {
     errors.push(validate.errDetails(reqUser.role, 'role',

@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const fingerprint = require('express-fingerprint');
 const helmet = require('helmet');
 const settings = require('./settings');
+const fileUpload = require('express-fileupload');
 
 exports.setup = function(app, passport) {
 
@@ -21,6 +22,7 @@ exports.setup = function(app, passport) {
   app.use(fingerprint());
   app.use(cors());
   app.use(helmet());
+  app.use(fileUpload());
 
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }));

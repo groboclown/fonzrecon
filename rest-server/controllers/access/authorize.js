@@ -39,7 +39,6 @@ module.exports = function(permission, affectedUserListFunc) {
     var rolePermissionFunc = null;
     if (!!account) {
       if (!account.role || !roles[account.role]) {
-        console.error(`Account ${account.id} has invalid role id ${account.role}`);
         var err = new Error('Invalid account role for ' + account.id);
         err.status = 500;
         return next(err);

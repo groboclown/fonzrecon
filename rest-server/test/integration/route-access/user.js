@@ -309,7 +309,7 @@ describe('Access PUT /api/v1/users/:id', () => {
   it('As Admin', () => {
     return runAs.admin('testadmin').put('/api/v1/users/testuser', createOneUserData('testuser'))
       .then((res) => {
-        assert.equal(res.status, 201, 'status');
+        assert.equal(res.status, 200, 'status');
       });
   });
 
@@ -403,11 +403,314 @@ describe('Access DELETE /api/v1/users/:id', () => {
 });
 
 
+// ==========================================================================
+describe('Access POST /api/v1/users/batch-import', () => {
+  before(testSetup.beforeDb);
+
+  it('Not logged in', () => {
+    return runAs.anonymous().post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As User', () => {
+    return runAs.user('otheruser').post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for User', () => {
+    return runAs.bot().forUser('otheruser').post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Admin', () => {
+    return runAs.admin('testadmin').post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.equal(res.status, 201, 'status');
+      });
+  });
+
+  it('As Bot for Admin', () => {
+    return runAs.bot().forAdmin('testadmin').post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot', () => {
+    return runAs.bot().forSelf().post('/api/v1/users/batch-import', createManyUserData())
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+});
+
+
+// ==========================================================================
+describe('Access PUT /api/v1/users/:id/role', () => {
+  before(testSetup.beforeDb);
+
+  beforeEach(() => {
+    return testSetup.createOrGetUser({
+      username: 'testuser',
+      email: `testuser@fonzrecon.github`,
+      names: [`User Test`],
+      pointsToAward: 0,
+      organization: 'org',
+      locale: 'en',
+      password: 'sekret'
+    })
+  });
+
+  it('Not logged in', () => {
+    return runAs.anonymous().put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Self User', () => {
+    return runAs.user('testuser').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for Self User', () => {
+    return runAs.bot().forUser('testuser').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Other User', () => {
+    return runAs.user('otheruser').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for Other User', () => {
+    return runAs.bot().forUser('otheruser').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Admin', () => {
+    return runAs.admin('testadmin').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+      });
+  });
+
+  it('As Bot for Admin', () => {
+    return runAs.bot().forAdmin('testadmin').put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot', () => {
+    return runAs.bot().forSelf().put('/api/v1/users/testuser/role', { role: 'ADMIN' })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+});
+
+
+// ==========================================================================
+describe('Access PUT /api/v1/users/reset-points-to-award', () => {
+  before(testSetup.beforeDb);
+
+  it('Not logged in', () => {
+    return runAs.anonymous().put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As User', () => {
+    return runAs.user('testuser').put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for User', () => {
+    return runAs.bot().forUser('testuser').put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Admin', () => {
+    return runAs.admin('testadmin').put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+      });
+  });
+
+  it('As Bot for Admin', () => {
+    return runAs.bot().forAdmin('testadmin').put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot', () => {
+    return runAs.bot().forSelf().put('/api/v1/users/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+});
+
+
+// ==========================================================================
+describe('Access PUT /api/v1/users/:id/reset-points-to-award', () => {
+  before(testSetup.beforeDb);
+
+  beforeEach(() => {
+    return testSetup.createOrGetUser({
+      username: 'testuser',
+      email: `testuser@fonzrecon.github`,
+      names: [`User Test`],
+      pointsToAward: 0,
+      organization: 'org',
+      locale: 'en',
+      password: 'sekret'
+    })
+  });
+
+  it('Not logged in', () => {
+    return runAs.anonymous().put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Self User', () => {
+    return runAs.user('testuser').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for Self User', () => {
+    return runAs.bot().forUser('testuser').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Other User', () => {
+    return runAs.user('otheruser').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot for Other User', () => {
+    return runAs.bot().forUser('otheruser').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Admin', () => {
+    return runAs.admin('testadmin').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+      });
+  });
+
+  it('As Bot for Admin', () => {
+    return runAs.bot().forAdmin('testadmin').put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot', () => {
+    return runAs.bot().forSelf().put('/api/v1/users/testuser/reset-points-to-award', { points: 10 })
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+});
+
+
+// ==========================================================================
+describe('Access GET /api/v1/users/about-me', () => {
+  before(testSetup.beforeDb);
+
+  it('Not logged in', () => {
+    return runAs.anonymous().get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As User', () => {
+    return runAs.user('testuser').get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+      });
+  });
+
+  it('As Bot for User', () => {
+    return runAs.bot().forUser('testuser').get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Admin', () => {
+    return runAs.admin('testadmin').get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.equal(res.status, 200, 'status');
+      });
+  });
+
+  it('As Bot for Admin', () => {
+    return runAs.bot().forAdmin('testadmin').get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+
+  it('As Bot', () => {
+    return runAs.bot().forSelf().get('/api/v1/users/about-me')
+      .then((res) => {
+        assert.fail('Must not succeed');
+      }, assertForbidden);
+  });
+});
+
+
+// ==========================================================================
+
 
 function createOneUserData(username) {
   return {
     user: createUserData(username)
   };
+}
+
+function createManyUserData(count) {
+  count = count || 10;
+  var ret = [];
+  for (let i = 0; i < count; i++) {
+    ret.push(createUserData('user' + i));
+  }
+  return { users: ret };
 }
 
 
