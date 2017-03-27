@@ -58,47 +58,76 @@ const ALL_SETTINGS = {
     description: 'Who to send emails to when an administration action occurs (list of emails)',
     defaultValue: [],
     validator: [ validate.isArrayOf, validate.isEmailAddress, 1 ],
-    templateAccess: 'private'
+    templateAccess: 'private',
+    publicAccess: false
   },
   SiteUrl: {
     description: 'Root url of the site',
     defaultValue: 'http://localhost',
     validator: validate.isURL,
-    templateAccess: 'public'
+    templateAccess: 'public',
+    publicAccess: true
   },
   EmailTheme: {
     description: 'Directory under templates/email to use for formatted emails',
     defaultValue: 'light',
     validator: [ validate.isString, 1 ],
-    templateAccess: 'public'
+    templateAccess: 'public',
+    publicAccess: false
   },
   SiteFromEmail: {
     description: 'The `from` line in the emails sent from the site',
     defaultValue: 'no-reply@site.fonzrecon',
     validator: validate.isEmailAddress,
-    templateAccess: 'public'
+    templateAccess: 'public',
+    publicAccess: false
   },
   SiteName: {
     description: 'How the site self identifies',
     defaultValue: 'FonzRecon For You',
     validator: [ validate.isString, 1 ],
-    templateAccess: 'public'
+    templateAccess: 'public',
+    publicAccess: true
+  },
+  SiteBannerImage: {
+    description: 'URI for the site`s banner image',
+    defaultValue: null,
+    validator: [ validate.isNullOrUri ],
+    templateAccess: 'public',
+    publicAccess: true
+  },
+  SiteSmallImage: {
+    description: 'URI for the site`s standard image; about 128x128',
+    defaultValue: null,
+    validator: [ validate.isNullOrUri ],
+    templateAccess: 'public',
+    publicAccess: true
+  },
+  SiteIconImage: {
+    description: 'URI for the site`s icon (should be ~64x64)',
+    defaultValue: null,
+    validator: [ validate.isNullOrUri ],
+    templateAccess: 'public',
+    publicAccess: true
   },
   EmailProvider: {
     description: 'How to send emails, one of ' + contact.emailProviders,
     defaultValue: contact.emailProviders[0],
     validator: [ validate.isInSet, contact.emailProviders ],
-    templateAccess: 'private'
+    templateAccess: 'private',
+    publicAccess: false
   },
   EmailProviderConnection: {
     description: 'How to connect to the email provider',
     defaultValue: null,
     validator: validate.yes,
-    templateAccess: 'private'
+    templateAccess: 'private',
+    publicAccess: false
   }
 };
 const PUBLIC_TEMPLATE_SETTING_KEYS = [];
 const PRIVATE_TEMPLATE_SETTING_KEYS = [];
+const PUBLIC_SITE_SETTING_KEYS = [];
 const ALL_SETTING_KEYS = [];
 
 function simplePromiseFactory() {
@@ -122,6 +151,9 @@ for (let k in ALL_SETTINGS) {
       PUBLIC_TEMPLATE_SETTING_KEYS.push(k);
     } else if (ALL_SETTINGS[k].templateAccess === 'private') {
       PRIVATE_TEMPLATE_SETTING_KEYS.push(k);
+    }
+    if (ALL_SETTINGS[k].publicAccess) {
+      PUBLIC_SITE_SETTING_KEYS.push(k);
     }
   }
 }
@@ -262,7 +294,6 @@ SettingSchema.statics.getSettingValues = function(keys) {
 /**
  * Retrieve a single object with all the settings used by email.
  */
-
 SettingSchema.statics.getTemplateSettings = function() {
   // Shallow clone of the dictionaries above.
   return Promise
@@ -273,6 +304,14 @@ SettingSchema.statics.getTemplateSettings = function() {
     .then((args) => {
       return { public: args[0], private: args[1] };
     });
+};
+
+
+/**
+ * Retrieve all the settings that an end user would care about.
+ */
+SettingSchema.statics.getPublicSiteSettings = function() {
+  return this.getSettingValues(PUBLIC_SITE_SETTING_KEYS);
 };
 
 

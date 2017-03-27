@@ -181,6 +181,15 @@ exports.isInt = function(value) {
 
 
 
+exports.isNullOrUri = function(value) {
+  if (value === null || value === undefined) {
+    return true;
+  }
+  // TODO not really a URL...
+  return exports.isURL(value);
+};
+
+
 exports.yes = function(value) {
   return true;
 };

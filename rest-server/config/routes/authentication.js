@@ -2,6 +2,7 @@
 
 const express = require('express');
 const loginController = require('../../controllers/login');
+const publicController = require('../../controllers/public');
 const access = require('../../controllers/access');
 
 module.exports = function(passport) {
@@ -17,6 +18,10 @@ module.exports = function(passport) {
 
   router.put('/validate', loginController.validate);
   router.put('/password-change', loginController.requestPasswordChange);
+
+  // Other general public API actions.  They're just crammed in here because
+  // it's the place for public stuff.
+  router.get('/site-settings', publicController.siteSettings);
 
   return router;
 };

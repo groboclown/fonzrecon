@@ -965,3 +965,23 @@ A sub-set of the list of settings that should be updated.
 
 The map of final setting values that were updated in the request.
 This is a subset of the values returned by [GET](#getapiv1settings).
+
+
+## GET `auth/site-settings`
+
+Fetches the public site settings.
+
+**Access:** Everyone.
+
+**Query Parameters:** None.
+
+**Returns:**
+
+```json
+{
+  "SiteName": "Text name",
+  "SiteBannerImage": "images/banner.png",
+  "SiteSmallImage": "images/site-128x128.png",
+  "SiteIconImage": "images/site-icon.png"
+}
+```
