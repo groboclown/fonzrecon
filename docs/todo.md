@@ -9,6 +9,12 @@
       see her own thumbs up points, but not the other points.
     * User authentication - should it be allowed if a user has a pending
       validation token?
+    * Authorization get user list function may return a promise, but that
+      promise needs a "catch" added to it.
+  * Doc improvements:
+    * prize claim validate
+    * prize claim detail view
+    * images
   * Future Features:
     * Allow a user who received an aaay to thumb up the aaay, if there were
       additional people who received the aaay.  The user who gives the

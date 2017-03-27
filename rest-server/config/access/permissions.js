@@ -20,7 +20,9 @@ module.exports = {
   PRIZE_CREATE: { key: 'PRIZE_CREATE' },
   PRIZE_UPDATE: { key: 'PRIZE_UPDATE' },
   CLAIM_VIEW: { key: 'CLAIM_VIEW' },
+  CLAIM_DETAILS_VIEW: { key: 'CLAIM_DETAILS_VIEW' },
   CLAIM_CREATE: { key: 'CLAIM_CREATE' },
+  CLAIM_VALIDATE: { key: 'CLAIM_VALIDATE' },
   SITE_SETTINGS: { key: 'SITE_SETTINGS' },
 
   // This one is called the same, but the result (true or false)

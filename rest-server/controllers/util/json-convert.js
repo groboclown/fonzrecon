@@ -127,6 +127,30 @@ exports.prize = function(prizeObj) {
 
 
 
+exports.claimedPrizeBrief = function(claimed) {
+  if (typeof(claimed) === 'object' && !claimed._id && typeof(claimed.toString) === 'function') {
+    claimed = claimed.toString();
+  }
+  if (typeof(claimed) === 'string') {
+    return {
+      id: claimed,
+      uri: '/api/v1/claimed-prizes/' + claimed,
+      type: 'ClaimedPrizeRef'
+    };
+  }
+  return {
+    id: claimed._id,
+    claimedByUser: exports.briefUser(claimed.claimedByUser),
+    prize: exports.prize(claimed.prize),
+    uri: '/api/v1/claimed-prizes/' + claimed._id,
+    createdAt: claimed.createdAt,
+    pendingValidation: claimed.pendingValidation,
+    type: 'ClaimedPrizeBrief'
+  };
+};
+
+
+
 exports.claimedPrize = function(claimed) {
   if (typeof(claimed) === 'object' && !claimed._id && typeof(claimed.toString) === 'function') {
     claimed = claimed.toString();
@@ -144,6 +168,13 @@ exports.claimedPrize = function(claimed) {
     prize: exports.prize(claimed.prize),
     uri: '/api/v1/claimed-prizes/' + claimed._id,
     createdAt: claimed.createdAt,
+    pendingValidation: claimed.pendingValidation,
+    validatedByUser: claimed.validatedByUser
+      ? claimed.validatedByUser.username
+      : null,
+    validatedTime: claimed.validatedTime,
+    claimAllowed: claimed.claimAllowed,
+    claimRefusalReason: claimed.claimRefusalReason,
     type: 'ClaimedPrize'
   };
 };

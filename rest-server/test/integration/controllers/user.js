@@ -6,7 +6,7 @@ const initializeDb = require('../../util/initialize-db');
 const mockControllerRunner = require('../../util/mock-controller');
 const userController = require('../../../controllers/user');
 const createUserApi = require('../../../lib/create-user-api');
-const models = require('../../../models');
+const models = testSetup.models;
 const Account = models.Account;
 const User = models.User;
 
@@ -141,12 +141,20 @@ describe('Get All', () => {
 
   // Create a test user as a fixture
   beforeEach(() => {
-    return createUserApi.createUser({
-        username: 'testuser',
-        names: ['nnn'],
-        email: 'eat@joes.com',
-        pointsToAward: 0,
-        organization: 'org'
+    // This should be automatically removed for us by mocha-mongoose,
+    // but without it an extra admin user is inserted.
+    return User.remove()
+      .then(() => {
+        return Account.remove();
+      })
+      .then(() => {
+        return createUserApi.createUser({
+            username: 'testuser',
+            names: ['nnn'],
+            email: 'eat@joes.com',
+            pointsToAward: 0,
+            organization: 'org'
+          });
       });
   });
 

@@ -71,11 +71,15 @@ exports.getOne = function(req, res, next) {
 
 
 exports.create = function(req, res, next) {
+  req.checkBody({
 
+  });
+
+  next();
 };
 
 
 
 exports.update = function(req, res, next) {
-
+  next();
 };

@@ -26,6 +26,10 @@ const PrizeChoiceSchema = new Schema({
     type: String,
     required: false
   },
+  imageUri: {
+    type: String,
+    required: false
+  },
   purchasePoints: {
     // Positive integer type
     // Positive integer type

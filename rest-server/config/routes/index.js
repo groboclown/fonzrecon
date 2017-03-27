@@ -19,6 +19,7 @@ exports.setup = function(app, passport) {
   app.use('/api/v1/prizes', require('./prize'));
   app.use('/api/v1/claimed-prizes', require('./claimed-prize'));
   app.use('/api/v1/settings', require('./setting'));
+  app.use('/api/v1/images', require('./image'));
 
   // Generic error handler
   app.use((err, req, res, next) => {

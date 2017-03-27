@@ -49,7 +49,7 @@ exports.getAll = function(req, res, next) {
     .then((results) => {
       results.type = 'ClaimedPrize';
       res.status(200).json(jsonConvert.pagedResults(
-        results, jsonConvert.claimedPrize));
+        results, jsonConvert.claimedPrizeBrief));
     })
     .catch((err) => {
       next(err);
@@ -61,6 +61,24 @@ exports.getAll = function(req, res, next) {
 exports.getOne = function(req, res, next) {
   return ClaimedPrize
     .findOneBriefById(req.params.id)
+    .lean()
+    .exec()
+    .then((claimed) => {
+      if (!claimed) {
+        throw errors.resourceNotFound();
+      }
+      return res.status(200).json(jsonConvert.claimedPrizeBrief(claimed));
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+
+
+exports.getOneDetails = function(req, res, next) {
+  return ClaimedPrize
+    .findOne({ _id: req.params.id })
     .lean()
     .exec()
     .then((claimed) => {
@@ -140,7 +158,8 @@ exports.create = function(req, res, next) {
 
       return new ClaimedPrize({
         claimedByUser: fromUser,
-        prize: prize
+        prize: prize,
+        pendingValidation: true
       })
       .save();
     })
@@ -167,4 +186,57 @@ exports.create = function(req, res, next) {
     .catch((err) => {
       next(err);
     });
+};
+
+
+exports.validatePrize = function(req, res, next) {
+  const reqUser = accessLib.getRequestUser(req);
+  if (!reqUser) {
+    next(errors.forbidden());
+  }
+
+  req.checkBody({
+    refused: {
+      isBoolean: {},
+      optional: false,
+      errorMessage: 'must be a boolean'
+    },
+    refusalMessage: {
+      isString: {},
+      optional: true,
+      errorMessage: 'must be null or a string'
+    }
+  });
+
+  req.getValidationResult()
+    .then((results) => {
+      if (!results.isEmpty()) {
+        throw errors.validationProblems(results.array());
+      }
+      if (req.body.refused && !req.body.refusalMessage) {
+        throw errors.extraValidationProblem('refusalMessage',
+          req.body.refusalMessage, 'refused claims must have a reason');
+      }
+
+      return ClaimedPrize.findOne({ _id: req.params.id });
+    })
+    .then((claimed) => {
+      if (!claimed) {
+        throw errors.resourceNotFound();
+      }
+
+      if (req.body.refused) {
+        return claimed.refuseClaim(reqUser, req.body.refusalMessage);
+      }
+      return claimed.auhorizeClaim(reqUser);
+    })
+    .then((claimed) => {
+      return res.status(200).json(jsonConvert.claimedPrize(claimed));
+    })
+    .catch((err) => {
+      next(err);
+    });
+
+
+  next();
 };

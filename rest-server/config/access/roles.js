@@ -6,6 +6,9 @@ const permissions = require('./permissions');
 function ALLOW_SELF(selfUser, onBehalfOf, affectedUsers) {
   return affectedUsers.includes(selfUser);
 }
+function ALLOW_NOT_SELF(selfUser, onBehalfOf, affectedUsers) {
+  return !affectedUsers.includes(selfUser);
+}
 function ALLOW_ON_BEHALF_OF(selfUser, onBehalfOf, affectedUsers) {
   return affectedUsers.includes(onBehalfOf);
 }
@@ -19,8 +22,8 @@ function ALLOW_NONE(selfUser, onBehalfOf, affectedUsers) {
 
 
 module.exports = {
-  names: ['BOT', 'USER', 'ADMIN'],
-  userRoles: ['USER', 'ADMIN'],
+  names: ['BOT', 'USER', 'PRIZE_ADMIN', 'ADMIN'],
+  userRoles: ['USER', 'PRIZE_ADMIN', 'ADMIN'],
 
   // Can view basic user info, can award on users' behalf, can view
   // basic public award info.  Even if the user is an admin, the user
@@ -77,6 +80,36 @@ module.exports = {
       ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
       PRIZE_VIEW: ALLOW_ANY,
+      CLAIM_VIEW: ALLOW_ANY,
+      CLAIM_DETAILS_VIEW: ALLOW_SELF,
+
+      // This, too is a bit weird.  The API will create an ack
+      // only for the requesting user.  Because the requesting user
+      // is a user, they will be allowed to create it for themselves.
+      ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
+      THUMBSUP_CREATE: ALLOW_ANY,
+      CLAIM_CREATE: ALLOW_ANY
+    }
+  },
+
+  // Same as a normal user, but has been given elevated access to manage
+  // prizes and authorize individuals to claim prizes.
+  PRIZE_ADMIN: {
+    name: 'PRIZE_ADMIN',
+    canRunOnBehalfOf: false,
+    hasAdminAccess: false,
+    permissions: {
+      USER_BRIEF_VIEW: ALLOW_ANY,
+      USER_DETAILS_VIEW: ALLOW_SELF,
+      USER_DETAILS_EDIT: ALLOW_SELF,
+      ACCOUNT_VIEW: ALLOW_SELF,
+      ACCOUNT_EDIT: ALLOW_SELF,
+      ACCOUNT_CREATE: ALLOW_NONE,
+      ACKNOWLEDGEMENT_VIEW: ALLOW_ANY,
+      ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_NONE,
+      PRIZE_VIEW: ALLOW_ANY,
+      CLAIM_DETAILS_VIEW: ALLOW_ANY,
+      CLAIM_VALIDATE: ALLOW_NOT_SELF, // Can't validate self!
 
       // This, too is a bit weird.  The API will create an ack
       // only for the requesting user.  Because the requesting user
@@ -110,11 +143,13 @@ module.exports = {
       ACKNOWLEDGEMENT_PRIVATE_VIEW: ALLOW_ANY,
       PRIZE_VIEW: ALLOW_ANY,
       PRIZE_CREATE: ALLOW_ANY,
+      CLAIM_DETAILS_VIEW: ALLOW_ANY,
+      CLAIM_VALIDATE: ALLOW_ANY,
+      CLAIM_VIEW: ALLOW_ANY,
 
       // Again, acks will only be created for the requesting user.
       ACKNOWLEDGEMENT_CREATE: ALLOW_ANY,
       THUMBSUP_CREATE: ALLOW_ANY,
-      CLAIM_VIEW: ALLOW_ANY,
       CLAIM_CREATE: ALLOW_NONE, // Admins can't claim prizes
       SITE_SETTINGS: ALLOW_ANY
     }
