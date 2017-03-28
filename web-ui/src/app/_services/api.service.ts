@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
-import { MeService } from './me.service';
+import { LowLoginAccountService } from './low-login-account.service';
 import { LoginAccount } from '../_models/login-account';
 
 // FIXME make this a parameter.
@@ -15,7 +15,7 @@ export class ApiService {
 
   constructor(
         private http: Http,
-        private me: MeService
+        private lowLoginAccount: LowLoginAccountService
       ) {
     // Do nothing
   }
@@ -53,7 +53,7 @@ export class ApiService {
   }
 
   private auth(headerDict: any): RequestOptions {
-    const token = this.me.getAuthenticatedToken();
+    const token = this.lowLoginAccount.getAuthenticatedToken();
     if (token) {
       headerDict.Authorization = 'JWT ' + token;
     }

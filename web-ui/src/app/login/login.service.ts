@@ -5,10 +5,10 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
 import { Subject } from 'rxjs/Subject';
-import { ApiService } from './api.service';
-import { LowLoginAccountService } from './low-login-account.service';
+import { ApiService, LowLoginAccountService } from '../_services/index';
+import {  } from './low-login-account.service';
 import { LoginAccount } from '../_models/login-account';
-import { createObservableFor } from './lib/index';
+import { createObservableFor } from '../_services/lib/index';
 
 /**
  * Handles login and logout behaviors.
@@ -61,24 +61,24 @@ export class LoginService {
    * @return {Observable<string>} 'true' if a valid logout, 'false' if not,
    *    and anything else for an error message.
    */
-  logout(): Observable<boolean> {
+  logout() {
     if (!this.lowLoginAccount.isAuthenticated()) {
       this.lowLoginAccount.onLogout();
       return createObservableFor(true);
     }
-    return this.api.post('/auth/logout', {})
-    .flatMap((response: Response) => {
-      this.lowLoginAccount.onLogout();
-      return createObservableFor(true);
-    })
-    .catch((err: Response | any) => {
-      if (err instanceof Response) {
-        const body = err.json() || {};
-        const error = new Error(body.message);
-        // error.data = body;
-        return Observable.throw(error);
-      }
-      return Observable.throw(err.message || 'unknown error');
-    });
+    this.api.post('/auth/logout', {})
+    .subscribe(
+      (response: Response) => {
+        this.lowLoginAccount.onLogout();
+      },
+      (err: Response | any) => {
+        if (err instanceof Response) {
+          const body = err.json() || {};
+          const error = new Error(body.message);
+          // error.data = body;
+          throw error;
+        }
+        throw err;
+      });
   }
 }

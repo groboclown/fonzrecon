@@ -8,33 +8,34 @@ import { routing } from './app.routing';
 
 import { AuthGuard } from './_guards/index';
 import {
-    ApiService, UserService, MeService, LoginService,
-    SiteService
+    ApiService, MeService,
+    SiteService, LowLoginAccountService
   } from './_services/index';
-import { LoginComponent } from './login/index';
 import { HomeComponent } from './home/index';
-import { HeaderComponent } from './header/index';
+
+import { HeaderModule } from './header/index';
+import { LoginModule } from './login/index';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    HomeComponent,
-    HeaderComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    routing
+    routing,
+
+    HeaderModule.forRoot(),
+    LoginModule.forRoot()
   ],
   providers: [
     AuthGuard,
     ApiService,
-    UserService,
     MeService,
-    LoginService,
-    SiteService
+    SiteService,
+    LowLoginAccountService
   ],
   bootstrap: [AppComponent]
 })

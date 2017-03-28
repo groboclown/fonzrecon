@@ -25,7 +25,13 @@ export class HeaderComponent implements OnInit {
         });
       this.meService.getLoginAccount()
         .subscribe((response: LoginAccount) => {
-          this.loginAccount = response;
+          if (response !== null && response !== undefined) {
+            console.log(`DEBUG header loaded login account data ${response.username}`);
+            this.loginAccount = response;
+          } else {
+            console.log(`DEBUG header loaded login account data [null]`);
+            this.loginAccount = new LoginAccount();
+          }
         });
     }
 

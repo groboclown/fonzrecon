@@ -9,6 +9,13 @@ export class LoginAccount {
   hasPendingVerification: boolean;
   user: User = new User();
 
+  primaryName(): string {
+    if (this.user) {
+      return this.user.primaryName;
+    }
+    return this.username;
+  }
+
   isAuthenticated() {
     return this.username != null && this.token != null;
   }

@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    console.log(`Checking whether the route is active.`);
+    console.log(`DEBUG Checking whether the route is active.`);
     if (this.me.isAuthenticated()) {
       return true;
     }
