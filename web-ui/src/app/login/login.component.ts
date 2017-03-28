@@ -21,21 +21,22 @@ export class LoginComponent implements OnInit {
 
     ngOnInit() {
         // reset login status
-        this.loginService.logout();
+        // this.loginService.logout();
     }
 
     login() {
         this.loading = true;
         this.loginService.login(this.model.username, this.model.password)
             .subscribe(result => {
-                if (result === true) {
-                    this.router.navigate(['/']);
-                } else {
-                    this.error = 'Username or password is incorrect';
-                    this.loading = false;
-                }
+              if (result === true) {
+                  this.router.navigate(['/']);
+              } else {
+                  this.error = 'Username or password is incorrect';
+                  this.loading = false;
+              }
             }, err => {
-              console.log(`Login encountered error ${err}`);
+              this.error = err.message;
+              this.loading = false;
             });
     }
 }

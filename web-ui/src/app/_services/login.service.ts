@@ -1,23 +1,34 @@
 import { Injectable, Inject } from '@angular/core';
-import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/observable/throw';
+import { Subject } from 'rxjs/Subject';
 import { ApiService } from './api.service';
 import { MeService } from './me.service';
 import { LoginAccount } from '../_models/login-account';
+import { createObservableFor } from './lib/index';
 
 /**
  * Handles login and logout behaviors.
  */
 @Injectable()
 export class LoginService {
+  private userInitialized = new Subject<boolean>();
+
   constructor(
-        private http: Http,
         private api: ApiService,
         private me: MeService
       ) {
-    // Do nothing
+    console.log(`DEBUG adding low level login listener`);
+    this.me.getLowLevelLogin()
+      .subscribe(() => {
+        console.log(`DEBUG getting about-me`);
+        return this.api.get('/api/v1/users/about-me')
+        .map((response: Response) => this.me.onAboutMe(response.json() || {}));
+      });
+    this.me.getLoginAccount();
   }
 
   /**
@@ -25,12 +36,12 @@ export class LoginService {
    *    and anything else for an error message.
    */
   login(username, password): Observable<boolean> {
+    // Logout first to ensure we don't pass in any tokens.
     this.me.onLogout();
-    console.log(`DEBUG Attempting login`);
-    return this.http.post(this.api.toUrl('/auth/login'), JSON.stringify({
+    return this.api.post('/auth/login', {
       username: username,
       password: password
-    }))
+    })
     .map((response: Response) => {
       const token = (response.json() || {}).token;
       if (token) {
@@ -38,7 +49,6 @@ export class LoginService {
           username: username,
           token: token
         });
-        // TODO pull in user object for self.
         return true;
       }
       this.me.onLogout();
@@ -46,13 +56,11 @@ export class LoginService {
     })
     .catch((err: Response | any) => {
       if (err instanceof Response) {
-        console.log(`DEBUG Encountered bad response ${err.status}`);
         const body = err.json() || {};
         const error = new Error(body.message);
         // error.data = body;
         return Observable.throw(error);
       }
-      console.log(`DEBUG Encountered error ${err}`);
       return Observable.throw(err);
     });
   }
@@ -65,21 +73,21 @@ export class LoginService {
   logout(): Observable<boolean> {
     if (!this.me.isAuthenticated()) {
       this.me.onLogout();
-      return Observable.apply('true');
+      return createObservableFor(true);
     }
-    this.api.post('/auth/logout', {})
-      .map((response: Response) => {
-        this.me.onLogout();
-        return true;
-      })
-      .catch((err: Response | any) => {
-        if (err instanceof Response) {
-          const body = err.json() || {};
-          const error = new Error(body.message);
-          // error.data = body;
-          return Observable.throw(error);
-        }
-        return Observable.throw(err.message || 'unknown error');
-      });
+    return this.api.post('/auth/logout', {})
+    .flatMap((response: Response) => {
+      this.me.onLogout();
+      return createObservableFor(true);
+    })
+    .catch((err: Response | any) => {
+      if (err instanceof Response) {
+        const body = err.json() || {};
+        const error = new Error(body.message);
+        // error.data = body;
+        return Observable.throw(error);
+      }
+      return Observable.throw(err.message || 'unknown error');
+    });
   }
 }

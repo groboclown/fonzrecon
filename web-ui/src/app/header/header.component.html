@@ -1,1 +1,4 @@
-<div id="app-header"></div>
+<div id="app-header" class="header-line">
+  <span id="site-name">{{ site.name }}</span>
+  <span id="me-auth" *ngIf="isAuthenticated()">{{ loginAccount.primaryName }}</span>
+</div>

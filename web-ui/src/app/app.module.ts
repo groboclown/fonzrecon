@@ -7,7 +7,10 @@ import { AppComponent } from './app.component';
 import { routing } from './app.routing';
 
 import { AuthGuard } from './_guards/index';
-import { ApiService, UserService, MeService, LoginService } from './_services/index';
+import {
+    ApiService, UserService, MeService, LoginService,
+    SiteService
+  } from './_services/index';
 import { LoginComponent } from './login/index';
 import { HomeComponent } from './home/index';
 import { HeaderComponent } from './header/index';
@@ -30,7 +33,8 @@ import { HeaderComponent } from './header/index';
     ApiService,
     UserService,
     MeService,
-    LoginService
+    LoginService,
+    SiteService
   ],
   bootstrap: [AppComponent]
 })

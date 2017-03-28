@@ -44,6 +44,9 @@ exports.setup = function(app, passport) {
     } else if (settings.envName === 'test' && (!err.status || err.status === 500)) {
       if (err.details) { console.error(JSON.stringify(err.details)); }
       console.error(err.stack);
+    } else if (!err.status || err.status === 500) {
+      if (err.details) { console.error(JSON.stringify(err.details)); }
+      console.error(err.stack);
     }
 
 

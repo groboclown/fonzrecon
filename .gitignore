@@ -43,6 +43,7 @@ config.sh
 .tmp
 
 ### macOS ###
+.DS_Store
 *.DS_Store
 .AppleDouble
 .LSOverride
@@ -65,3 +66,43 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# Angular JS ignores:
+
+# compiled output
+/web-ui/dist
+/web-ui/tmp
+/web-ui/out-tsc
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/web-ui/.sass-cache
+/web-ui/connect.lock
+/web-ui/coverage
+/web-ui/libpeerconnection.log
+npm-debug.log
+testem.log
+/web-ui/typings
+
+# e2e
+/web-ui/e2e/*.js
+/web-ui/e2e/*.map
+
+# System Files
+Thumbs.db

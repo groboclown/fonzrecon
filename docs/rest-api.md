@@ -379,6 +379,8 @@ Authorization: JWT (token string)
 
 **Returns:**
 
+TODO return user "me" object.
+
 ```json
 {
     "token": "fSxyKq7iGp3osOHnqoo2Mz3EJZ0V5ZOYYOiWKqwmBe128rh3Exso2GUeSOl5bZoKRPIvqW3hgOpe46D8CBFLFw==",
@@ -621,7 +623,7 @@ user can give.
 ```
 
 
-## PUT `api/v1/:id`
+## PUT `api/v1/users/:id`
 
 Updates a select number of fields for the user with the given ID.
 
@@ -646,7 +648,7 @@ Updates a select number of fields for the user with the given ID.
 ```
 
 
-## PUT `api/v1/:id/role`
+## PUT `api/v1/users/:id/role`
 
 Updates the role of the account associated with the given username.  The
 user can only be switched between `USER` and `ADMIN` roles, and cannot be
@@ -671,7 +673,7 @@ made into a `BOT` account.
 ```
 
 
-## PUT `api/v1/reset-points-to-award`
+## PUT `api/v1/users/reset-points-to-award`
 
 Updates all active users to have a specific number of points to award.
 
@@ -694,7 +696,7 @@ Updates all active users to have a specific number of points to award.
 ```
 
 
-## PUT `api/v1/:id/reset-points-to-award`
+## PUT `api/v1/users/:id/reset-points-to-award`
 
 Updates the given user to have a specific number of points to award.
 
@@ -717,7 +719,7 @@ Updates the given user to have a specific number of points to award.
 ```
 
 
-## DELETE `api/v1/:id`
+## DELETE `api/v1/users/:id`
 
 Marks the account with the given username as disabled.  The account cannot
 be logged into, and cannot be found through searching, but it still exists

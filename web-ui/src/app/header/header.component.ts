@@ -1,24 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ApiService } from '../_services/index';
+import { Site, LoginAccount } from '../_models/index';
+
+import { SiteService, MeService } from '../_services/index';
 
 @Component({
     moduleId: module.id,
     selector: 'app-header',
-    templateUrl: 'header.component.html'
+    templateUrl: 'header.component.html',
+    styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
+  private site: Site = new Site();
+  private loginAccount: LoginAccount = new LoginAccount();
 
-    constructor(private apiService: ApiService) { }
+  constructor(
+    private siteService: SiteService,
+    private meService: MeService) { }
 
     ngOnInit() {
-        /*
-        // get users from secure api end point
-        this.userService.getUsers()
-            .subscribe(users => {
-                this.users = users;
-            });
-        */
+      this.siteService.getAsync()
+        .subscribe((response: Site) => {
+          this.site = response;
+        });
+      this.meService.getLoginAccount()
+        .subscribe((response: LoginAccount) => {
+          this.loginAccount = response;
+        });
     }
 
+  isAuthenticated(): Boolean {
+    return this.loginAccount && this.loginAccount.isAuthenticated();
+  }
 }

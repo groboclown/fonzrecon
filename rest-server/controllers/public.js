@@ -5,7 +5,7 @@ const Setting = models.Setting;
 const errors = require('./util').errors;
 
 
-exports.siteSettings = function(res, req, next) {
+exports.siteSettings = function(req, res, next) {
   return Setting
     .getPublicSiteSettings()
     .then((settings) => {

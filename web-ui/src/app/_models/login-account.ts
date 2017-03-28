@@ -1,8 +1,13 @@
 
+import { User } from './user';
+
 export class LoginAccount {
+  // These should be read-only except by the me service.
   username: string;
   token: string;
-  // TODO include "me" information.
+  isAdmin: boolean;
+  hasPendingVerification: boolean;
+  user: User = new User();
 
   isAuthenticated() {
     return this.username != null && this.token != null;
@@ -16,5 +21,8 @@ export class LoginAccount {
   loggedOut() {
     this.username = null;
     this.token = null;
+    this.user = new User();
+    this.isAdmin = false;
+    this.hasPendingVerification = false;
   }
 }
