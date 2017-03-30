@@ -17,6 +17,7 @@ import { HeaderModule } from './header/index';
 import { LoginModule } from './login/index';
 import { AdminModule } from './admin/index';
 import { AaaysModule } from './aaays/index';
+import { PagingModule } from './paging/index';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { AaaysModule } from './aaays/index';
     HttpModule,
     routing,
 
+    PagingModule.forRoot(),
     HeaderModule.forRoot(),
     LoginModule.forRoot(),
     AdminModule.forRoot(),
@@ -42,7 +44,6 @@ import { AaaysModule } from './aaays/index';
     LowLoginAccountService
   ],
   exports: [
-    // PagedComponent
   ],
   bootstrap: [AppComponent]
 })

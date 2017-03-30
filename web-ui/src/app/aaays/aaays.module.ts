@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { PagingModule } from '../paging/index';
 
 import { AaaysRoutingModule } from './aaays-routing.module';
 import { AaayListComponent } from './aaay-list.component';
@@ -11,26 +12,21 @@ import { AaayListService } from './aaay-list.service';
 import { CreateAaayService } from './create-aaay.service';
 import { CreateAaayComponent } from './create-aaay.component';
 
-import { PagedComponent } from '../_directives/index';
-
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
-    AaaysRoutingModule,
+    PagingModule,
+    AaaysRoutingModule
   ],
   declarations: [
-    PagedComponent,
-
     AaayListComponent,
     AaayComponent,
     CreateAaayComponent
   ],
   exports: [
-    PagedComponent,
-
     AaayListComponent,
     AaayComponent
   ]

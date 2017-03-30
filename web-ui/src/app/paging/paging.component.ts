@@ -1,15 +1,15 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { PagedData } from '../_models/index';
-import { PagedService } from '../_services/index';
+import { PagedData } from './paging.model';
+import { PagingService } from './paging.service';
 
 @Component({
     moduleId: module.id,
     selector: 'app-paged-list',
-    templateUrl: 'paged.component.html'
+    templateUrl: 'paging.component.html'
 })
-export class PagedComponent<T> implements OnInit {
-  @Input() pagedService: PagedService<T>;
+export class PagingComponent<T> implements OnInit {
+  @Input() pagingService: PagingService<T>;
   @Input() uri: string;
   @Input() queryParams: any = {};
   error: string;
@@ -29,12 +29,12 @@ export class PagedComponent<T> implements OnInit {
   }
 
   ngOnInit() {
-    this.pagedService.onRefresh()
+    this.pagingService.onRefresh()
     .subscribe((pagedData: PagedData<T>) => {
       this.pagedData = pagedData;
     });
 
-    this.pagedService.onRefreshError()
+    this.pagingService.onRefreshError()
     .subscribe((error: any) => {
       console.warn(`Paged result error: ${error}`);
       if (error.message) {
@@ -45,27 +45,27 @@ export class PagedComponent<T> implements OnInit {
   }
 
   refresh() {
-    this.pagedService.uri = this.uri;
-    this.pagedService.refresh(this.queryParams);
+    this.pagingService.uri = this.uri;
+    this.pagingService.refresh(this.queryParams);
   }
 
   nextPage() {
-    this.pagedService.uri = this.uri;
-    this.pagedService.loadNextPage(this.queryParams);
+    this.pagingService.uri = this.uri;
+    this.pagingService.loadNextPage(this.queryParams);
   }
 
   prevPage() {
-    this.pagedService.uri = this.uri;
-    this.pagedService.loadPrevPage(this.queryParams);
+    this.pagingService.uri = this.uri;
+    this.pagingService.loadPrevPage(this.queryParams);
   }
 
   selectPage(page: number) {
-    this.pagedService.uri = this.uri;
-    this.pagedService.loadPage(page, this.queryParams);
+    this.pagingService.uri = this.uri;
+    this.pagingService.loadPage(page, this.queryParams);
   }
 
   setPerPage(pageCount: number) {
-    this.pagedService.setPerPage(pageCount);
-    this.pagedService.refresh(this.queryParams);
+    this.pagingService.setPerPage(pageCount);
+    this.pagingService.refresh(this.queryParams);
   }
 }

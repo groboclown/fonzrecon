@@ -5,9 +5,9 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
 
-import { ApiService, PagedService } from '../_services/index';
+import { ApiService } from '../_services/index';
+import { PagedData, PagingService } from '../paging/index';
 
-import { PagedData } from '../_models/index';
 import { User } from '../_models/index';
 
 
@@ -15,28 +15,20 @@ import { User } from '../_models/index';
  * Generic service; must be implemented by the sub-class.
  */
  @Injectable()
-export class UserListService extends PagedService<User> {
+export class UserListService extends PagingService<User> {
 
   constructor(api: ApiService) {
     super(api);
-    this.uri = '/api/v1/aaays';
+    this.uri = '/api/v1/users';
   }
 
   /** Override: load up the extra parameters for the filter.
    */
-  filterParameters(params: any): any {
-    const c = (this.comment || '').trim();
-    if (c.length > 0) {
-      params.comment = c;
-    }
-    const n = (this.name || '').trim();
-    if (n.length > 0) {
-      params.name = n;
-    }
-    return params;
+  _filterParameters(queryParams: any, params: any) {
+    // Do nothing for now.
   }
 
-  _parseItemFromJson(item: any): Aaay {
-    return Aaay.parseFromJson(item);
+  _parseItemFromJson(item: any): User {
+    return User.parseFromJson(item);
   }
 }

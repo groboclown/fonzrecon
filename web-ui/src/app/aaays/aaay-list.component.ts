@@ -5,7 +5,7 @@ import { AaayListService } from './aaay-list.service';
 
 @Component({
     moduleId: module.id,
-    selector: 'app-aaay-page',
+    selector: 'app-aaay-list',
     templateUrl: 'aaay-list.component.html'
 })
 export class AaayListComponent {

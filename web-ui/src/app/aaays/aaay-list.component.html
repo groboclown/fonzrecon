@@ -2,7 +2,7 @@
   <!-- TODO make the create + list in a parent component -->
   <app-create-aaay></app-create-aaay>
   <h2>Look Who's Talking</h2>
-  <app-paged-list uri="/api/v1/aaays" [pagedService]="aaayListService">
+  <app-paged-list uri="/api/v1/aaays" [pagingService]="aaayListService">
     <ul class="aaay-list">
       <li *ngFor="let aaay of aaayList.results">
         <app-aaay [aaay]="aaay"></app-aaay>

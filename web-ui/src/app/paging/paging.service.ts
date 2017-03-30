@@ -5,17 +5,17 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
 import { Subject } from 'rxjs/Subject';
-import { ApiService } from './api.service';
-import { createObservableFor } from './lib/index';
+import { ApiService } from '../_services/api.service';
+import { createObservableFor } from '../_services/lib/index';
 
-import { PagedData } from '../_models/index';
+import { PagedData } from './paging.model';
 
 /**
  * Generic service; must be implemented by the sub-class.
  * Note that this is not injectable - the subclass must be
  * set that way.
  */
-export class PagedService<T> {
+export class PagingService<T> {
   private refreshSubject: Subject<PagedData<T>> = new Subject();
   private errorSubject: Subject<Response | any> = new Subject();
   private paged: PagedData<T>;
