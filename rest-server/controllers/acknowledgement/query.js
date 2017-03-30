@@ -62,10 +62,12 @@ exports.getAll = function(req, res, next) {
       if (extraAccess.canViewPrivate(req)) {
         return Acknowledgement
           .findDetails(queryCondition)
+          .sort('-updatedAt')
           .paginate(pagination);
       }
       return Acknowledgement
         .findDetailsForUser(user, queryCondition)
+        .sort('-updatedAt')
         .paginate(pagination);
     })
     .then((results) => {
