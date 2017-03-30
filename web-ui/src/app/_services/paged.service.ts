@@ -26,6 +26,16 @@ export class PagedService<T> {
     this.paged.parseResultFromJson = (item) => this._parseItemFromJson(item);
   }
 
+  /** Override: load up the extra parameters for the filter.
+   */
+  _filterParameters(queryParams: any, params: any) {
+    throw new Error('_filterParameters not implemented');
+  }
+
+  _parseItemFromJson(item: any): T | any {
+    throw new Error('_parseItemFromJson not implemented');
+  }
+
   onRefresh(): Observable<PagedData<T>> {
     return this.refreshSubject.asObservable();
   }
@@ -34,12 +44,7 @@ export class PagedService<T> {
     return this.errorSubject.asObservable();
   }
 
-  /** Override: load up the extra parameters for the filter.
-   */
-  filterParameters(params: any): any {
-  }
-
-  setPerPage(count: number, refresh = true) {
+  setPerPage(count: number) {
     if (count < 5) {
       count = 5;
     }
@@ -47,26 +52,23 @@ export class PagedService<T> {
       count = 100;
     }
     this.paged.perPage = count;
-    if (refresh) {
-      this.refresh();
-    }
   }
 
-  loadNextPage() {
+  loadNextPage(queryParams: any) {
     if (this.paged.nextPage) {
       this.paged.page = this.paged.nextPage;
-      this.refresh();
+      this.refresh(queryParams);
     }
   }
 
-  loadPrevPage() {
+  loadPrevPage(queryParams: any) {
     if (this.paged.prevPage) {
       this.paged.page = this.paged.prevPage;
-      this.refresh();
+      this.refresh(queryParams);
     }
   }
 
-  loadPage(page: number) {
+  loadPage(page: number, queryParams: any) {
     if (!this.paged.lastPage) {
       page = 1;
     } else if (page > this.paged.lastPage) {
@@ -74,18 +76,18 @@ export class PagedService<T> {
     }
     if (page > 0) {
       this.paged.page = page;
-      this.refresh();
+      this.refresh(queryParams);
     }
   }
 
-  refresh() {
+  refresh(queryParams: any) {
     const params = {
       page: this.paged.page,
       perPage: this.paged.perPage,
       offset: this.paged.offset,
       delta: this.paged.deltaPageCount
     };
-    this.filterParameters(params);
+    this._filterParameters(queryParams, params);
 
     this.api.get(this.uri, params)
       .subscribe(
@@ -99,8 +101,4 @@ export class PagedService<T> {
       );
   }
 
-  _parseItemFromJson(item: any): T | any {
-    // Must be implememted by the subclass;
-    return item;
-  }
 }

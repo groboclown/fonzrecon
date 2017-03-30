@@ -11,6 +11,7 @@ import { PagedService } from '../_services/index';
 export class PagedComponent<T> implements OnInit {
   @Input() pagedService: PagedService<T>;
   @Input() uri: string;
+  @Input() queryParams: any = {};
   error: string;
   pagedData: PagedData<T>;
 
@@ -40,30 +41,31 @@ export class PagedComponent<T> implements OnInit {
         this.error = error.error;
       }
     });
-    this.onRefresh();
+    this.refresh();
   }
 
-  onRefresh() {
+  refresh() {
     this.pagedService.uri = this.uri;
-    this.pagedService.refresh();
+    this.pagedService.refresh(this.queryParams);
   }
 
-  onNextPage() {
+  nextPage() {
     this.pagedService.uri = this.uri;
-    this.pagedService.loadNextPage();
+    this.pagedService.loadNextPage(this.queryParams);
   }
 
-  onPrevPage() {
+  prevPage() {
     this.pagedService.uri = this.uri;
-    this.pagedService.loadPrevPage();
+    this.pagedService.loadPrevPage(this.queryParams);
   }
 
-  onPage(page: number) {
+  selectPage(page: number) {
     this.pagedService.uri = this.uri;
-    this.pagedService.loadPage(page);
+    this.pagedService.loadPage(page, this.queryParams);
   }
 
   setPerPage(pageCount: number) {
-    this.pagedService.setPerPage(pageCount, true);
+    this.pagedService.setPerPage(pageCount);
+    this.pagedService.refresh(this.queryParams);
   }
 }
