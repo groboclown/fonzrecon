@@ -34,3 +34,5 @@
       * [http://www.npmjs.com/package/botbuilder]
     * Start with simple hello world
     * Eventually, access through Team channel
+* web-ui
+  * header needs to allow quick access to the logged-in user.

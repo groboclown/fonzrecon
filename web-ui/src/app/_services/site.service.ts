@@ -58,7 +58,7 @@ export class SiteService {
       });
   }
 
-  private toImageUrl(img: string) {
+  toImageUrl(img: string) {
     if (!img) {
       return null;
     }

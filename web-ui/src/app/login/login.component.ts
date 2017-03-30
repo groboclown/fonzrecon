@@ -21,7 +21,6 @@ export class LoginComponent implements OnInit {
         private loginService: LoginService) { }
 
     ngOnInit() {
-      console.log(`DEBUG on init for login component`);
       // reset login status
       this.loginService.logout();
 

@@ -1,6 +1,22 @@
 <div id="app-header" class="header-line">
-  <span id="site-name">{{ site.name }}</span>
-  <!-- <span id="me-auth" *ngIf="isAuthenticated()">{{ loginAccount.primaryName }}</span> -->
-  <span id="me-auth">[{{ loginAccount.primaryName() }}]</span>
-  <span id="me-auth">{{ loginAccount.username }}</span>
+  <span class="left-side">
+    <span id="site-name">{{ site.name }}</span>
+  </span>
+  <span class="right-side">
+    <span class="user-container" (click)="onToggleUserDropDown()">
+      <span *ngIf="imageUrl()"><img src="{{ imageUrl() }}"></span>
+      <span id="me-auth" *ngIf="isAuthenticated()">{{ loginAccount.username }}</span>
+    </span>
+  </span>
 </div>
+<div id="nav" class="header-nav" *ngIf="isAuthenticated()">
+  <span><a [routerLink]="['/']">[]</a></span>
+  <span *ngIf="isAdmin()"><a [routerLink]="['/admin']">Admin</a></span>
+  <span><a [routerLink]="['/login']">Logout</a></span>
+</div>
+<!--
+<div class="drop-down" [@userDropDownState]="shouldToggleUserDropDown">
+  <div>{{ loginAccount.primaryName() }}</div>
+  <div><a [routerLink]="['/login']">Logout</a></div>
+</div>
+-->

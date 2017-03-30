@@ -1,0 +1,15 @@
+<div>
+  <div><span>To
+    <span *ngFor="let u of aaay.awardedTo">
+      {{ u && u.primaryName || '(unknown user)' }}
+    </span>
+  </span><span>at {{ aaay.createdAt }}</span></div>
+  <div>{{ aaay.comment }}</div>
+  <div><span>From
+    {{ aaay.givenBy && aaay.givenBy.primaryName || '(unknown given-by user)'
+    }}</span></div>
+  <div *ngIf="hasThumbsUp()" class="thumbs-up-container">
+    <span *ngFor="let t of aaay.thumbsUps">{{ t.givenBy.primaryName }}</span>
+    gave a thumbs up!
+  </div>
+</div>

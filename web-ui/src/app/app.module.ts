@@ -11,15 +11,17 @@ import {
     ApiService, MeService,
     SiteService, LowLoginAccountService
   } from './_services/index';
-import { HomeComponent } from './home/index';
+// import { PagedComponent } from './_directives/index';
 
 import { HeaderModule } from './header/index';
 import { LoginModule } from './login/index';
+import { AdminModule } from './admin/index';
+import { AaaysModule } from './aaays/index';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    // PagedComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +30,9 @@ import { LoginModule } from './login/index';
     routing,
 
     HeaderModule.forRoot(),
-    LoginModule.forRoot()
+    LoginModule.forRoot(),
+    AdminModule.forRoot(),
+    AaaysModule.forRoot()
   ],
   providers: [
     AuthGuard,
@@ -36,6 +40,9 @@ import { LoginModule } from './login/index';
     MeService,
     SiteService,
     LowLoginAccountService
+  ],
+  exports: [
+    // PagedComponent
   ],
   bootstrap: [AppComponent]
 })

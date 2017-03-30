@@ -1,0 +1,18 @@
+<div class="paged-container">
+  <div class="paged-controls">
+  </div>
+  <div class="error" *ngIf="isError()">
+    Problem loading results: {{ error }}
+  </div>
+  <ul class="results" *ngIf="hasData()">
+    <!-- This should be a *ngFor loop over the items in the rows, but
+    it seems that right now, angular doesn't allow for templates to be
+    passed arguments. -->
+    <ng-content></ng-content>
+  </ul>
+  <div class="no-results" *ngIf="isNotErrorNoData()">
+    No results.
+  </div>
+  <div class="paged-bottom-controls">
+  </div>
+</div>

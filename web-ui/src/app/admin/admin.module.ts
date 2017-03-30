@@ -4,8 +4,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
-import { HeaderRoutingModule } from './header-routing.module';
-import { HeaderComponent } from './header.component';
+import { AdminRoutingModule } from './admin-routing.module';
+import { AdminComponent } from './admin.component';
+import { AdminGuard } from '../_guards/index';
 
 @NgModule({
   imports: [
@@ -13,22 +14,24 @@ import { HeaderComponent } from './header.component';
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
-    HeaderRoutingModule
+    AdminRoutingModule
   ],
   declarations: [
-    HeaderComponent
+    AdminComponent
   ],
   exports: [
-    HeaderComponent
+    AdminComponent
   ]
 })
-export class HeaderModule {
+export class AdminModule {
   static forRoot(): ModuleWithProviders {
     return {
-      ngModule: HeaderModule,
+      ngModule: AdminModule,
 
       // If private services are added, then inject them here:
-      providers: []
+      providers: [
+        AdminGuard
+      ]
     };
   }
 }

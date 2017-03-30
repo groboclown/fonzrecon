@@ -1,6 +1,8 @@
 'use strict';
 
 const emailjs = require('emailjs');
+// FIXME understand why this isn't setup right.
+emailjs.authentication = emailjs.authentication || {};
 
 module.exports = function(connectionSettings) {
   return {

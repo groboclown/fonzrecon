@@ -16,7 +16,6 @@ import 'rxjs/add/operator/map';
  */
 @Injectable()
 export class MeService {
-
   constructor(
     private api: ApiService,
     private lowLoginAccount: LowLoginAccountService
@@ -35,6 +34,14 @@ export class MeService {
 
   isAuthenticated(): boolean {
     return this.lowLoginAccount.isAuthenticated();
+  }
+
+  isAdmin(): boolean {
+    const account = this.lowLoginAccount.getLoginAccountSync();
+    if (!account) {
+      return false;
+    }
+    return account.isAuthenticated() && account.isAdmin;
   }
 
   private loadAboutMe() {

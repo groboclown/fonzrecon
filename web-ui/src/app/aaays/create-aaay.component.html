@@ -1,0 +1,37 @@
+<div class="create-aaay">
+    <h2>Give an "Aaay!"</h2>
+    <!-- TODO add validation -->
+    <form name="form" (ngSubmit)="f.form.valid && submit()" #f="ngForm" novalidate>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !comment.valid }">
+            <label for="comment">Comment</label>
+            <input type="text" class="form-control" name="comment" [(ngModel)]="model.comment" #username="ngModel" required />
+            <div *ngIf="f.submitted && !comment.valid" class="help-block">Comment is required</div>
+        </div>
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !points.valid }">
+            <label for="points">Points:</label>
+            <input type="points" class="form-control" name="points" [(ngModel)]="model.points" #password="ngModel" required />
+            <div *ngIf="f.submitted && !points.valid" class="help-block">Points are required</div>
+        </div>
+        <!-- TODO make this a searchable field that loads on-the-fly from the
+        user list.  Also, make it better support multiple people. -->
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !toUsers.valid }">
+            <label for="toUsers">Send To:</label>
+            <input type="toUsers" class="form-control" name="toUsers" [(ngModel)]="model.toUsers" #password="ngModel" required />
+            <span>(separate individuals with a '<code>;</code>')</span>
+            <div *ngIf="f.submitted && !toUsers.valid" class="help-block">List of people is required</div>
+        </div>
+        <!-- TODO make this an optional list.
+        TODO make it so it better supports a list of multiples. -->
+        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !tags.valid }">
+            <label for="tags">Tags</label>
+            <input type="tags" class="form-control" name="tags" [(ngModel)]="model.tags" #password="ngModel" required />
+            <span>(separate tags with a '<code>;</code>')</span>
+            <div *ngIf="f.submitted && !tags.valid" class="help-block">Tags are not required</div>
+        </div>
+        <div class="form-group">
+            <button [disabled]="loading" class="btn btn-primary">Send!</button>
+            <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+        </div>
+        <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+    </form>
+</div>

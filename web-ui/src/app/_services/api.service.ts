@@ -20,9 +20,9 @@ export class ApiService {
     // Do nothing
   }
 
-  get(uri: string): Observable<Response> {
+  get(uri: string, params: object = null): Observable<Response> {
     console.log(`DEBUG GET ${uri}`);
-    return this.http.get(this.toUrl(uri), this.withGetHeaders());
+    return this.http.get(this.toUrl(uri), this.withGetHeaders(params));
   }
 
   post(uri: string, data: object): Observable<Response> {
@@ -44,8 +44,12 @@ export class ApiService {
     return BASE_URL + uri;
   }
 
-  withGetHeaders(): RequestOptions {
-    return this.auth({});
+  withGetHeaders(params): RequestOptions {
+    const ret = this.auth({});
+    if (params) {
+      ret.search = params;
+    }
+    return ret;
   }
 
   withJsonHeaders(): RequestOptions {
