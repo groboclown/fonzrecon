@@ -6,8 +6,7 @@ import { AaayListComponent } from './aaay-list.component';
 
 
 const aaaysRoutes: Routes = [
-  { path: 'aaays', component: AaayListComponent, canActivate: [AuthGuard] },
-  { path: '', component: AaayListComponent, canActivate: [AuthGuard] }
+  { path: 'aaays', component: AaayListComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

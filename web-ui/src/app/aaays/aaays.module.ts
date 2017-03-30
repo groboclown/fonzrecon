@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { PagingModule } from '../paging/index';
+import { AlertModule } from '../alert/index';
 
 import { AaaysRoutingModule } from './aaays-routing.module';
 import { AaayListComponent } from './aaay-list.component';
@@ -19,6 +20,7 @@ import { CreateAaayComponent } from './create-aaay.component';
     BrowserModule,
     BrowserAnimationsModule,
     PagingModule,
+    AlertModule,
     AaaysRoutingModule
   ],
   declarations: [
@@ -28,6 +30,7 @@ import { CreateAaayComponent } from './create-aaay.component';
   ],
   exports: [
     AaayListComponent,
+    CreateAaayComponent,
     AaayComponent
   ]
 })

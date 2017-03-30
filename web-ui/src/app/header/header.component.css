@@ -16,6 +16,10 @@
   cursor: pointer;
 }
 
+.site-name {
+  font-weight: bolder;
+}
+
 .header-nav {
   margin: 0;
   padding: 0;

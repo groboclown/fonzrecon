@@ -1,5 +1,6 @@
 import {
-  Component, OnInit,
+  Component, OnInit, AfterViewInit,
+  ChangeDetectionStrategy, ChangeDetectorRef,
 
   // animation members
   trigger, state, animate, transition, style
@@ -11,6 +12,7 @@ import { SiteService, MeService } from '../_services/index';
 
 @Component({
     moduleId: module.id,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-header',
     templateUrl: 'header.component.html',
     styleUrls: ['./header.component.css'],
@@ -27,20 +29,23 @@ import { SiteService, MeService } from '../_services/index';
       ])
     ]
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
   private site: Site = new Site();
   private loginAccount: LoginAccount = new LoginAccount();
 
   shouldToggleUserDropDown = false;
 
   constructor(
-    private siteService: SiteService,
-    private meService: MeService) { }
+      private siteService: SiteService,
+      private meService: MeService,
+      private changeDetection: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
     this.siteService.getAsync()
     .subscribe((response: Site) => {
       this.site = response;
+      this.changeDetection.detectChanges();
     });
     this.meService.getLoginAccount()
     .subscribe((response: LoginAccount) => {
@@ -51,7 +56,12 @@ export class HeaderComponent implements OnInit {
         console.log(`DEBUG header loaded login account data [null]`);
         this.loginAccount = new LoginAccount();
       }
+      this.changeDetection.detectChanges();
     });
+  }
+
+  ngAfterViewInit() {
+    // this.changeDetection.detectChanges();
   }
 
   imageUrl(): string {

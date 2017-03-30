@@ -3,10 +3,14 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { PagingModule } from '../paging/index';
+import { AlertModule } from '../alert/index';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
-import { AdminGuard } from '../_guards/index';
+import { ManageUserListComponent } from './manage-user-list.component';
+import { ManageUserListService } from './manage-user-list.service';
+import { AdminGuard } from './admin.guard';
 
 @NgModule({
   imports: [
@@ -14,13 +18,17 @@ import { AdminGuard } from '../_guards/index';
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
+    PagingModule,
+    AlertModule,
     AdminRoutingModule
   ],
   declarations: [
-    AdminComponent
+    AdminComponent,
+    ManageUserListComponent
   ],
   exports: [
     AdminComponent
+    // ManageUserListComponent cannot be used outside this module.
   ]
 })
 export class AdminModule {
@@ -30,7 +38,8 @@ export class AdminModule {
 
       // If private services are added, then inject them here:
       providers: [
-        AdminGuard
+        AdminGuard,
+        ManageUserListService
       ]
     };
   }

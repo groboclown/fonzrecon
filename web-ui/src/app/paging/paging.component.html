@@ -1,15 +1,23 @@
 <div class="paged-container">
   <div class="paged-controls">
   </div>
-  <div class="error" *ngIf="isError()">
-    Problem loading results: {{ error }}
-  </div>
-  <ul class="results" *ngIf="hasData()">
+  <app-alert [status]='alertStatus'></app-alert>
+  <div class="results" *ngIf="hasData()">
+    <div>
+      <span>
+        {{ pagedData.results.length }} out of {{ pagedData.itemCount }};
+      </span>
+      <span>
+        Page {{ pagedData.page }}
+        <span *ngIf='pagedData.lastPage'>of {{ pagedData.lastPage }}</span>
+        ({{ pagedData.perPage }} per page)
+      </span>
+    </div>
     <!-- This should be a *ngFor loop over the items in the rows, but
     it seems that right now, angular doesn't allow for templates to be
     passed arguments. -->
     <ng-content></ng-content>
-  </ul>
+  </div>
   <div class="no-results" *ngIf="isNotErrorNoData()">
     No results.
   </div>

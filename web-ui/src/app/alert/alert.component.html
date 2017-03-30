@@ -1,0 +1,8 @@
+<div *ngIf='message.isError' class="alert-error box">
+  <a class="close" (click)='clearMessage()' href='#'>x</a>
+  <p>{{ text }}</p>
+</div>
+<div *ngIf='message.isMessage' class="alert-message box">
+  <a class="close" (click)='clearMessage()' href='#'>x</a>
+  <p>{{ message.text }}</p>
+</div>

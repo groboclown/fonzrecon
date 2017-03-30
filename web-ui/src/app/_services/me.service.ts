@@ -8,6 +8,7 @@ import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 
 /**
@@ -55,9 +56,10 @@ export class MeService {
       (err: Response | any) => {
         console.log(`DEBUG get me data returned error ${err}`);
         if (err instanceof Response) {
-          // TODO properly handle error.
+          // This is actually okay.  It generally means that the user isn't
+          // logged in.
         }
-        return Observable.throw(err);
+        return this.lowLoginAccount.withAboutMeData({});
       },
       () => {
         console.log(`DEBUG get me data completed`);

@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
 import { Aaay } from './aaay.model';
+import { AlertStatus } from '../alert/index';
 import { CreateAaayService } from './create-aaay.service';
 
 @Component({
@@ -9,9 +11,10 @@ import { CreateAaayService } from './create-aaay.service';
     templateUrl: 'create-aaay.component.html'
 })
 export class CreateAaayComponent {
+  @Input() onChangeEvent: Subject<any>;
+  alertStatus = new AlertStatus();
   model: any = {};
   loading = false;
-  error = '';
 
   constructor(
     private createAaayService: CreateAaayService
@@ -23,7 +26,6 @@ export class CreateAaayComponent {
     const ts = (this.model.tags || '').split(/\s*;\s*/);
     const us = (this.model.toUsers || '').split(/\s*;\s*/);
     const pub = (this.model.public === false) ? false : true;
-    console.log(`DEBUG sending users '${this.model.toUsers}' => ${JSON.stringify(us)}`);
     this.createAaayService.submit({
       points: points,
       to: us,
@@ -33,10 +35,15 @@ export class CreateAaayComponent {
     })
     .subscribe(
       (aaay: Aaay) => {
-        // FIXME
+        console.log(`DEBUG received aaay`);
+        this.alertStatus.success(`You just gave an Aaay!`);
+        if (this.onChangeEvent) {
+          console.log(`DEBUG sending change event`);
+          this.onChangeEvent.next({ aaay: aaay });
+        }
       },
       (error: any) => {
-        this.error = error.message;
+        this.alertStatus.error(error.message);
       },
       () => {
         this.loading = false;

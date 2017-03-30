@@ -1,0 +1,16 @@
+<div>
+  <app-alert [status]='alertStatus'></app-alert>
+  <app-paged-list [pagingService]="userListService">
+    <div class="manage-user-list">
+      <div *ngFor="let user of userList.results ; let i=index">
+        <span class="delete-user clickable" (click)='deleteUser($event, i, user)' >delete</span>
+        |
+        <span class="edit-user clickable" (click)="editUser($event, i, user)">edit</span>
+        |
+        <span class="user">
+          <span class="name">{{ user.username }} ({{ user.primaryName }})</span>
+        </span>
+      </div>
+    </div>
+  </app-paged-list>
+</div>

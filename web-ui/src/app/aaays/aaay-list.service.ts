@@ -16,7 +16,9 @@ import { Aaay } from './aaay.model';
  */
  @Injectable()
 export class AaayListService extends PagingService<Aaay> {
-  constructor(api: ApiService) {
+  constructor(
+      api: ApiService
+  ) {
     super(api);
     this.uri = '/api/v1/aaays';
   }

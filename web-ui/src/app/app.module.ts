@@ -14,10 +14,12 @@ import {
 // import { PagedComponent } from './_directives/index';
 
 import { HeaderModule } from './header/index';
+import { AlertModule } from './alert/index';
 import { LoginModule } from './login/index';
 import { AdminModule } from './admin/index';
 import { AaaysModule } from './aaays/index';
 import { PagingModule } from './paging/index';
+import { HomeModule } from './home/index';
 
 @NgModule({
   declarations: [
@@ -32,9 +34,11 @@ import { PagingModule } from './paging/index';
 
     PagingModule.forRoot(),
     HeaderModule.forRoot(),
+    AlertModule.forRoot(),
     LoginModule.forRoot(),
     AdminModule.forRoot(),
-    AaaysModule.forRoot()
+    AaaysModule.forRoot(),
+    HomeModule.forRoot()
   ],
   providers: [
     AuthGuard,

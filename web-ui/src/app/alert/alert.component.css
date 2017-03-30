@@ -1,0 +1,49 @@
+.alert-error {
+  background-color: #ff4040;
+  color: black;
+}
+
+.alert-message {
+  background-color: #60c060;
+  color: black;
+}
+
+.box {
+  margin: 0 auto;
+  padding: 0.5em;
+  text-align: center;
+  position: relative;
+}
+
+.box p {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.close {
+  font-size: 1em;
+  text-decoration: none;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+.alert-error .close {
+  background: #800000;
+  color: black;
+}
+
+.alert-error .close:hover {
+  background: #ff0000;
+  color: black;
+}
+
+.alert-message .close {
+  background: #00e000;
+  color: black;
+}
+
+.alert-message .close:hover {
+  background: #00ff00;
+  color: black;
+}

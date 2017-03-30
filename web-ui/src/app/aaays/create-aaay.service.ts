@@ -23,10 +23,15 @@ export class CreateAaayService {
 
   submit(data: any): Observable<Aaay> {
     return this.api.post('/api/v1/aaays', data)
-    .flatMap((response: Response) => {
+    .map((response: Response) => {
+      console.log(`DEBUG Received response ${response}`);
       // TODO parse out the returned AaayRef.
       // if (response.)
-      return createObservableFor(null);
+      return new Aaay();
+    })
+    .catch((err: Response | any) => {
+      console.log(`DEBUG Caught failure ${err} ${err.stack}`);
+      return Observable.throw(err);
     });
   }
 }

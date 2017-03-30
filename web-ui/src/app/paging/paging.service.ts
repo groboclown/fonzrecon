@@ -21,7 +21,9 @@ export class PagingService<T> {
   private paged: PagedData<T>;
   uri: string;
 
-  constructor(private api: ApiService) {
+  constructor(
+      private api: ApiService
+  ) {
     this.paged = new PagedData<T>();
     this.paged.parseResultFromJson = (item) => this._parseItemFromJson(item);
   }

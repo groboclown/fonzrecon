@@ -15,10 +15,12 @@ import { User } from '../_models/index';
  * Generic service; must be implemented by the sub-class.
  */
  @Injectable()
-export class UserListService extends PagingService<User> {
+export class ManageUserListService extends PagingService<User> {
 
-  constructor(api: ApiService) {
-    super(api);
+  constructor(
+      private _api: ApiService
+  ) {
+    super(_api);
     this.uri = '/api/v1/users';
   }
 
@@ -30,5 +32,21 @@ export class UserListService extends PagingService<User> {
 
   _parseItemFromJson(item: any): User {
     return User.parseFromJson(item);
+  }
+
+  deleteUser(username: string): Observable<any> {
+    return this._api.delete('/api/v1/users/' + username)
+      .map(
+        (response: Response) => {
+          return { error: false, message: `User ${username} deleted.` };
+        },
+        (error: Response | any) => {
+          // TODO error
+          if (error.message) {
+            return { error: true, message: error.message };
+          }
+          return { error: true, message: error };
+        }
+      );
   }
 }
