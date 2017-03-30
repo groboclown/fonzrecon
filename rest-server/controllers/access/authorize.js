@@ -80,10 +80,6 @@ module.exports = function(permission, affectedUserListFunc) {
         // Authenticated!!!
         return next();
       }
-      if (rolePermissionFunc(username, behalfUsername, affectedUsers)) {
-        // Authenticated!!!
-        return next();
-      }
       return next(forbidden());
     }
     return next(forbidden());

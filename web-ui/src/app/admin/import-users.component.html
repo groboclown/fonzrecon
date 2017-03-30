@@ -1,0 +1,66 @@
+<div>
+  <h2>Import Users</h2>
+  <p>
+    You may upload users as a .csv file.  The .csv file must have a header
+    row with these columns: <code>username</code>, <code>email</code>,
+    <code>name</code>, <code>pointsToAward</code>, <code>organization</code>,
+    <code>locale</code>, <code>role</code>.
+  </p>
+  <p>
+    <b>role</b> must be one of <code>USER</code>, <code>ADMIN</code>, or
+    <code>PRIZE_ADMIN</code>.
+  </p>
+
+  <!--
+  <h3>JSON Import</h3>
+  <p>
+    The json format is:
+  </p>
+  <pre><[!CDATA
+    {
+      "users": [
+        {
+          "username": "uniqueusername",
+          "email": "my.name@somewhere",
+          "names": ["Alias 1", "One, Alias"],
+          "pointsToAward": 0,
+          "organization": "Sales",
+          "locale": "en",
+          "role": "USER"
+        }
+      ]
+    }
+  ]></pre>
+  <p>(TODO add a text field and submit button)</p>
+  -->
+
+  <h3>CSV Import</h3>
+  <div>
+    <input type="file" (change)="fileChange($event)" placeholder="Upload csv file" accept=".csv">
+  </div>
+  <div class="upload-button">
+    <button [disabled]="loading" (click)='uploadCsvFile()'>Upload</button>
+    <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+  </div>
+  <div class="results">
+    <app-alert [status]='alertStatus'></app-alert>
+    <div *ngIf='userResults' class="result-container">
+      <div *ngFor='let res of userResults'>
+        <div *ngIf='res.status === "created"'>
+          Created {{ res.username }}
+        </div>
+        <div *ngIf='res.status === "rejected"'>
+          Rejected {{ res.username }}:
+          <ul>
+          <li *ngFor='let detail of res.details'>
+            {{ detail.param }}: {{ detail.details }} (sent {{ detail.value }})
+          </li>
+          </ul>
+        </div>
+        <div *ngIf='res.status !== "created" && res.status !== "rejected"'>
+          Unknown status: {{ res }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

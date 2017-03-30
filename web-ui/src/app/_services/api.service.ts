@@ -33,6 +33,12 @@ export class ApiService {
     return this.http.put(this.toUrl(uri), JSON.stringify(data), this.withJsonHeaders());
   }
 
+  postFile(uri: string, file: File, formFileName: string): Observable<Response> {
+    const formData: FormData = new FormData();
+    formData.append(formFileName, file, file.name);
+    return this.http.post(this.toUrl(uri), formData, this.auth({}));
+  }
+
   delete(uri: string): Observable<Response> {
     return this.http.delete(this.toUrl(uri), this.withJsonHeaders());
   }
@@ -61,6 +67,7 @@ export class ApiService {
     if (token) {
       headerDict.Authorization = 'JWT ' + token;
     }
+    headerDict.Accept = 'application/json';
     return new RequestOptions({ headers: new Headers(headerDict) });
   }
 }

@@ -10,6 +10,8 @@ import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
 import { ManageUserListComponent } from './manage-user-list.component';
 import { ManageUserListService } from './manage-user-list.service';
+import { ImportUsersComponent } from './import-users.component';
+import { ImportUsersService } from './import-users.service';
 import { AdminGuard } from './admin.guard';
 
 @NgModule({
@@ -24,11 +26,13 @@ import { AdminGuard } from './admin.guard';
   ],
   declarations: [
     AdminComponent,
-    ManageUserListComponent
+    ManageUserListComponent,
+    ImportUsersComponent
   ],
   exports: [
     AdminComponent
     // ManageUserListComponent cannot be used outside this module.
+    // ImportUsersComponent cannot be used outside this module.
   ]
 })
 export class AdminModule {
@@ -39,7 +43,8 @@ export class AdminModule {
       // If private services are added, then inject them here:
       providers: [
         AdminGuard,
-        ManageUserListService
+        ManageUserListService,
+        ImportUsersService
       ]
     };
   }

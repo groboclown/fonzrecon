@@ -570,9 +570,11 @@ user can give.
 Imports a list of users into the system.
 
 If the request is a multi-part file upload, then the import will attempt
-to load the `csvUsers` named file as a csv file.  The mime type of the
-file must be `text/csv`.  The csv file must have column names that match
-up with the JSON body key names.
+to load the `csvUsers` named file as a CSV file.  The mime type of the
+file must be `text/csv`.  The CSV file must have column names that match
+up with the JSON body key names.  The one exception is the `names` column.
+Instead, the CSV file should have a `name` header, and that value plus the
+username will be set as the list of names for the user.
 
 If the request is not a multi-part file upload, then the users to import
 must be in the JSON-formatted body text.
@@ -603,23 +605,24 @@ user can give.
 **Returns:**
 
 ```json
-[
-  {
-    "username": "uniqueusername",
-    "status": "created"
-  },
-  {
-    "username": "bad-user",
-    "status": "rejected",
-    "details": [
-      {
-        "param": "username",
-        "value": "bad-user",
-        "details": "can contain only numbers and lowercase letters"
-      }
-    ]
-  }
-]
+{ "results": [
+    {
+      "username": "uniqueusername",
+      "status": "created"
+    },
+    {
+      "username": "bad-user",
+      "status": "rejected",
+      "details": [
+        {
+          "param": "username",
+          "value": "bad-user",
+          "details": "can contain only numbers and lowercase letters"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 

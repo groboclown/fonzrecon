@@ -78,16 +78,16 @@ exports.import = function(req, res, next) {
         // Nothing created and no errors.  Don't send a 201, because
         // the user probably wanted to create at least one user.  This
         // tells the sender to examine in detail the results.
-        res.status(200).json([]);
+        res.status(200).json({ results: []});
       } else if (!anyRejected && anyCreated) {
         // Only creation
-        res.status(201).json(ret);
+        res.status(201).json({ results: ret });
       } else if (anyRejected && !anyCreated) {
         // Only errors
-        res.status(400).json(ret);
+        res.status(400).json({ results: ret });
       } else {
         // Mixed results
-        res.status(200).json(ret);
+        res.status(200).json({ results: ret });
       }
     })
     .catch((err) => {
@@ -96,9 +96,16 @@ exports.import = function(req, res, next) {
 };
 
 
+const ALLOWED_MIME_TYPES = [
+  'text/csv',
+  'application/csv',
+  'text/comma-separated-values',
+  'application/vnd.ms-excel'
+];
 
 exports.importUserListFile = function(uploadedFile) {
-  if (uploadedFile.mimetype !== 'text/csv') {
+  if (!ALLOWED_MIME_TYPES.includes(uploadedFile.mimetype)) {
+    console.log(`DEBUG user requested mime type ${uploadedFile.mimetype}`);
     return Promise.reject(validate.error(uploadedFile.mimetype,
       'csvUsers mimetype', 'mimetype must be `text/csv`'));
   }
@@ -110,6 +117,7 @@ exports.importUserListFile = function(uploadedFile) {
     csvtojson({ checkColumn: true })
       .fromStream(bufferStream)
       .on('json', (row) => {
+        row.names = [row.name];
         ret.push(row);
       })
       .on('done', (err) => {

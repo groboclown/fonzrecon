@@ -22,11 +22,12 @@ exports.setup = function(app, passport) {
   app.use(fingerprint());
   app.use(cors());
   app.use(helmet());
-  app.use(fileUpload());
 
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
+  app.use(fileUpload());
+  
   app.use(validator({
     customValidators: {
       isArrayOfString: function(param, minCount) {

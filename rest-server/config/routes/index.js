@@ -4,6 +4,7 @@ const settings = require('../settings');
 const access = require('../../controllers/access');
 
 exports.setup = function(app, passport) {
+
   // Require authorization for all '/api' URIs.
   app.all('/api/*', access.findAccount(passport));
 
@@ -27,10 +28,17 @@ exports.setup = function(app, passport) {
       err = new Error('Unknown error');
     }
 
+    // Custom handling of the multipart file upload error messages
+    if (err.message && err.message.indexOf('Multipart: ') >= 0) {
+      err.status = 400;
+      err.details = [ { error: 'File upload failed', details: err.message } ];
+    }
+
     // Treat as 404
     if (err.message
         && (~err.message.indexOf('not found')
-        || (~err.message.indexOf('Cast to ObjectId failed')))) {
+        || (~err.message.indexOf('Cast to ObjectId failed')))
+        && (!err.details)) {
       return next();
     }
 
