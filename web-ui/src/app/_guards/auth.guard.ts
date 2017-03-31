@@ -13,6 +13,6 @@ export class AuthGuard implements CanActivate {
     if (this.me.isAuthenticated()) {
       return true;
     }
-    this.router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
+    this.router.navigate(['/webui/login'], { queryParams: { returnUrl: state.url } });
   }
 }

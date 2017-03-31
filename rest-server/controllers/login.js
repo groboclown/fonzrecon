@@ -119,7 +119,7 @@ exports.validate = function(req, res, next) {
     password: {
       isLength: {
         options: [{ min: 6, max: 100 }],
-        errorMessage: 'must be more than 3 characters, and less than 100'
+        errorMessage: 'must be at least 6 characters, and less than 100'
       },
       notEmpty: true
     }

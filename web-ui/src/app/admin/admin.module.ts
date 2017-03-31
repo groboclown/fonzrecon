@@ -8,11 +8,11 @@ import { WidgetsModule } from '../widgets/index';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
+import { AdminGuard } from './admin.guard';
 import { ManageUserListComponent } from './manage-user-list.component';
 import { ManageUserListService } from './manage-user-list.service';
 import { ImportUsersComponent } from './import-users.component';
 import { ImportUsersService } from './import-users.service';
-import { AdminGuard } from './admin.guard';
 
 @NgModule({
   imports: [
@@ -42,9 +42,9 @@ export class AdminModule {
 
       // If private services are added, then inject them here:
       providers: [
-        AdminGuard,
         ManageUserListService,
-        ImportUsersService
+        ImportUsersService,
+        AdminGuard
       ]
     };
   }

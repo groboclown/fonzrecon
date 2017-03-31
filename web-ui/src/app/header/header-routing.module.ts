@@ -5,7 +5,6 @@ import { HeaderComponent } from './header.component';
 import { MeComponent } from './me.component';
 
 const headerRoutes: Routes = [
-  { path: 'webui/header-x', component: HeaderComponent },
   { path: 'webui/header/me', component: MeComponent }
 ];
 

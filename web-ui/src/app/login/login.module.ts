@@ -8,6 +8,8 @@ import { LoginComponent } from './login.component';
 import { LoginService } from './login.service';
 import { ForgotComponent } from './forgot.component';
 import { ResetPasswordService } from './reset-password.service';
+import { ChangePasswordComponent } from './change-password.component';
+import { ChangePasswordService } from './change-password.service';
 
 @NgModule({
   imports: [
@@ -18,7 +20,8 @@ import { ResetPasswordService } from './reset-password.service';
   ],
   declarations: [
     LoginComponent,
-    ForgotComponent
+    ForgotComponent,
+    ChangePasswordComponent
   ],
   providers: [
     // Public service.  Maybe move elsewhere?
@@ -32,7 +35,8 @@ export class LoginModule {
 
       // If private services are added, then inject them here:
       providers: [
-        LoginService
+        LoginService,
+        ChangePasswordService
       ]
     };
   }
