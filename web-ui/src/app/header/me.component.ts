@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
-import { ApiService } from '../_services/api.service';
-import { MeService } from '../_services/me.service';
+import { ApiService, MeService } from '../_services/index';
 import { LoginAccount } from '../_models/login-account';
 
 @Component({
@@ -10,7 +9,7 @@ import { LoginAccount } from '../_models/login-account';
     templateUrl: 'me.component.html',
     styleUrls: ['./me.component.css'],
 })
-export class MeComponent {
+export class MeComponent implements OnInit {
   hasAccount: boolean;
   hasUser: boolean;
   account: LoginAccount;
@@ -21,6 +20,9 @@ export class MeComponent {
     private api: ApiService
   ) {
     this.setupHelper(null);
+  }
+
+  ngOnInit() {
     this.me.getLoginAccount()
     .subscribe(
       (account: LoginAccount) => {

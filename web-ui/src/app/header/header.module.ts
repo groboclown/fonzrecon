@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { WidgetsModule } from '../widgets/index';
 
 import { HeaderRoutingModule } from './header-routing.module';
 import { HeaderComponent } from './header.component';
 import { MeComponent } from './me.component';
+import { ResetPasswordComponent } from './reset-password.component';
 
 @NgModule({
   imports: [
@@ -14,11 +16,14 @@ import { MeComponent } from './me.component';
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
+    WidgetsModule,
+
     HeaderRoutingModule
   ],
   declarations: [
     HeaderComponent,
-    MeComponent
+    MeComponent,
+    ResetPasswordComponent
   ],
   exports: [
     HeaderComponent

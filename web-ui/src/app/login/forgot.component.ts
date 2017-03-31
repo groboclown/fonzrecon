@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 
-import { ResetPasswordService } from './reset-password.service';
+import { ResetPasswordService } from '../_services';
 import { AlertStatus } from '../widgets/index';
 
 @Component({

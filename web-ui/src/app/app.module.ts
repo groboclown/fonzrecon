@@ -9,7 +9,8 @@ import { routing } from './app.routing';
 import { AuthGuard } from './_guards/index';
 import {
     ApiService, MeService,
-    SiteService, LowLoginAccountService
+    SiteService, LowLoginAccountService,
+    ResetPasswordService
   } from './_services/index';
 // import { PagedComponent } from './_directives/index';
 
@@ -44,7 +45,8 @@ import { HomeModule } from './home/index';
     ApiService,
     MeService,
     SiteService,
-    LowLoginAccountService
+    LowLoginAccountService,
+    ResetPasswordService
   ],
   exports: [
   ],
