@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { PagingModule } from '../paging/index';
-import { AlertModule } from '../alert/index';
+import { WidgetsModule } from '../widgets/index';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
@@ -21,7 +21,7 @@ import { AdminGuard } from './admin.guard';
     BrowserModule,
     BrowserAnimationsModule,
     PagingModule,
-    AlertModule,
+    WidgetsModule,
     AdminRoutingModule
   ],
   declarations: [

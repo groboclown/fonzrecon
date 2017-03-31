@@ -5,7 +5,7 @@ import {
 
 import { ManageUserList } from './manage-user-list.model';
 import { ManageUserListService } from './manage-user-list.service';
-import { AlertStatus } from '../alert/index';
+import { AlertStatus } from '../widgets/index';
 
 
 @Component({

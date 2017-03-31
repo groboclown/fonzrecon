@@ -13,8 +13,8 @@ import {
   } from './_services/index';
 // import { PagedComponent } from './_directives/index';
 
+import { WidgetsModule } from './widgets/index';
 import { HeaderModule } from './header/index';
-import { AlertModule } from './alert/index';
 import { LoginModule } from './login/index';
 import { AdminModule } from './admin/index';
 import { AaaysModule } from './aaays/index';
@@ -23,8 +23,7 @@ import { HomeModule } from './home/index';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    // PagedComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +33,7 @@ import { HomeModule } from './home/index';
 
     PagingModule.forRoot(),
     HeaderModule.forRoot(),
-    AlertModule.forRoot(),
+    WidgetsModule.forRoot(),
     LoginModule.forRoot(),
     AdminModule.forRoot(),
     AaaysModule.forRoot(),

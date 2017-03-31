@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { AaaysModule } from '../aaays/index';
+import { WidgetsModule } from '../widgets/index';
 
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
@@ -14,8 +15,10 @@ import { HomeComponent } from './home.component';
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
-    HomeRoutingModule,
-    AaaysModule
+    AaaysModule,
+    WidgetsModule,
+
+    HomeRoutingModule
   ],
   declarations: [
     HomeComponent

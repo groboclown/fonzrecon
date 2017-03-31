@@ -4,7 +4,7 @@ import {
 import { Response } from '@angular/http';
 
 import { ImportUsersService } from './import-users.service';
-import { AlertStatus } from '../alert/index';
+import { AlertStatus } from '../widgets/index';
 
 @Component({
     moduleId: module.id,

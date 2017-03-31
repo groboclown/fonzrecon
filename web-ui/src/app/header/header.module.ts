@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 import { HeaderRoutingModule } from './header-routing.module';
 import { HeaderComponent } from './header.component';
+import { MeComponent } from './me.component';
 
 @NgModule({
   imports: [
@@ -16,10 +17,14 @@ import { HeaderComponent } from './header.component';
     HeaderRoutingModule
   ],
   declarations: [
-    HeaderComponent
+    HeaderComponent,
+    MeComponent
   ],
   exports: [
     HeaderComponent
+
+    // Do not export:
+    // MeComponent
   ]
 })
 export class HeaderModule {

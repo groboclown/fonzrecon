@@ -1,0 +1,22 @@
+<div>
+  <div *ngIf='hasAccount' class="account">
+    <div class="about">
+      <div *ngIf='imageUri' class="portrait">
+        <img src="{{ imageUri }}">
+      </div>
+      <div class="name">
+        <span>{{ account.primaryName() }}</span>
+      </div>
+      <div *ngIf='hasUser' class="org">
+        <span>{{ account.user.organization }}</span>
+      </div>
+    </div>
+    <div *ngIf='hasUser' class="points">
+      <div class="give">Points to give: {{ account.user.pointsToAward }}</div>
+      <div class="spend">Points in account: {{ account.user.receivedPointsToSpend }}</div>
+    </div>
+  </div>
+  <div *ngIf='!hasAccount' class="no-account">
+    Not logged in.
+  </div>
+</div>

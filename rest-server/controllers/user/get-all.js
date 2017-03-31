@@ -18,6 +18,7 @@ module.exports = function(req, res, next) {
   }
   return User
     .listBrief(userLike, includeInactive)
+    .sort('username')
     .paginate(pagination)
     .then((users) => {
       users.type = 'UserBrief';

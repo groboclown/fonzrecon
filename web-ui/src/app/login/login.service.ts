@@ -6,7 +6,6 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/throw';
 import { Subject } from 'rxjs/Subject';
 import { ApiService, LowLoginAccountService } from '../_services/index';
-import {  } from './low-login-account.service';
 import { LoginAccount } from '../_models/login-account';
 import { createObservableFor } from '../_services/lib/index';
 
@@ -18,9 +17,9 @@ export class LoginService {
   private userInitialized = new Subject<boolean>();
 
   constructor(
-        private api: ApiService,
-        private lowLoginAccount: LowLoginAccountService
-      ) {}
+      private api: ApiService,
+      private lowLoginAccount: LowLoginAccountService
+  ) {}
 
   /**
    * @return {Observable<string>} 'true' if a valid login, 'false' if not,

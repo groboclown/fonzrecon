@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { Aaay } from './aaay.model';
-import { AlertStatus } from '../alert/index';
+import { AlertStatus } from '../widgets/index';
 import { CreateAaayService } from './create-aaay.service';
 
 @Component({
@@ -41,12 +41,11 @@ export class CreateAaayComponent {
           console.log(`DEBUG sending change event`);
           this.onChangeEvent.next({ aaay: aaay });
         }
+        this.loading = false;
       },
       (error: any) => {
-        this.alertStatus.error(error.message);
-      },
-      () => {
         this.loading = false;
+        this.alertStatus.error(error);
       }
     );
   }

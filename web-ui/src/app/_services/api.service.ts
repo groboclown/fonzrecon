@@ -44,6 +44,9 @@ export class ApiService {
   }
 
   toUrl(uri: string): string {
+    if (!uri) {
+      return null;
+    }
     if (uri[0] !== '/') {
       uri = '/' + uri;
     }

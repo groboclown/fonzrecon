@@ -1,6 +1,6 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AlertModule } from '../alert/index';
+import { WidgetsModule } from '../widgets/index';
 
 import { PagingComponent } from './paging.component';
 import { PagingService } from './paging.service';
@@ -8,7 +8,7 @@ import { PagingService } from './paging.service';
 @NgModule({
   imports: [
     CommonModule,
-    AlertModule
+    WidgetsModule
   ],
   declarations: [
     PagingComponent

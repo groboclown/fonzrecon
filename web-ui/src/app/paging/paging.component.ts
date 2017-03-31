@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { PagedData } from './paging.model';
 import { PagingService } from './paging.service';
-import { AlertStatus, AlertMessage } from '../alert/index';
+import { AlertStatus, AlertMessage } from '../widgets/index';
 
 @Component({
     moduleId: module.id,
@@ -38,12 +38,7 @@ export class PagingComponent<T> implements OnInit {
 
     this.pagingService.onRefreshError()
     .subscribe((error: any) => {
-      console.warn(`Paged result error: ${error}`);
-      if (error.message) {
-        this.alertStatus.error(error.message);
-      } else {
-        this.alertStatus.error(error);
-      }
+      this.alertStatus.error(error);
     });
     this.refresh();
   }

@@ -6,7 +6,7 @@ import { AaayListComponent } from './aaay-list.component';
 
 
 const aaaysRoutes: Routes = [
-  { path: 'aaays', component: AaayListComponent, canActivate: [AuthGuard] }
+  { path: 'webui/aaays', component: AaayListComponent, canActivate: [AuthGuard] }
 ];
 
 @NgModule({

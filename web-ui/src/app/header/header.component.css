@@ -16,6 +16,23 @@
   cursor: pointer;
 }
 
+.header-line a {
+  color: #eeeeee;
+  text-decoration: none;
+}
+.header-line a:hover {
+  color: #eeeeee;
+  text-decoration: none;
+}
+.header-line a:active {
+  color: #eeeeee;
+  text-decoration: none;
+}
+.header-line a:visited {
+  color: #eeeeee;
+  text-decoration: none;
+}
+
 .site-name {
   font-weight: bolder;
 }
@@ -43,14 +60,4 @@
 }
 .header-nav span a:visited {
   color: #eeeeee;
-}
-
-.drop-down {
-  line-height: 2;
-  padding-top: 1em;
-  overflow-y: hidden;
-  border: 1px solid black;
-  width: 40%;
-  position: aboslute;
-  right: 0;
 }

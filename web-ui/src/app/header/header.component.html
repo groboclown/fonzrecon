@@ -3,21 +3,17 @@
     <span id="site-name">{{ site.name }}</span>
   </span>
   <span class="right-side">
-    <span class="user-container" (click)="onToggleUserDropDown()">
+    <span class="user-container" *ngIf='isAuthenticated()'>
+      <a [routerLink]="['/webui/header/me']">
       <span *ngIf="imageUrl()"><img src="{{ imageUrl() }}"></span>
       <span class="me-auth" *ngIf='isAuthenticated()'>{{ loginAccount.username }}</span>
-      <span class="me-login" *ngIf='!isAuthenticated()'><a [routerLink]="['/login']">Login</a></span>
+      </a>
     </span>
+    <span class="me-login" *ngIf='!isAuthenticated()'><a [routerLink]="['/webui/login']">Login</a></span>
   </span>
 </div>
 <div id="nav" class="header-nav" *ngIf="isAuthenticated()">
   <span><a [routerLink]="['/']">[]</a></span>
-  <span *ngIf="isAdmin()"><a [routerLink]="['/admin']">Admin</a></span>
-  <span><a [routerLink]="['/login']">Logout</a></span>
+  <span *ngIf="isAdmin()"><a [routerLink]="['/webui/admin']">Admin</a></span>
+  <span><a [routerLink]="['/webui/login']">Logout</a></span>
 </div>
-<!--
-<div class="drop-down" [@userDropDownState]="shouldToggleUserDropDown">
-  <div>{{ loginAccount.primaryName() }}</div>
-  <div><a [routerLink]="['/login']">Logout</a></div>
-</div>
--->
