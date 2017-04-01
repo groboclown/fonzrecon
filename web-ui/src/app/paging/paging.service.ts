@@ -70,13 +70,23 @@ export class PagingService<T> {
     }
   }
 
+  loadFirstPage(queryParams: any) {
+    this.loadPage(1, queryParams);
+  }
+
+  loadLastPage(queryParams: any) {
+    if (this.paged.lastPage) {
+      this.loadPage(this.paged.lastPage, queryParams);
+    }
+  }
+
   loadPage(page: number, queryParams: any) {
     if (!this.paged.lastPage) {
       page = 1;
     } else if (page > this.paged.lastPage) {
       page = this.paged.lastPage;
     }
-    if (page > 0) {
+    if (page > 0 && page !== this.paged.page) {
       this.paged.page = page;
       this.refresh(queryParams);
     }

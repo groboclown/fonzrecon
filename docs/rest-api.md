@@ -239,6 +239,7 @@ Aaay.  It does not have a URI to reference it.*
   "username": "username1",
   "pointsToAward": 40,
   "organization": "Engineering",
+  "locale": "en-us",
   "receivedPointsToSpend": 30,
   "contacts": [
     {
@@ -269,6 +270,7 @@ Aaay.  It does not have a URI to reference it.*
   permissions to view this value, then it will be `null`.
 * `contacts` - how to reach the user.  If the requesting user does not have
   permissions to view this value, then it will be `null`.
+* `locale` - user's localization category.
 * `organization` - string describing the general role of the user.
 * `names` - alternative names that the user can be found as.
 * `active` - whether the user account is active (enabled for login).

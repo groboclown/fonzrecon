@@ -28,7 +28,7 @@ exports.briefUser = function(user) {
   };
 };
 
-exports.user = function(_user) {
+exports.user = function(_user, _account) {
   var ret = exports.briefUser(_user);
   if (ret.type === 'UserBriefRef') {
     return ret;
@@ -39,6 +39,7 @@ exports.user = function(_user) {
   ret.updatedAt = _user.updatedAt;
   ret.pointsToAward = _user.pointsToAward;
   ret.receivedPointsToSpend = _user.receivedPointsToSpend;
+  ret.locale = _user.locale;
   ret.contacts = _user.contacts.map((c) => {
     return {
       type: c.type,
@@ -46,6 +47,16 @@ exports.user = function(_user) {
       address: c.address
     };
   });
+  if (_account) {
+    ret.role = _account.role;
+    ret.accountEmail = _account.accountEmail;
+    ret.active = _account.active;
+    ret.banned = !!_account.banExpires && _account.banExpires > new Date();
+    ret.banExpires = _account.banExpires;
+    ret.pendingResetAuthentication = !!_account.resetAuthenticationExpires && _account.resetAuthenticationExpires > new Date();
+
+    // TODO include browser token associations?
+  }
   return ret;
 };
 

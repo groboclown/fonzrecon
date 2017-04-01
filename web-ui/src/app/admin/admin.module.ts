@@ -2,7 +2,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PagingModule } from '../paging/index';
 import { WidgetsModule } from '../widgets/index';
 
@@ -13,11 +13,16 @@ import { ManageUserListComponent } from './manage-user-list.component';
 import { ManageUserListService } from './manage-user-list.service';
 import { ImportUsersComponent } from './import-users.component';
 import { ImportUsersService } from './import-users.service';
+import { SetGivingPointsComponent } from './set-giving-points.component';
+import { SetGivingPointsService } from './set-giving-points.service';
+import { EditUserComponent } from './edit-user.component';
+import { EditUserService } from './edit-user.service';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     PagingModule,
@@ -27,7 +32,9 @@ import { ImportUsersService } from './import-users.service';
   declarations: [
     AdminComponent,
     ManageUserListComponent,
-    ImportUsersComponent
+    ImportUsersComponent,
+    SetGivingPointsComponent,
+    EditUserComponent
   ],
   exports: [
     AdminComponent
@@ -44,7 +51,9 @@ export class AdminModule {
       providers: [
         ManageUserListService,
         ImportUsersService,
-        AdminGuard
+        AdminGuard,
+        SetGivingPointsService,
+        EditUserService
       ]
     };
   }

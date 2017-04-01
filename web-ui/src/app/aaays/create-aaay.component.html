@@ -9,22 +9,29 @@
     </div>
     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !points.valid }">
       <label for="points">Points:</label>
-      <input type="points" class="form-control" name="points" [(ngModel)]="model.points" #points="ngModel" required />
+      <input type="text" class="form-control" name="points" [(ngModel)]="model.points" #points="ngModel" required />
       <app-param-error [status]='alertStatus' param='points'></app-param-error>
     </div>
     <!-- TODO make this a searchable field that loads on-the-fly from the
     user list.  Also, make it better support multiple people. -->
     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !toUsers.valid }">
       <label for="toUsers">Send To:</label>
-      <input type="toUsers" class="form-control" name="toUsers" [(ngModel)]="model.toUsers" #toUsers="ngModel" required />
+      <input type="text" class="form-control" name="toUsers" [(ngModel)]="model.toUsers" #toUsers="ngModel" required />
       <span>(separate individuals with a '<code>;</code>')</span>
       <app-param-error [status]='alertStatus' param='to'></app-param-error>
+      <!-- Testing a type-ahead funtionality...
+      <input type="text" class="form-control" [formControl]="userLookaheadForm" name="toUsers" required />
+      <app-param-error [status]='alertStatus' param='to'></app-param-error>
+      <ul>
+        <li *ngFor="let item of items | async">{{item}}</li>
+      </ul>
+      -->
     </div>
     <!-- TODO make this an optional list.
     TODO make it so it better supports a list of multiples. -->
     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !tags.valid }">
       <label for="tags">Tags</label>
-      <input type="tags" class="form-control" name="tags" [(ngModel)]="model.tags" #tags="ngModel" />
+      <input type="text" class="form-control" name="tags" [(ngModel)]="model.tags" #tags="ngModel" />
       <span>(separate tags with a '<code>;</code>')</span>
       <app-param-error [status]='alertStatus' param='tags'></app-param-error>
     </div>

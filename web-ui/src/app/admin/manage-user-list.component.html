@@ -1,12 +1,20 @@
 <div>
   <app-alert [status]='alertStatus'></app-alert>
-  <app-paged-list [pagingService]="userListService">
+  <div class="filter">
+    <input [(ngModel)]='filter.all' type="checkbox" name="show-deleted">
+    <label for="show-deleted">Show Deleted Users</label>
+  </div>
+  <app-paged-list [pagingService]='userListService' [queryParams]='filter'>
     <div class="manage-user-list">
       <div *ngFor="let user of userList.results ; let i=index">
         <span *ngIf='user.active'>
-          <span class="delete-user clickable" (click)='deleteUser($event, i, user)' >delete</span>
+          <span class="delete-user clickable" (click)='deleteUser($event, i, user)'>delete</span>
           |
-          <span class="edit-user clickable" (click)="editUser($event, i, user)">edit</span>
+          <a class="edit-user clickable" [routerLink]="['/webui/admin/edit-user', user.username]">edit</a>
+          |
+        </span>
+        <span *ngIf='!user.active'>
+          <span class="reactivate-user clickable" (click)='reactivateUser($event, i, user)'>reactivate</span>
           |
         </span>
         <span class="user">

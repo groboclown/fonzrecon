@@ -14,6 +14,9 @@ export class PagedData<T> {
   results: T[] = [];
   parseResultFromJson: Function;
 
+  firstItemIndex = 0;
+  lastItemIndex = 0;
+
   updateFromJson(data): PagedData<T> {
     if (!data) {
       this.page = 1;
@@ -42,6 +45,9 @@ export class PagedData<T> {
       this.prevPage = data.prev;
       this.deltaPages = data.pages || [];
       this.itemCount = data.count;
+
+      this.firstItemIndex = this.offset + ((this.page - 1) * this.perPage) + 1;
+      this.lastItemIndex = Math.min(this.offset + (this.page * this.perPage), this.itemCount);
     }
     return this;
   }

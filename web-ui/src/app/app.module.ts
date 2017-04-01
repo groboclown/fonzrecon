@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
@@ -10,7 +10,7 @@ import { AuthGuard } from './_guards/index';
 import {
     ApiService, MeService,
     SiteService, LowLoginAccountService,
-    ResetPasswordService
+    ResetPasswordService, UserDetailsService, UserListService
   } from './_services/index';
 // import { PagedComponent } from './_directives/index';
 
@@ -29,6 +29,7 @@ import { HomeModule } from './home/index';
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpModule,
     routing,
 
@@ -46,7 +47,9 @@ import { HomeModule } from './home/index';
     MeService,
     SiteService,
     LowLoginAccountService,
-    ResetPasswordService
+    ResetPasswordService,
+    UserDetailsService,
+    UserListService
   ],
   exports: [
   ],

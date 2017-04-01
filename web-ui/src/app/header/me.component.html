@@ -1,5 +1,10 @@
 <div>
   <div *ngIf='hasAccount' class="account">
+    <div class="actions">
+      <div class="refresh">
+        <button (click)='refresh()'>R</button>
+      </div>
+    </div>
     <div class="about">
       <div *ngIf='imageUri' class="portrait">
         <img src="{{ imageUri }}">

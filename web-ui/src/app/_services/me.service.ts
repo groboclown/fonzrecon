@@ -45,6 +45,10 @@ export class MeService {
     return account.isAuthenticated() && account.isAdmin;
   }
 
+  refresh() {
+    this.loadAboutMe();
+  }
+
   private loadAboutMe() {
     console.log(`DEBUG getting about-me`);
     return this.api.get('/api/v1/users/about-me')

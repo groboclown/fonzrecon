@@ -1,17 +1,28 @@
 <div class="paged-container">
-  <div class="paged-controls">
-  </div>
   <app-alert [status]='alertStatus'></app-alert>
   <div class="results" *ngIf="hasData()">
-    <div>
+    <div class="paged-info">
       <span>
-        {{ pagedData.results.length }} out of {{ pagedData.itemCount }};
+        {{ pagedData.results.length }} items
+      </span>
+      <span>
+        ({{ pagedData.firstItemIndex }} - {{ pagedData.lastItemIndex }} of {{ pagedData.itemCount }})
       </span>
       <span>
         Page {{ pagedData.page }}
         <span *ngIf='pagedData.lastPage'>of {{ pagedData.lastPage }}</span>
         ({{ pagedData.perPage }} per page)
       </span>
+    </div>
+    <div class="paged-controls">
+      <!-- "disabled" here seems backwards, but it's right. -->
+      <button (click)='firstPage()' [disabled]='pagedData.page <= 1'>|&lt;</button>
+      <button (click)='prevPage()' [disabled]='pagedData.page <= 1'>&lt;</button>
+      <button (click)='nextPage()' [disabled]='!pagedData.lastPage || pagedData.page >= pagedData.lastPage'>&gt;</button>
+      <button (click)='lastPage()' [disabled]='!pagedData.lastPage || pagedData.page >= pagedData.lastPage'>&gt;|</button>
+      <app-load-button [loading]='loading'>
+        <button [disabled]="loading" (click)='refresh()'>R</button>
+      </app-load-button>
     </div>
     <!-- This should be a *ngFor loop over the items in the rows, but
     it seems that right now, angular doesn't allow for templates to be

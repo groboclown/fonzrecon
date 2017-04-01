@@ -1,0 +1,19 @@
+.account {
+  margin: 0;
+  padding: 0;
+  background-color: #e00060;
+  color: #eeffff;
+  position: relative;
+}
+
+.account .about {
+  margin: 1em;
+  padding: 0;
+  background-color: #ffd0f0;
+  color: black;
+}
+
+.account .actions {
+  position: absolute;
+  right: 1em;
+}

@@ -16,6 +16,7 @@ import { AlertStatus } from '../widgets/index';
     styleUrls: ['./manage-user-list.component.css']
 })
 export class ManageUserListComponent implements AfterViewInit {
+  filter: any = {};
   userList: ManageUserList = new ManageUserList();
   private alertStatus = new AlertStatus();
 
@@ -39,13 +40,15 @@ export class ManageUserListComponent implements AfterViewInit {
     this.userListService.deleteUser(user.username)
     .subscribe(
       (message: any) => {
-        if (message.error) {
-          this.alertStatus.error(message.message);
-        } else {
-          this.alertStatus.success(message.message);
-        }
-        this.userListService.refresh({});
+        this.alertStatus.success(message.message);
+      },
+      (error: any) => {
+        this.alertStatus.error(error);
       }
     );
+  }
+
+  reactivateUser(event, index, user) {
+    // TODO add
   }
 }

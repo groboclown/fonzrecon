@@ -12,6 +12,7 @@ import { AlertStatus, AlertMessage } from '../widgets/index';
 export class PagingComponent<T> implements OnInit {
   @Input() pagingService: PagingService<T>;
   @Input() queryParams: any = {};
+  loading = false;
   alertStatus = new AlertStatus();
   pagedData = new PagedData<T>();
   isError = false;
@@ -33,33 +34,50 @@ export class PagingComponent<T> implements OnInit {
 
     this.pagingService.onRefresh()
     .subscribe((pagedData: PagedData<T>) => {
+      this.loading =  false;
       this.pagedData = pagedData;
     });
 
     this.pagingService.onRefreshError()
     .subscribe((error: any) => {
+      this.loading =  false;
       this.alertStatus.error(error);
     });
     this.refresh();
   }
 
   refresh() {
+    this.loading = true;
     this.pagingService.refresh(this.queryParams);
   }
 
   nextPage() {
+    this.loading = true;
     this.pagingService.loadNextPage(this.queryParams);
   }
 
   prevPage() {
+    this.loading = true;
     this.pagingService.loadPrevPage(this.queryParams);
   }
 
+  firstPage() {
+    this.loading = true;
+    this.pagingService.loadFirstPage(this.queryParams);
+  }
+
+  lastPage() {
+    this.loading = true;
+    this.pagingService.loadLastPage(this.queryParams);
+  }
+
   selectPage(page: number) {
+    this.loading = true;
     this.pagingService.loadPage(page, this.queryParams);
   }
 
   setPerPage(pageCount: number) {
+    this.loading = true;
     this.pagingService.setPerPage(pageCount);
     this.pagingService.refresh(this.queryParams);
   }

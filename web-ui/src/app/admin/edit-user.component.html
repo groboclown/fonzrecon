@@ -1,0 +1,63 @@
+<div>
+  <div class="back">
+    <span><a [routerLink]="['/webui/admin/users']">Back to Manage Users</a></span>
+  </div>
+  <app-alert [status]='alertStatus'></app-alert>
+  <div *ngIf='!user' class="unknown-user">
+    Unknown user {{ username }}
+  </div>
+  <div *ngIf='user'>
+    <form [formGroup]='userForm' (ngSubmit)='submit(userForm.value, userForm.valid)' novalidate>
+      <!-- read-only values, so not in form groups. -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" formControlName="username" />
+      </div>
+      <div class="form-group">
+        <label for="receivedPointsToSpend">Received Points Left to Spend</label>
+        <input type="text" name="receivedPointsToSpend" formControlName="receivedPointsToSpend" />
+      </div>
+
+      <!-- currently read-only values -->
+      <div class="form-group">
+        <label for="nameList">Names</label>
+        <input type="text" name="nameList" disabled value="{{ nameList }}" />
+      </div>
+      <!-- TODO contacts -->
+      <div class="form-group">
+        <label for="active">Active</label>
+        <input type="checkbox" name="active" formControlName="active" />
+      </div>
+
+      <!-- Editable -->
+      <div class="form-group">
+        <label for="pointsToAward">Points To Award</label>
+        <input type="text" name="pointsToAward" formControlName="pointsToAward" />
+        <app-param-error [status]='alertStatus' param='pointsToAward'></app-param-error>
+      </div>
+      <div class="form-group">
+        <label for="accountEmail">Email</label>
+        <input type="email" name="accountEmail" formControlName="accountEmail" />
+        <app-param-error [status]='alertStatus' param='email'></app-param-error>
+      </div>
+      <div class="form-group">
+        <label for="organization">Organization</label>
+        <input type="text" name="organization" formControlName="organization" />
+        <app-param-error [status]='alertStatus' param='organization'></app-param-error>
+      </div>
+      <!-- TODO make a drop-down -->
+      <div class="form-group">
+        <label for="role">Role</label>
+        <input type="text" name="role" formControlName="role">
+        <app-param-error [status]='alertStatus' param='role'></app-param-error>
+      </div>
+
+
+      <div class="form-group">
+        <app-load-button [loading]='loading'>
+          <button [disabled]="loading" type="submit">Update User</button>
+        </app-load-button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -37,14 +37,9 @@ export class ImportUsersComponent {
           this.userResults = userResults.results || [];
         },
         (err: any) => {
-          if (err instanceof Response) {
-            this.alertStatus.error(JSON.stringify(err.json()));
-          } else {
-            this.alertStatus.error(err.message);
-          }
+          this.alertStatus.error(err);
         }
       );
     }
   }
-
 }

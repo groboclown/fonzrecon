@@ -12,6 +12,10 @@ export class AlertMessage {
 export class AlertStatus {
   private subject = new Subject<AlertMessage>();
 
+  clear() {
+    this.subject.next();
+  }
+
   success(message: string) {
     this.subject.next({
       isError: false,

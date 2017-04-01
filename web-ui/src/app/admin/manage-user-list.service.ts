@@ -27,7 +27,9 @@ export class ManageUserListService extends PagingService<User> {
   /** Override: load up the extra parameters for the filter.
    */
   _filterParameters(queryParams: any, params: any) {
-    // Do nothing for now.
+    if (queryParams.all) {
+      params.all = 'true';
+    }
   }
 
   _parseItemFromJson(item: any): User {
@@ -36,17 +38,8 @@ export class ManageUserListService extends PagingService<User> {
 
   deleteUser(username: string): Observable<any> {
     return this._api.delete('/api/v1/users/' + username)
-      .map(
-        (response: Response) => {
-          return { error: false, message: `User ${username} deleted.` };
-        },
-        (error: Response | any) => {
-          // TODO error
-          if (error.message) {
-            return { error: true, message: error.message };
-          }
-          return { error: true, message: error };
-        }
-      );
+      .map((response: Response) => {
+        return { error: false, message: `User ${username} deleted.` };
+      });
   }
 }

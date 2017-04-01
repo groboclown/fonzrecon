@@ -34,6 +34,10 @@ export class MeComponent implements OnInit {
     );
   }
 
+  refresh() {
+    this.me.refresh();
+  }
+
   private setupHelper(account: LoginAccount) {
     if (account) {
       this.account = account;

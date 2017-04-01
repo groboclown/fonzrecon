@@ -16,12 +16,22 @@ describe('Create User', () => {
 
   // Create a test user as a fixture
   beforeEach(() => {
-    return createUserApi.createUser({
-        username: 'testuser',
-        names: ['nnn'],
-        email: 'eat@joes.com',
-        pointsToAward: 0,
-        organization: 'org'
+    // For some reason, the database isn't fully cleaned up
+    // when this runs, in all cases.
+    return User
+      .remove()
+      .then(() => {
+        return Account
+          .remove();
+      })
+      .then(() => {
+        return createUserApi.createUser({
+            username: 'testuser',
+            names: ['nnn'],
+            email: 'eat@joes.com',
+            pointsToAward: 0,
+            organization: 'org'
+          })
       })
       .then(initializeDb);
   });

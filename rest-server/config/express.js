@@ -27,7 +27,7 @@ exports.setup = function(app, passport) {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(fileUpload());
-  
+
   app.use(validator({
     customValidators: {
       isArrayOfString: function(param, minCount) {
