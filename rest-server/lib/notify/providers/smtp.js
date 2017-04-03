@@ -1,8 +1,6 @@
 'use strict';
 
 const emailjs = require('emailjs');
-// FIXME understand why this isn't setup right.
-emailjs.authentication = emailjs.authentication || {};
 
 module.exports = function(connectionSettings) {
   return {
@@ -17,19 +15,30 @@ function sendEmail(connectionSettings, args) {
   var text = args.text;
   var html = args.html;
   var from = args.from;
+  var auth = null; // default setting is to try all authentication types.
+  if (connectionSettings.authentication) {
+    for (let k in emailjs.SMTP.authentication) {
+      if (emailjs.SMTP.authentication.hasOwnProperty(k)
+          && k.toUpperCase() === connectionSettings.authentication.toUpperCase()) {
+        auth = email.authentication[k];
+        break;
+      }
+    }
+  }
 
   var options = {
-    user: connectionSettings.username,
-    password: connectionSettings.password,
-    host: connectionSettings.host,
-    ssl: connectionSettings.ssl,
-    tls: connectionSettings.tls,
-    timeout: connectionSettings.timeout,
-    domain: connectionSettings.domain,
-    authentication: connectionSettings.authentication === 'xoauth2'
-      ? emailjs.authentication.XOAUTH2
-      : emailjs.authentication.PLAIN
+    user: parseStr(connectionSettings.user),
+    password: parseStr(connectionSettings.password),
+    host: parseStr(connectionSettings.host),
+    ssl: parseBool(connectionSettings.ssl),
+    tls: parseBool(connectionSettings.tls),
+    timeout: parseNumber(connectionSettings.timeout),
+    port: parseNumber(connectionSettings.port),
+    domain: parseStr(connectionSettings.domain),
+    authentication: auth
   };
+
+  console.log(`DEBUG connecting to email server with ${JSON.stringify(options)}`);
 
   var server = emailjs.server.connect(options);
 
@@ -48,11 +57,35 @@ function sendEmail(connectionSettings, args) {
   return new Promise((resolve, reject) => {
     server.send(msg, (err, message) => {
       if (err) {
+        console.log(`Encountered error ${err}: ${JSON.stringify(err)}`);
+        if (err.previous) {
+          console.log(err.previous.stack);
+        }
         reject(err);
       }
-      // DEBUG
-      console.log(`DEBUG Sent message: ${message}`);
       resolve(null);
     });
   });
+}
+
+
+function parseStr(s) {
+  if (!s || s === '') {
+    return null;
+  }
+  return s;
+}
+
+function parseBool(s) {
+  if (typeof(s) === 'boolean') {
+    return s;
+  }
+  return s === 'true';
+}
+
+function parseNumber(s) {
+  if (!s) {
+    return null;
+  }
+  return +s;
 }

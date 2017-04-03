@@ -1,1 +1,1 @@
-{{ siteSettings.SiteName }} - Site Settings Updated
+[{{ siteSettings.SiteName }}] Site Settings Updated

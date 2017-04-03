@@ -82,6 +82,8 @@ export class ArraySiteFormData extends BaseSiteFormData {
 export class SmtpKey {
   subkey: string;
   topkey: string;
+  desc: string;
+  type: string;
 }
 
 export class SmtpSiteFormData extends BaseSiteFormData {
@@ -94,11 +96,22 @@ export class SmtpSiteFormData extends BaseSiteFormData {
     this.controlType = 'smtp';
     this.emailConnection = emailConnection;
     const dictValues = emailConnection.value;
-    for (const k in dictValues) {
-      if (dictValues.hasOwnProperty(k)) {
-        this.keys.push({ subkey: k, topkey: this.key + '.' + k });
-      }
-    }
+    // Ensure the SMTP dictionary values are all present.
+    // We manually define the keys.
+    const pk = this.key + '.';
+    this.keys = [
+      { subkey: 'user', topkey: pk + 'user', type: 'text', desc: 'Username for the SMTP connection'},
+      { subkey: 'password', topkey: pk + 'password', type: 'password', desc: 'Password for the user`s connection'},
+      { subkey: 'host', topkey: pk + 'host', type: 'text', desc: 'SMTP hostname'},
+      { subkey: 'port', topkey: pk + 'port', type: 'number', desc: 'SMTP host port'},
+      { subkey: 'ssl', topkey: pk + 'ssl', type: 'boolean', desc: 'Use ssl connection?  Must be `true` or `false`'},
+      { subkey: 'tls', topkey: pk + 'tls', type: 'boolean', desc: 'Use tls connection?  Must be `true` or `false`'},
+      { subkey: 'timeout', topkey: pk + 'timeout', type: 'number',
+        desc: 'Maximum timeout to wait for a connection (default is 5000)'},
+      { subkey: 'domain', topkey: pk + 'domain', type: 'text', desc: 'authentication domain'},
+      { subkey: 'authentication', topkey: pk + 'authentication', type: 'text',
+        desc: 'type of authentication, either `plain` or `xoauth2` (default is plain)'}
+    ];
   }
 
   addFormControl(groups: any) {

@@ -95,6 +95,14 @@ const ALL_SETTINGS = {
     templateAccess: 'public',
     publicAccess: false
   },
+  SitePublicAdminEmail: {
+    description: 'The help user, published in emails and on the site',
+    defaultValue: 'admin@site.fonzrecon',
+    valueType: 'email',
+    validator: validate.isEmailAddress,
+    templateAccess: 'public',
+    publicAccess: true
+  },
   SiteName: {
     description: 'How the site self identifies',
     defaultValue: 'FonzRecon For You',

@@ -200,7 +200,8 @@ requests.push(Setting
   .setEmailProviderConnection({
     user: 'my-username',
     password: 'my-password',
-    host: 'smtp.hostname.fonzrecon.githu',
+    host: 'smtp.hostname.fonzrecon.github',
+    port: 465,
     ssl: true,
     tls: null,
     timeout: null, // Defaults to 5000

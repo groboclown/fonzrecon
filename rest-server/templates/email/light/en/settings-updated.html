@@ -3,6 +3,9 @@
 User {{ setBy.username }} changed the following site settings:
 </p>
 <ul>
-  <!-- TODO make this a loop with cleaned up values -->
-  {{ JSON.stringify(results) }}
+  {% for key, val in results %}
+  <li>
+    <b>{{ key }}</b> - <code>{{ JSON.stringify(val) }}</code>
+  </li>
+  {% endfor %}
 </ul>

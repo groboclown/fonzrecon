@@ -1,41 +1,79 @@
 <div [formGroup]="form">
-  <div [ngSwitch]="data.controlType">
+  <div [ngSwitch]="data.controlType" class="control-entry">
     <div *ngSwitchCase="'string'">
-      <label [attr.for]="data.key">{{data.data.key}}</label>
-      <input [formControlName]="data.key"
-          [id]="data.key" [type]="data.type">
-    </div>
-    <div *ngSwitchCase="'url'">
-      <label [attr.for]="data.key">{{data.data.key}}</label>
-      <input [formControlName]="data.key"
-          [id]="data.key" [type]="data.type"> (url)
-    </div>
-    <div *ngSwitchCase="'password'">
-      <label [attr.for]="data.key">{{data.data.key}}</label>
-      <input [formControlName]="data.key"
-          [id]="data.key" type="password">
-    </div>
-    <div *ngSwitchCase="'email'">
-      <label [attr.for]="data.key">{{data.data.key}}</label>
-      <input [formControlName]="data.key"
-          [id]="data.key" type="email"> (email)
-    </div>
-    <div *ngSwitchCase="'smtp'" class="form-box">
-      <div class="form-box-entry">
-        <label [attr.for]="data.key">{{data.key}}</label>
+      <div class="control-label">
+        <label [attr.for]="data.key">{{data.data.key}}</label>
+      </div>
+      <div class="control-desc">
+        {{data.data.description}}
+      </div>
+      <div class="control-input">
         <input [formControlName]="data.key"
             [id]="data.key" [type]="data.type">
       </div>
-      <div *ngFor='let tkey of data.keys' class="form-box-entry">
-        <label [attr.for]="tkey.topkey">{{tkey.subkey}}</label>
-        <span *ngIf="tkey.subkey === 'password'">
-          <input [formControlName]="tkey.topkey"
-            [id]="tkey.topkey" type='password'>
-        </span>
-        <span *ngIf="tkey.subkey !== 'password'">
-          <input [formControlName]="tkey.topkey"
-            [id]="tkey.topkey" type='text'>
-        </span>
+    </div>
+    <div *ngSwitchCase="'url'">
+      <div class="control-label">
+        <label [attr.for]="data.key">{{data.data.key}}</label>
+      </div>
+      <div class="control-desc">
+        {{data.data.description}}
+      </div>
+      <div class="control-input">
+        <input [formControlName]="data.key"
+            [id]="data.key" [type]="data.type"> (url)
+      </div>
+    </div>
+    <div *ngSwitchCase="'password'">
+      <div class="control-label">
+        <label [attr.for]="data.key">{{data.data.key}}</label>
+      </div>
+      <div class="control-desc">
+        {{data.data.description}}
+      </div>
+      <div class="control-input">
+        <input [formControlName]="data.key"
+            [id]="data.key" type="password">
+      </div>
+    </div>
+    <div *ngSwitchCase="'email'">
+      <div class="control-label">
+        <label [attr.for]="data.key">{{data.data.key}}</label>
+      </div>
+      <div class="control-desc">
+        {{data.data.description}}
+      </div>
+      <div class="control-input">
+        <input [formControlName]="data.key"
+            [id]="data.key" type="email"> (email)
+      </div>
+    </div>
+    <div *ngSwitchCase="'smtp'">
+      <div class="form-box-entry">
+        <div class="control-label">
+          <label [attr.for]="data.key">{{data.key}}</label>
+        </div>
+        <div class="control-desc">
+          {{data.data.description}}
+        </div>
+        <div class="control-input">
+          <input [formControlName]="data.key"
+              [id]="data.key" [type]="data.type">
+        </div>
+      </div>
+      <div class="form-box">
+        <div *ngFor='let tkey of data.keys' class="form-box-entry">
+          <div class="control-label">
+            <label [attr.for]="tkey.topkey">{{ tkey.subkey }}</label>
+          </div>
+          <div class="control-desc">
+            {{ tkey.desc }}
+          </div>
+          <div class="control-input">
+            <input [formControlName]="tkey.topkey"
+              [id]="tkey.topkey" [type]='tkey.type'>
+          </div>
+        </div>
       </div>
     </div>
     <!-- TODO add more *ngSwitchCase for the different component types -->

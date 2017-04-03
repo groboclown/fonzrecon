@@ -6,3 +6,16 @@
 .form-box-entry {
 
 }
+
+.control-entry {
+  padding: .5em;
+}
+
+.control-label {
+  font-weight: 200%;
+  font-size: 120%;
+}
+
+.control-desc {
+  font-size: 80%;
+}
