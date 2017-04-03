@@ -1,0 +1,8 @@
+<h3>The FonzRecon site {{ siteSettings.SiteName }} ({{ siteSettings.SiteUrl }})</h3>
+<p>
+User {{ setBy.username }} changed the following site settings:
+</p>
+<ul>
+  <!-- TODO make this a loop with cleaned up values -->
+  {{ JSON.stringify(results) }}
+</ul>

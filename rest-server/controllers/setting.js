@@ -4,6 +4,7 @@ const models = require('../models');
 const Setting = models.Setting;
 const errors = require('./util').errors;
 const notify = require('../lib/notify');
+const accessLib = require('../lib/access');
 
 
 function mapSettingsList(settings) {
@@ -36,6 +37,7 @@ exports.get = function(req, res, next) {
 
 
 exports.set = function(req, res, next) {
+  const fromUser = accessLib.getRequestUser(req);
   if (!req.body.settings || typeof(req.body.settings) !== 'object') {
     return next(
       errors.extraValidationProblem('settings', req.body.settings,
@@ -44,10 +46,12 @@ exports.set = function(req, res, next) {
   Setting.setSettings(req.body.settings)
     .then(mapSettingsList)
     .then((results) => {
+      // Do not wait for email sent.
       res.status(200).json(results);
 
       notify.sendAdminNotification('settings-updated', {
-        results
+        setBy: fromUser,
+        results: results
       });
     })
     .catch((err) => {

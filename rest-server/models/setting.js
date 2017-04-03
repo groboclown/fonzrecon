@@ -279,15 +279,12 @@ SettingSchema.statics.setSettings = function(keyValueMap) {
       return self.getMappedSettingObjects(keys);
     })
     .then((settings) => {
-      var settingObjs = [];
+      var savePromises = [];
       for (let i = 0; i < keys.length; i++) {
-        settingObjs.push(settings[keys[i]]);
+        settings[keys[i]].value = keyValueMap[keys[i]];
+        savePromises.push(settings[keys[i]].save());
       }
-      return Promise
-        .all(settingObjs.map((s) => {
-          s.value = keyValueMap[s.key];
-          return s.save();
-        }));
+      return Promise.all(savePromises);
     });
 };
 

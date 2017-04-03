@@ -1,19 +1,24 @@
 <div [formGroup]="form">
   <div [ngSwitch]="data.controlType">
-    <div *ngSwitchCase="'string'"> (string)
+    <div *ngSwitchCase="'string'">
       <label [attr.for]="data.key">{{data.data.key}}</label>
       <input [formControlName]="data.key"
           [id]="data.key" [type]="data.type">
     </div>
-    <div *ngSwitchCase="'url'"> (url)
+    <div *ngSwitchCase="'url'">
       <label [attr.for]="data.key">{{data.data.key}}</label>
       <input [formControlName]="data.key"
-          [id]="data.key" [type]="data.type">
+          [id]="data.key" [type]="data.type"> (url)
     </div>
-    <div *ngSwitchCase="'email'"> (email)
+    <div *ngSwitchCase="'password'">
       <label [attr.for]="data.key">{{data.data.key}}</label>
       <input [formControlName]="data.key"
-          [id]="data.key" [type]="data.type">
+          [id]="data.key" type="password">
+    </div>
+    <div *ngSwitchCase="'email'">
+      <label [attr.for]="data.key">{{data.data.key}}</label>
+      <input [formControlName]="data.key"
+          [id]="data.key" type="email"> (email)
     </div>
     <div *ngSwitchCase="'smtp'" class="form-box">
       <div class="form-box-entry">
@@ -23,8 +28,14 @@
       </div>
       <div *ngFor='let tkey of data.keys' class="form-box-entry">
         <label [attr.for]="tkey.topkey">{{tkey.subkey}}</label>
-        <input [formControlName]="tkey.topkey"
-          [id]="tkey.topkey" [type]='string'>
+        <span *ngIf="tkey.subkey === 'password'">
+          <input [formControlName]="tkey.topkey"
+            [id]="tkey.topkey" type='password'>
+        </span>
+        <span *ngIf="tkey.subkey !== 'password'">
+          <input [formControlName]="tkey.topkey"
+            [id]="tkey.topkey" type='text'>
+        </span>
       </div>
     </div>
     <!-- TODO add more *ngSwitchCase for the different component types -->

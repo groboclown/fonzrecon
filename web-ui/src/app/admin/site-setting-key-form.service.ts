@@ -16,6 +16,7 @@ const CONTROLTYPE_TYPE_MAP = {
   'string': 'string',
   'url': 'url',
   'uri': 'url',
+  'password': 'password',
   'email': 'email'
 };
 

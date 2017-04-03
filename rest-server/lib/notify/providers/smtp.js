@@ -12,7 +12,7 @@ module.exports = function(connectionSettings) {
 
 
 function sendEmail(connectionSettings, args) {
-  var to = args.toEmail;
+  var to = args.to;
   var subject = args.subject;
   var text = args.text;
   var html = args.html;
@@ -42,14 +42,16 @@ function sendEmail(connectionSettings, args) {
       { data: html }
     ]
   };
+  console.log(`DEBUG sending message ${JSON.stringify(message)}`);
+  var msg = emailjs.message.create(message);
 
   return new Promise((resolve, reject) => {
-    server.send(message, (err, message) => {
+    server.send(msg, (err, message) => {
       if (err) {
         reject(err);
       }
       // DEBUG
-      console.log(`Sent message: ${message}`);
+      console.log(`DEBUG Sent message: ${message}`);
       resolve(null);
     });
   });

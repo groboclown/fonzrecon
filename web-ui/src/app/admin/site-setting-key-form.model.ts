@@ -105,7 +105,7 @@ export class SmtpSiteFormData extends BaseSiteFormData {
     groups[this.key] = new FormControl(this.data.value || 'smtp', Validators.required);
     const v = this.emailConnection.value;
     for (let i = 0; i < this.keys.length; i++) {
-      groups[this.keys[i].topkey] = new FormControl(v[this.keys[i].topkey] || '', Validators.required);
+      groups[this.keys[i].topkey] = new FormControl(v[this.keys[i].subkey] || '', Validators.required);
     }
   }
 
