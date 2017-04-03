@@ -1,0 +1,23 @@
+<div>
+  <h2>Site Settings</h2>
+  <app-alert [status]='alertStatus'></app-alert>
+
+  <div *ngIf='form'>
+    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+      <div *ngFor='let sv of formGroupData.formDataList' class="form-row">
+        <app-site-setting-key-form [data]="sv" [form]="form"></app-site-setting-key-form>
+      </div>
+      <div class="form-row">
+        <button type="submit" [disabled]="form && form.valid">Save</button>
+      </div>
+    </form>
+  </div>
+  <div *ngIf='!form'>
+    <div class="form-row">
+      Loading site values...
+    </div>
+  </div>
+  <div *ngIf="saved" class="form-row">
+    <strong>Saved the following values</strong><br>{{payLoad}}
+  </div>
+</div>

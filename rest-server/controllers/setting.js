@@ -13,7 +13,8 @@ function mapSettingsList(settings) {
     ret[settings[i].key] = {
       key: settings[i].key,
       description: settings[i].description,
-      value: settings[i].value
+      value: settings[i].value,
+      valueType: settings[i].valueType
     };
   }
 

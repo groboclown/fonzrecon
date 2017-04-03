@@ -1,0 +1,33 @@
+<div [formGroup]="form">
+  <div [ngSwitch]="data.controlType">
+    <div *ngSwitchCase="'string'"> (string)
+      <label [attr.for]="data.key">{{data.data.key}}</label>
+      <input [formControlName]="data.key"
+          [id]="data.key" [type]="data.type">
+    </div>
+    <div *ngSwitchCase="'url'"> (url)
+      <label [attr.for]="data.key">{{data.data.key}}</label>
+      <input [formControlName]="data.key"
+          [id]="data.key" [type]="data.type">
+    </div>
+    <div *ngSwitchCase="'email'"> (email)
+      <label [attr.for]="data.key">{{data.data.key}}</label>
+      <input [formControlName]="data.key"
+          [id]="data.key" [type]="data.type">
+    </div>
+    <div *ngSwitchCase="'smtp'" class="form-box">
+      <div class="form-box-entry">
+        <label [attr.for]="data.key">{{data.key}}</label>
+        <input [formControlName]="data.key"
+            [id]="data.key" [type]="data.type">
+      </div>
+      <div *ngFor='let tkey of data.keys' class="form-box-entry">
+        <label [attr.for]="tkey.topkey">{{tkey.subkey}}</label>
+        <input [formControlName]="tkey.topkey"
+          [id]="tkey.topkey" [type]='string'>
+      </div>
+    </div>
+    <!-- TODO add more *ngSwitchCase for the different component types -->
+  </div>
+  <div class="errorMessage" *ngIf="!isValid">{{data.key}} is required</div>
+</div>

@@ -941,6 +941,7 @@ Retrieves a map of all the site-wide settings.
   "KeyName": {
     "key": "KeyName",
     "description": "Untranslated description of the key",
+    "valueType": "string type describing the value object",
     "value": "current setting; type is key dependent"
   },
   ...

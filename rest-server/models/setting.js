@@ -22,6 +22,14 @@ const SettingSchema = new Schema({
   value: {
     type: Schema.Types.Mixed,
     required: true
+  },
+  valueType: {
+    type: String,
+    enum: ['string', 'int', 'email', 'url',
+      'string?', 'int?', 'email?', 'url?',
+      'string[]', 'int[]', 'email[]', 'url[]',
+      'dictionary',],
+    default: 'string'
   }
 }, {
   timestamps: true
@@ -33,7 +41,7 @@ SettingSchema.statics._forKey = function(key) {
   return this.findOne({ key: key });
 };
 
-SettingSchema.statics._setKey = function(key, description, value) {
+SettingSchema.statics._setKey = function(key, description, valueType, value) {
   return this._forKey(key)
     .then((val) => {
       if (val) {
@@ -43,6 +51,7 @@ SettingSchema.statics._setKey = function(key, description, value) {
       return new module.exports({
           key: key,
           description: description,
+          valueType: valueType,
           value: value
         }).save();
     });
@@ -57,6 +66,7 @@ const ALL_SETTINGS = {
   AdminActionNotificationEmails: {
     description: 'Who to send emails to when an administration action occurs (list of emails)',
     defaultValue: [],
+    valueType: 'url[]',
     validator: [ validate.isArrayOf, validate.isEmailAddress, 1 ],
     templateAccess: 'private',
     publicAccess: false
@@ -64,6 +74,7 @@ const ALL_SETTINGS = {
   SiteUrl: {
     description: 'Root url of the site',
     defaultValue: 'http://localhost',
+    valueType: 'url',
     validator: validate.isURL,
     templateAccess: 'public',
     publicAccess: true
@@ -71,6 +82,7 @@ const ALL_SETTINGS = {
   EmailTheme: {
     description: 'Directory under templates/email to use for formatted emails',
     defaultValue: 'light',
+    valueType: 'string',
     validator: [ validate.isString, 1 ],
     templateAccess: 'public',
     publicAccess: false
@@ -78,6 +90,7 @@ const ALL_SETTINGS = {
   SiteFromEmail: {
     description: 'The `from` line in the emails sent from the site',
     defaultValue: 'no-reply@site.fonzrecon',
+    valueType: 'email',
     validator: validate.isEmailAddress,
     templateAccess: 'public',
     publicAccess: false
@@ -85,6 +98,7 @@ const ALL_SETTINGS = {
   SiteName: {
     description: 'How the site self identifies',
     defaultValue: 'FonzRecon For You',
+    valueType: 'string',
     validator: [ validate.isString, 1 ],
     templateAccess: 'public',
     publicAccess: true
@@ -92,6 +106,7 @@ const ALL_SETTINGS = {
   SiteBannerImage: {
     description: 'URI for the site`s banner image',
     defaultValue: null,
+    valueType: 'url?',
     validator: [ validate.isNullOrUri ],
     templateAccess: 'public',
     publicAccess: true
@@ -99,6 +114,7 @@ const ALL_SETTINGS = {
   SiteSmallImage: {
     description: 'URI for the site`s standard image; about 128x128',
     defaultValue: null,
+    valueType: 'url?',
     validator: [ validate.isNullOrUri ],
     templateAccess: 'public',
     publicAccess: true
@@ -106,6 +122,7 @@ const ALL_SETTINGS = {
   SiteIconImage: {
     description: 'URI for the site`s icon (should be ~64x64)',
     defaultValue: null,
+    valueType: 'url?',
     validator: [ validate.isNullOrUri ],
     templateAccess: 'public',
     publicAccess: true
@@ -113,6 +130,7 @@ const ALL_SETTINGS = {
   EmailProvider: {
     description: 'How to send emails, one of ' + contact.emailProviders,
     defaultValue: contact.emailProviders[0],
+    valueType: 'string',
     validator: [ validate.isInSet, contact.emailProviders ],
     templateAccess: 'private',
     publicAccess: false
@@ -120,6 +138,7 @@ const ALL_SETTINGS = {
   EmailProviderConnection: {
     description: 'How to connect to the email provider',
     defaultValue: null,
+    valueType: 'dictionary',
     validator: validate.yes,
     templateAccess: 'private',
     publicAccess: false
@@ -171,7 +190,7 @@ SettingSchema.statics._settingGetterValue = function(keyDef) {
 SettingSchema.statics._settingSetter = function(keyDef, value) {
   return keyDef.validatorPromiseFactory(value)
     .then((scrubbed) => {
-      return this._setKey(keyDef.key, keyDef.description, scrubbed);
+      return this._setKey(keyDef.key, keyDef.description, keyDef.vlaueType, scrubbed);
     });
 };
 function createSettingGetterSetter(keyDef) {
@@ -209,6 +228,7 @@ SettingSchema.statics.findFor = function(keys) {
           settings.push(new Self({
             key: keys[i],
             description: ALL_SETTINGS[keys[i]].description,
+            valueType: ALL_SETTINGS[keys[i]].valueType,
             value: ALL_SETTINGS[keys[i]].defaultValue
           }));
         }

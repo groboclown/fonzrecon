@@ -17,6 +17,13 @@ import { SetGivingPointsComponent } from './set-giving-points.component';
 import { SetGivingPointsService } from './set-giving-points.service';
 import { EditUserComponent } from './edit-user.component';
 import { EditUserService } from './edit-user.service';
+import { SiteSettingsComponent } from './site-settings.component';
+import { SiteSettingsService } from './site-settings.service';
+import { SiteSettingKeyFormComponent } from './site-setting-key-form.component';
+import { SiteSettingKeyFormService } from './site-setting-key-form.service';
+
+// TODO make this lazy loaded, as only administrators will ever see this
+// module.
 
 @NgModule({
   imports: [
@@ -34,7 +41,9 @@ import { EditUserService } from './edit-user.service';
     ManageUserListComponent,
     ImportUsersComponent,
     SetGivingPointsComponent,
-    EditUserComponent
+    EditUserComponent,
+    SiteSettingsComponent,
+    SiteSettingKeyFormComponent
   ],
   exports: [
     AdminComponent
@@ -53,7 +62,9 @@ export class AdminModule {
         ImportUsersService,
         AdminGuard,
         SetGivingPointsService,
-        EditUserService
+        EditUserService,
+        SiteSettingsService,
+        SiteSettingKeyFormService
       ]
     };
   }
