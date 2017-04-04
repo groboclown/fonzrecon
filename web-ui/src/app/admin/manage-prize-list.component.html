@@ -1,0 +1,35 @@
+<div>
+  <app-alert [status]='alertStatus'></app-alert>
+  <div class="filter">
+    <input [(ngModel)]='filter.all' type="checkbox" name="show-expired" disabled>
+    <label for="show-expired">Show Expired Prizes</label>
+  </div>
+  <app-paged-list [pagingService]='prizeListService' [queryParams]='filter'>
+    <div class="manage-prize-list">
+      <div *ngFor="let prize of prizeList.results ; let i=index">
+        <div class="prize-item-header">
+          <span class="expire-prize clickable" (click)='expirePrize($event, i, prize)'>expire</span>
+          |
+          <a class="edit-prize clickable" [routerLink]="['/webui/admin/edit-prize', prize.id]">edit</a>
+          |
+          <span class="prize-name">{{ prize.name }}</span>
+        </div>
+        <div class="prize-item-description">
+          <span *ngIf="prize.expires">
+            Expires: {{ prize.expires }}
+          </span>
+          <span *ngIf="!prize.expires">
+            Expires: Never
+          </span>
+          <span *ngIf="prize.imageUri">
+            <img [src]="toImageUrl(prize)">
+          </span>
+          <span>Points: {{ prize.purchasePoints }}</span>
+          <span>
+            {{ prize.description }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </app-paged-list>
+</div>

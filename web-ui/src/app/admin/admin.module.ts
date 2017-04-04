@@ -17,6 +17,8 @@ import { SetGivingPointsComponent } from './set-giving-points.component';
 import { SetGivingPointsService } from './set-giving-points.service';
 import { EditUserComponent } from './edit-user.component';
 import { EditUserService } from './edit-user.service';
+import { ManagePrizeListComponent } from './manage-prize-list.component';
+import { ManagePrizeListService } from './manage-prize-list.service';
 import { SiteSettingsComponent } from './site-settings.component';
 import { SiteSettingsService } from './site-settings.service';
 import { SiteSettingKeyFormComponent } from './site-setting-key-form.component';
@@ -42,6 +44,7 @@ import { SiteSettingKeyFormService } from './site-setting-key-form.service';
     ImportUsersComponent,
     SetGivingPointsComponent,
     EditUserComponent,
+    ManagePrizeListComponent,
     SiteSettingsComponent,
     SiteSettingKeyFormComponent
   ],
@@ -58,11 +61,12 @@ export class AdminModule {
 
       // If private services are added, then inject them here:
       providers: [
-        ManageUserListService,
         ImportUsersService,
+        ManageUserListService,
         AdminGuard,
         SetGivingPointsService,
         EditUserService,
+        ManagePrizeListService,
         SiteSettingsService,
         SiteSettingKeyFormService
       ]

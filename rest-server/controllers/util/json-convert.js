@@ -130,6 +130,7 @@ exports.prize = function(prizeObj) {
     description: prizeObj.description,
     referenceUrl: prizeObj.referenceUrl,
     purchasePoints: prizeObj.purchasePoints,
+    imageUri: prizeObj.imageUri,
     expires: prizeObj.expires,
     uri: '/api/v1/prizes/' + prizeObj._id,
     type: 'Prize'

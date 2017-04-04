@@ -32,10 +32,6 @@ export class ManageUserListComponent implements AfterViewInit {
     });
   }
 
-  editUser(event, index, user) {
-    // TODO add
-  }
-
   deleteUser(event, index, user) {
     this.userListService.deleteUser(user.username)
     .subscribe(

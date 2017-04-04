@@ -311,6 +311,7 @@ Aaay.  It does not have a URI to reference it.*
   "description": "The President will give you a handshake and a signed photo.",
   "referenceUrl": "https://prizes-are-rewarded/handshake-with-the-prez",
   "purchasePoints": 17,
+  "imageUri": "/link/to/img.png",
   "uri": "/api/v1/prizes/68b5cbd4e2d144141823827f",
   "expires": "2010-02-28T18:50:34.115Z",
   "type": "Prize"
@@ -855,6 +856,37 @@ Returns a list of prizes that the user can claim for awarded points.
 The returned value conforms to the [paging](#paging) results.  The type
 returned is [Prize](#prize) objects.
 
+
+## PUT `api/v1/prizes/:id`
+
+Updates the prize with the given values.
+
+**JSON Body:**
+
+```json
+{
+
+}
+```
+
+**Returns:**
+
+
+## PUT `api/v1/prizes/:id/expire`
+
+Updates the prize to have a given expiration.
+
+**JSON Body:**
+
+```json
+{
+  "when": "2016-02-28T18:50:34.115Z"
+}
+```
+
+**Returns:**
+
+An empty JSON body.
 
 
 # Claimed Prize API

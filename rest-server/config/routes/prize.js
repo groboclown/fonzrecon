@@ -15,7 +15,9 @@ router.get('/', PRIZE_VIEW, controller.getAll);
 router.get('/:id', PRIZE_VIEW, controller.getOne);
 
 router.post('/', PRIZE_CREATE, controller.create);
+router.put('/:id/expire', PRIZE_UPDATE, controller.expire);
 router.put('/:id', PRIZE_UPDATE, controller.update);
+
 
 // ================================================================
 // Authentication functions
