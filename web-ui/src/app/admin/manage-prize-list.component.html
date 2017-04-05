@@ -1,4 +1,5 @@
 <div>
+  <div><a [routerLink]="['/webui/admin/create-prize']">Create a new prize</a></div>
   <app-alert [status]='alertStatus'></app-alert>
   <div class="filter">
     <input [(ngModel)]='filter.all' type="checkbox" name="show-expired" disabled>
@@ -8,8 +9,10 @@
     <div class="manage-prize-list">
       <div *ngFor="let prize of prizeList.results ; let i=index">
         <div class="prize-item-header">
+          <!--
           <span class="expire-prize clickable" (click)='expirePrize($event, i, prize)'>expire</span>
           |
+          -->
           <a class="edit-prize clickable" [routerLink]="['/webui/admin/edit-prize', prize.id]">edit</a>
           |
           <span class="prize-name">{{ prize.name }}</span>

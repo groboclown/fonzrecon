@@ -19,6 +19,8 @@ import { EditUserComponent } from './edit-user.component';
 import { EditUserService } from './edit-user.service';
 import { ManagePrizeListComponent } from './manage-prize-list.component';
 import { ManagePrizeListService } from './manage-prize-list.service';
+import { CreatePrizeComponent } from './create-prize.component';
+import { PrizeService } from './prize.service';
 import { SiteSettingsComponent } from './site-settings.component';
 import { SiteSettingsService } from './site-settings.service';
 import { SiteSettingKeyFormComponent } from './site-setting-key-form.component';
@@ -45,6 +47,7 @@ import { SiteSettingKeyFormService } from './site-setting-key-form.service';
     SetGivingPointsComponent,
     EditUserComponent,
     ManagePrizeListComponent,
+    CreatePrizeComponent,
     SiteSettingsComponent,
     SiteSettingKeyFormComponent
   ],
@@ -68,7 +71,8 @@ export class AdminModule {
         EditUserService,
         ManagePrizeListService,
         SiteSettingsService,
-        SiteSettingKeyFormService
+        SiteSettingKeyFormService,
+        PrizeService
       ]
     };
   }

@@ -568,7 +568,7 @@ user can give.
 ```
 
 
-## POST `api/v1/users/batch-import`
+## POST `/api/v1/users/batch-import`
 
 Imports a list of users into the system.
 
@@ -629,7 +629,7 @@ user can give.
 ```
 
 
-## PUT `api/v1/users/:id`
+## PUT `/api/v1/users/:id`
 
 Updates a select number of fields for the user with the given ID.
 
@@ -654,7 +654,7 @@ Updates a select number of fields for the user with the given ID.
 ```
 
 
-## PUT `api/v1/users/:id/role`
+## PUT `/api/v1/users/:id/role`
 
 Updates the role of the account associated with the given username.  The
 user can only be switched between `USER` and `ADMIN` roles, and cannot be
@@ -679,7 +679,7 @@ made into a `BOT` account.
 ```
 
 
-## PUT `api/v1/users/reset-points-to-award`
+## PUT `/api/v1/users/reset-points-to-award`
 
 Updates all active users to have a specific number of points to award.
 
@@ -702,7 +702,7 @@ Updates all active users to have a specific number of points to award.
 ```
 
 
-## PUT `api/v1/users/:id/reset-points-to-award`
+## PUT `/api/v1/users/:id/reset-points-to-award`
 
 Updates the given user to have a specific number of points to award.
 
@@ -725,7 +725,7 @@ Updates the given user to have a specific number of points to award.
 ```
 
 
-## DELETE `api/v1/users/:id`
+## DELETE `/api/v1/users/:id`
 
 Marks the account with the given username as disabled.  The account cannot
 be logged into, and cannot be found through searching, but it still exists
@@ -744,7 +744,7 @@ in the database.
 
 # Aaay Access API
 
-## GET `api/v1/aaays`
+## GET `/api/v1/aaays`
 
 Retrieve the paged list of Aaay awards, with a brief description.
 
@@ -764,7 +764,7 @@ returned is [Aaay](#aaay).
 
 
 
-## GET `api/v1/aaays/:id`
+## GET `/api/v1/aaays/:id`
 
 Retrieve a brief description of the Aaay award.
 
@@ -782,7 +782,7 @@ Retrieve a brief description of the Aaay award.
 
 
 
-## POST `api/v1/aaays`
+## POST `/api/v1/aaays`
 
 Create a new award.  The award will be given by the currently authenticated
 user, or the user requested from a bot.
@@ -816,7 +816,7 @@ An `AaayRef` that describes the ID of the created Aaay.
 
 
 
-## POST `api/v1/aaays/:id/thumbsUp`
+## POST `/api/v1/aaays/:id/thumbsUp`
 
 Create a new thumbs up for this award.  The award will be given by the
 currently authenticated user, or the user requested through a bot.
@@ -839,7 +839,7 @@ currently authenticated user, or the user requested through a bot.
 
 # Prize API
 
-## GET `api/v1/prizes`
+## GET `/api/v1/prizes`
 
 Returns a list of prizes that the user can claim for awarded points.
 
@@ -857,24 +857,86 @@ The returned value conforms to the [paging](#paging) results.  The type
 returned is [Prize](#prize) objects.
 
 
-## PUT `api/v1/prizes/:id`
 
-Updates the prize with the given values.
+## POST `/api/v1/prizes`
+
+Creates a new prize.
+
+**Access:** Administrators only.
 
 **JSON Body:**
 
 ```json
 {
-
+  "name": "$1 Amazon Gift Card",
+  "description": "Get an Amazon Gift Card worth $1",
+  "referenceUrl": "http://amazon.com/gift-card-details",
+  "imageUri": "optional image location",
+  "purchasePoints": 1000000,
+  "expires": "2016-02-28T18:50:34.115Z"
 }
 ```
 
+* `name` - simple name of the prize.
+* `description` - detailed description of the prize.  Currently, this does
+  not support formatting.
+* `referenceUrl` - (optional) link where the user can find out more about the
+  prize.
+* `imageUri` - (optional) relative URL to the image of the prize.
+* `purchasePoints` - positive whole number for the required number of points
+  to claim the prize.
+* `expires` - (optional) date when the prize expires.  If given, it must be
+  in the future.
+
+
 **Returns:**
 
+A `PrizeRef` pointing to the newly created prize.
 
-## PUT `api/v1/prizes/:id/expire`
+
+
+## PUT `/api/v1/prizes/:id`
+
+Updates the prize with the given values.
+
+**Access:** Administrators only.
+
+**JSON Body:**
+
+```json
+{
+  "name": "$1 Amazon Gift Card",
+  "description": "Get an Amazon Gift Card worth $1",
+  "referenceUrl": "http://amazon.com/gift-card-details",
+  "imageUri": "optional image location",
+  "purchasePoints": 1000000,
+  "expires": "2016-02-28T18:50:34.115Z"
+}
+```
+
+* `name` - simple name of the prize.
+* `description` - detailed description of the prize.  Currently, this does
+  not support formatting.
+* `referenceUrl` - (optional) link where the user can find out more about the
+  prize.
+* `imageUri` - (optional) relative URL to the image of the prize.
+* `purchasePoints` - positive whole number for the required number of points
+  to claim the prize.
+* `expires` - (optional) date when the prize expires.  If given, it must be
+  in the future.
+
+
+**Returns:**
+
+A `PrizeRef` pointing to the newly created prize.
+
+
+
+## PUT `/api/v1/prizes/:id/expire`
 
 Updates the prize to have a given expiration.
+
+**Access:** Administrators only.
 
 **JSON Body:**
 
@@ -884,6 +946,10 @@ Updates the prize to have a given expiration.
 }
 ```
 
+* `when` - required date when the prize expires.  Can be any time, but if
+  marked in the past, then the actual expiration will be when the event is
+  posted.
+
 **Returns:**
 
 An empty JSON body.
@@ -891,7 +957,7 @@ An empty JSON body.
 
 # Claimed Prize API
 
-## GET `api/v1/claimed-prizes`
+## GET `/api/v1/claimed-prizes`
 
 Retrieve all the prizes claimed by users.
 
@@ -910,7 +976,7 @@ returned is [ClaimedPrize](#claimedprize) objects.
 
 
 
-## GET `api/v1/claimed-prizes/:id`
+## GET `/api/v1/claimed-prizes/:id`
 
 Retrieve the single claimed prize with the given id.
 
@@ -924,7 +990,7 @@ A [ClaimedPrize](#claimedprize) object.
 
 
 
-## POST `api/v1/claimed-prizes`
+## POST `/api/v1/claimed-prizes`
 
 Claims a prize for the requesting user.
 
@@ -958,7 +1024,7 @@ Claims a prize for the requesting user.
 
 # Settings API
 
-## GET `api/v1/settings`
+## GET `/api/v1/settings`
 
 Retrieves a map of all the site-wide settings.
 
@@ -982,7 +1048,7 @@ Retrieves a map of all the site-wide settings.
 
 
 
-## PUT `api/v1/settings`
+## PUT `/api/v1/settings`
 
 Updates one or more site-wide setting values.
 

@@ -8,6 +8,7 @@ import { ImportUsersComponent } from './import-users.component';
 import { SetGivingPointsComponent } from './set-giving-points.component';
 import { EditUserComponent } from './edit-user.component';
 import { ManagePrizeListComponent } from './manage-prize-list.component';
+import { CreatePrizeComponent } from './create-prize.component';
 import { SiteSettingsComponent } from './site-settings.component';
 
 const adminRoutes: Routes = [
@@ -17,7 +18,8 @@ const adminRoutes: Routes = [
   { path: 'webui/admin/import-users', component: ImportUsersComponent, canActivate: [AdminGuard] },
   { path: 'webui/admin/reset-points-to-award', component: SetGivingPointsComponent, canActivate: [AdminGuard] },
   { path: 'webui/admin/site-settings', component: SiteSettingsComponent, canActivate: [AdminGuard] },
-  { path: 'webui/admin/prizes', component: ManagePrizeListComponent, canActivate: [AdminGuard] }
+  { path: 'webui/admin/prizes', component: ManagePrizeListComponent, canActivate: [AdminGuard] },
+  { path: 'webui/admin/create-prize', component: CreatePrizeComponent, canActivate: [AdminGuard] }
 ];
 
 @NgModule({

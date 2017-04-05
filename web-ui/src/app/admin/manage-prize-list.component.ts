@@ -35,6 +35,7 @@ export class ManagePrizeListComponent implements AfterViewInit {
     });
   }
 
+/*
   expirePrize(event, index, user) {
     this.prizeListService.expirePrize(user.username)
     .subscribe(
@@ -46,6 +47,7 @@ export class ManagePrizeListComponent implements AfterViewInit {
       }
     );
   }
+*/
 
   toImageUrl(prize: Prize): string {
     return this.siteService.toImageUrl(prize.imageUri);

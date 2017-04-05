@@ -20,7 +20,7 @@ function sendEmail(connectionSettings, args) {
     for (let k in emailjs.SMTP.authentication) {
       if (emailjs.SMTP.authentication.hasOwnProperty(k)
           && k.toUpperCase() === connectionSettings.authentication.toUpperCase()) {
-        auth = email.authentication[k];
+        auth = emailjs.SMTP.authentication[k];
         break;
       }
     }

@@ -1,0 +1,8 @@
+<div *ngIf='isError' class="alert-error alert-box">
+  <span class="close" (click)='clearStatus()'>x</span>
+  <p>{{ message }}</p>
+</div>
+<div *ngIf='isMessage' class="alert-message alert-box">
+  <span class="close" (click)='clearStatus()'>x</span>
+  <p>{{ message }}</p>
+</div>

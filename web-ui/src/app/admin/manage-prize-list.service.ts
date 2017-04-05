@@ -35,12 +35,4 @@ export class ManagePrizeListService extends PagingService<Prize> {
   _parseItemFromJson(item: any): Prize {
     return Prize.parseFromJson(item);
   }
-
-  expirePrize(id: string, when?: Date): Observable<any> {
-    const exp = when || new Date();
-    return this._api.put('/api/v1/prizes/' + id + '/expire', { when: exp })
-      .map((response: Response) => {
-        return { error: false, message: `Prize ${id} expired.` };
-      });
-  }
 }

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { AlertComponent } from './alert.component';
 import { ParameterErrorComponent } from './parameter-error.component';
+import { FormFeedbackComponent } from './form-feedback.component';
+import { FormFieldErrorComponent } from './form-field-error.component';
 import { LoadButtonComponent } from './load-button.component';
 
 @NgModule({
@@ -12,12 +14,16 @@ import { LoadButtonComponent } from './load-button.component';
   declarations: [
     LoadButtonComponent,
     AlertComponent,
-    ParameterErrorComponent
+    ParameterErrorComponent,
+    FormFeedbackComponent,
+    FormFieldErrorComponent
   ],
   exports: [
     LoadButtonComponent,
     AlertComponent,
-    ParameterErrorComponent
+    ParameterErrorComponent,
+    FormFeedbackComponent,
+    FormFieldErrorComponent
   ]
 })
 export class WidgetsModule {

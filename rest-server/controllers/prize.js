@@ -71,11 +71,90 @@ exports.getOne = function(req, res, next) {
 
 
 exports.create = function(req, res, next) {
-  req.checkBody({
+  // Clean up optional stuff.
+  if (req.body.referenceUrl === null) {
+    delete req.body['referenceUrl'];
+  }
+  if (req.body.imageUri === null) {
+    delete req.body['imageUri'];
+  }
+  if (req.body.expires === null) {
+    delete req.body['expires'];
+  }
+  console.log(`DEBUG create prize with body ${JSON.stringify(req.body)}`);
 
+  req.checkBody({
+    name: {
+      isLength: {
+        options: {
+          gt: 2,
+          lt: 4000
+        },
+        errorMessage: 'must be more than 2 characters, and less than 4000'
+      }
+    },
+    description: {
+      isLength: {
+        options: {
+          gt: 2,
+          lt: 4000
+        },
+        errorMessage: 'must be more than 2 characters, and less than 4000'
+      }
+    },
+    referenceUrl: {
+      isURL: {
+        errorMessage: 'must be a URL'
+      },
+      optional: true
+    },
+    imageUri: {
+      optional: true,
+      isLength: {
+        options: {
+          gt: 4,
+          lt: 4000
+        },
+        errorMessage: 'must be more than 4 characters, and less than 4000'
+      }
+    },
+    purchasePoints: {
+      isInt: {
+        options: {
+          gt: 0
+        },
+        errorMessage: 'must be present and positive.'
+      }
+    },
+    expires: {
+      optional: true,
+      isDate: {
+        errorMessage: 'must be a date format'
+      }
+    }
   });
 
-  next();
+  req.getValidationResult()
+    .then((results) => {
+      if (!results.isEmpty()) {
+        throw errors.validationProblems(results.array());
+      }
+
+      return new PrizeChoice({
+        name: req.body.name,
+        description: req.body.description,
+        referenceUrl: req.body.referenceUrl || null,
+        imageUri: req.body.imageUri || null,
+        purchasePoints: req.body.purchasePoints,
+        expires: req.body.expires ? new Date(req.body.expires) : null
+      }).save();
+    })
+    .then((prize) => {
+      res.status(201).json(jsonConvert.prize(prize));
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 

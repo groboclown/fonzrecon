@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { AlertMessage, AlertStatus } from './alert.model';
 
+// DEPRECATED use form-feedback instead.
 @Component({
     moduleId: module.id,
     selector: 'app-alert',

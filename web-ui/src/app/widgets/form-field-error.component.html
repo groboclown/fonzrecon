@@ -1,0 +1,13 @@
+<div [hidden]="hasNoError()">
+  <div *ngIf="hasServerError()" class="form-error">
+    {{ getServerError() }}
+  </div>
+  <div *ngIf="hasGeneralError()" class="form-error">
+    <div *ngFor="let e of getGeneralErrors()">
+      {{ e }}
+    </div>
+  </div>
+  <div *ngIf="hasValidationError()" class="form-error">
+    {{ getValidationError() }}
+  </div>
+</div>

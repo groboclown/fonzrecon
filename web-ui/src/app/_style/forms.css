@@ -1,0 +1,81 @@
+/* Standard Angular supported classes */
+form .ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+form .ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
+form .ng-dirty {
+  border-left: 5px solid #a96000; /* gold */
+}
+
+form .ng-invalid {
+  border-left: 5px solid #a94442; /* red */
+}
+
+/* Custom classes */
+
+/* Alert box */
+
+.alert-error {
+  background-color: #ff4040;
+  color: black;
+}
+
+.alert-message {
+  background-color: #60c060;
+  color: black;
+}
+
+.alert-box {
+  margin: 0 auto;
+  padding: 0em;
+  text-align: center;
+  position: relative;
+}
+
+.alert-box p {
+  margin: 0 auto;
+  padding: 0;
+}
+
+.alert-box .close {
+  font-size: 1em;
+  text-decoration: none;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+.alert-error .close {
+  background: #800000;
+  color: black;
+}
+
+.alert-error .close:hover {
+  background: #ff0000;
+  color: black;
+}
+
+.alert-message .close {
+  background: #00e000;
+  color: black;
+}
+
+.alert-message .close:hover {
+  background: #00ff00;
+  color: black;
+}
+
+
+/*** Form Error ***/
+
+.form-error {
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 0;
+  padding-bottom: 0;
+  background: #ffe0e0;
+  color: red;
+}

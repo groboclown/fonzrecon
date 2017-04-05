@@ -1,0 +1,45 @@
+<div>
+  <div class="back">
+    <span><a [routerLink]="['/webui/admin/prizes']">Back to Manage Prizes</a></span>
+  </div>
+  <form name="prizeForm" #prizeForm="ngForm" (ngSubmit)='submitCreatePrize($event, prizeForm.value, prizeForm.valid)' novalidate>
+    <app-form-feedback
+      [formFeedbackStatus]="formFeedbackStatus"
+      [form]="prizeForm"></app-form-feedback>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" #nameControl="ngModel" name="name" [(ngModel)]="prize.name" required>
+      <app-form-error [model]="descControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <input type="text" class="form-control" #descControl="ngModel" name="description" [(ngModel)]="prize.description" required>
+      <app-form-error [model]="descControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="referenceUrl">Reference URL</label>
+      <input type="text" class="form-control" #refUrlControl="ngModel" name="referenceUrl" [(ngModel)]="prize.referenceUrl" required>
+      <app-form-error [model]="refUrlControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="imageUri">Image URI</label>
+      <input type="text" class="form-control" #imageUriControl="ngModel" name="imageUri" [(ngModel)]="prize.imageUri" required>
+      <div *ngIf="imageUriControl.errors?.server" class="form-error">
+        {{ imageUriControl.errors?.server }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="purchasePoints">Points required to claim</label>
+      <input type="number" class="form-control" #purchasePointsControl="ngModel" name="purchasePoints" [(ngModel)]="prize.purchasePoints" required>
+      <div *ngIf="purchasePointsControl.errors?.server" class="form-error">
+        {{ purchasePointsControl.errors?.server }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <app-load-button [loading]='loading'>
+        <button [disabled]="loading || !prizeForm.valid" type="submit">Create Prize</button>
+      </app-load-button>
+    </div>
+  </form>
+</div>
