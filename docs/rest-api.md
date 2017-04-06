@@ -897,7 +897,8 @@ A `PrizeRef` pointing to the newly created prize.
 
 ## PUT `/api/v1/prizes/:id`
 
-Updates the prize with the given values.
+Updates the prize with the given values.  The image URI
+value is updated through the image API.
 
 **Access:** Administrators only.
 
@@ -908,7 +909,6 @@ Updates the prize with the given values.
   "name": "$1 Amazon Gift Card",
   "description": "Get an Amazon Gift Card worth $1",
   "referenceUrl": "http://amazon.com/gift-card-details",
-  "imageUri": "optional image location",
   "purchasePoints": 1000000,
   "expires": "2016-02-28T18:50:34.115Z"
 }
@@ -919,7 +919,6 @@ Updates the prize with the given values.
   not support formatting.
 * `referenceUrl` - (optional) link where the user can find out more about the
   prize.
-* `imageUri` - (optional) relative URL to the image of the prize.
 * `purchasePoints` - positive whole number for the required number of points
   to claim the prize.
 * `expires` - (optional) date when the prize expires.  If given, it must be
@@ -1091,3 +1090,39 @@ Fetches the public site settings.
   "SiteIconImage": "images/site-icon.png"
 }
 ```
+
+
+
+# Image API
+
+Some objects contain a reference to an image URI.  These
+images are uploaded to the REST server, and made available.
+Uploading the image will set the corresponding image uri
+value.
+
+At the moment, all images must be one of `bmp`, `png`,
+`gif`, or `jpg` formats, with a maximum size of 512x512
+pixels.
+
+The request must be a multi-part file upload with the image file labeled as `image`.
+
+All requests return the json body
+
+```json
+{
+  "imageUri": "/relative/path/to/image.tif"
+}
+```
+
+## POST `/api/v1/images/prize/:id`
+
+Sets the `imageUri` value of the prize with the given id,
+and uploads the image.
+
+
+## POST `/api/v1/images/user/:id`
+
+Sets the `imageUrl` value of the user with the given username.
+
+
+## POST `/api/v1/images/setting/:id`

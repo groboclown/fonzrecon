@@ -46,6 +46,12 @@ export class UserService {
       .map((response: Response) => response.json());
   }
 
+
+  sendImageFile(username: string, file: File): Observable<string> {
+    return this.api.postFile('/api/v1/images/user/' + username, file, 'image')
+      .map((response: Response) => response.json().imageUri);
+  }
+
   private put(username: string | User, extra: string, data: any): Observable<any> {
     return this.api.put(this.toUserUrl(username, extra), data)
     .map((response: Response) => response.json());

@@ -10,7 +10,7 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/switchMap';
 
 import { User } from '../_models/user';
-import { UserDetailsService } from '../_services/index';
+import { UserDetailsService, SiteService } from '../_services/index';
 import { AlertStatus } from '../widgets/index';
 import { UserService } from './user.service';
 
@@ -22,6 +22,8 @@ import { UserService } from './user.service';
 export class EditUserComponent implements OnInit {
   alertStatus = new AlertStatus();
   userForm: FormGroup;
+  uploadFile: File;
+  imageUrl: string;
   username: string;
   nameList: string;
   user: User = null;
@@ -30,6 +32,7 @@ export class EditUserComponent implements OnInit {
   constructor(
       private editUserService: UserService,
       private userDetailsService: UserDetailsService,
+      private siteService: SiteService,
       private formBuilder: FormBuilder,
       private route: ActivatedRoute
   ) {}
@@ -74,6 +77,7 @@ export class EditUserComponent implements OnInit {
 
   private updateUser(user: User) {
     this.user = user;
+    this.imageUrl = this.siteService.toImageUrl(user.imageUri);
     this.nameList = user.names.join('; ');
     this.userForm.controls['username'].setValue(user.username, { onlySelf: true });
     this.userForm.controls['receivedPointsToSpend'].setValue(+user.receivedPointsToSpend, { onlySelf: true });
@@ -121,6 +125,35 @@ export class EditUserComponent implements OnInit {
         }
       );
       start.next({});
+    }
+  }
+
+
+  fileChange(event) {
+    const fileList: FileList = event.target.files;
+    if (fileList.length > 0) {
+      this.uploadFile = fileList[0];
+    }
+  }
+
+
+  uploadImageFile() {
+    if (this.uploadFile) {
+      this.loading = true;
+      this.editUserService.sendImageFile(this.username, this.uploadFile)
+      .subscribe(
+        (imageUri: string) => {
+          this.loading = false;
+          this.alertStatus.success(null);
+          this.user.imageUri = imageUri;
+          this.imageUrl = this.siteService.toImageUrl(imageUri);
+          this.user.imageUri = imageUri;
+        },
+        (err: any) => {
+          this.loading = false;
+          this.alertStatus.error(err);
+        }
+      );
     }
   }
 
