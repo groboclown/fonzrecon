@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/mergeMap';
@@ -12,6 +13,7 @@ const BASE_URL = 'http://localhost:3000';
 
 @Injectable()
 export class ApiService {
+  private globalErrors = new Subject<Response>();
 
   constructor(
         private http: Http,
@@ -20,27 +22,61 @@ export class ApiService {
     // Do nothing
   }
 
+  onGlobalError(): Observable<Response> {
+    return this.globalErrors.asObservable();
+  }
+
   get(uri: string, params: object = null): Observable<Response> {
     console.log(`DEBUG GET ${uri}`);
-    return this.http.get(this.toUrl(uri), this.withGetHeaders(params));
+    return this.http.get(this.toUrl(uri), this.withGetHeaders(params))
+    .catch((r: any) => {
+      if (r instanceof Response) {
+        this.globalErrors.next(r);
+      }
+      throw r;
+    });
   }
 
   post(uri: string, data: object): Observable<Response> {
-    return this.http.post(this.toUrl(uri), JSON.stringify(data), this.withJsonHeaders());
+    return this.http.post(this.toUrl(uri), JSON.stringify(data), this.withJsonHeaders())
+    .catch((r: any) => {
+      if (r instanceof Response) {
+        this.globalErrors.next(r);
+      }
+      throw r;
+    });
   }
 
   put(uri: string, data: object): Observable<Response> {
-    return this.http.put(this.toUrl(uri), JSON.stringify(data), this.withJsonHeaders());
+    return this.http.put(this.toUrl(uri), JSON.stringify(data), this.withJsonHeaders())
+    .catch((r: any) => {
+      if (r instanceof Response) {
+        this.globalErrors.next(r);
+      }
+      throw r;
+    });
   }
 
   postFile(uri: string, file: File, formFileName: string): Observable<Response> {
     const formData: FormData = new FormData();
     formData.append(formFileName, file, file.name);
-    return this.http.post(this.toUrl(uri), formData, this.auth({}));
+    return this.http.post(this.toUrl(uri), formData, this.auth({}))
+    .catch((r: any) => {
+      if (r instanceof Response) {
+        this.globalErrors.next(r);
+      }
+      throw r;
+    });
   }
 
   delete(uri: string): Observable<Response> {
-    return this.http.delete(this.toUrl(uri), this.withJsonHeaders());
+    return this.http.delete(this.toUrl(uri), this.withJsonHeaders())
+    .catch((r: any) => {
+      if (r instanceof Response) {
+        this.globalErrors.next(r);
+      }
+      throw r;
+    });
   }
 
   toUrl(uri: string): string {

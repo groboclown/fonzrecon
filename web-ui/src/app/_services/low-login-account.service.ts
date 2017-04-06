@@ -65,10 +65,15 @@ export class LowLoginAccountService {
 
   withAboutMeData(aboutMeData: any) {
     console.log(`DEBUG loading me data from server`);
-    this.loginAccount.isAdmin = aboutMeData.isAdmin || false;
-    this.loginAccount.hasPendingVerification = aboutMeData.hasPendingVerification || false;
-    if (aboutMeData.User) {
-      this.loginAccount.user = User.parseFromJson(aboutMeData.User);
+    if (aboutMeData.failed) {
+      // Invalid login
+      this.onLogout();
+    } else {
+      this.loginAccount.isAdmin = aboutMeData.isAdmin || false;
+      this.loginAccount.hasPendingVerification = aboutMeData.hasPendingVerification || false;
+      if (aboutMeData.User) {
+        this.loginAccount.user = User.parseFromJson(aboutMeData.User);
+      }
     }
     this.loadMeSubject.next(this.loginAccount);
   }

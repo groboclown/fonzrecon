@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
@@ -15,13 +16,15 @@ const DEFAULT_SITE_NAME = 'Your Personal Fonz';
  */
 @Injectable()
 export class SiteService {
-  private loaded: Boolean = false;
+  private refreshed = false;
   private site: Site;
+  private subject: BehaviorSubject<Site>;
 
   constructor(
         private api: ApiService
       ) {
     this.site = createDefaultSite();
+    this.subject = new BehaviorSubject<Site>(this.site);
   }
 
   getSync(): Site {
@@ -29,33 +32,36 @@ export class SiteService {
   }
 
   getAsync(): Observable<Site> {
-    if (this.loaded) {
-      return createObservableFor(this.site);
+    if (!this.refreshed) {
+      this.refreshSettings();
     }
-    return this.refreshSettings();
+    return this.subject.asObservable();
   }
 
-  refreshSettings(): Observable<Site> {
+  refreshSettings() {
+    this.refreshed = true;
     this.site = createDefaultSite();
-    return this.api.get('/auth/site-settings')
-      .map((response: Response) => {
-        const newSite = createDefaultSite();
-        if (response.status < 400) {
-          const body = (response.json() || {})['settings'] || {};
-          newSite.name = body.SiteName || DEFAULT_SITE_NAME;
-          newSite.bannerImageUrl = this.toImageUrl(body.SiteBannerImage);
-          newSite.smallImageUrl = this.toImageUrl(body.SiteSmallImage);
-          newSite.iconImageUrl = this.toImageUrl(body.SiteIconImage);
+    this.api.get('/auth/site-settings')
+      .subscribe(
+        (response: Response) => {
+          const newSite = createDefaultSite();
+          if (response.status < 400) {
+            const body = (response.json() || {})['settings'] || {};
+            newSite.name = body.SiteName || DEFAULT_SITE_NAME;
+            newSite.bannerImageUrl = this.toImageUrl(body.SiteBannerImage);
+            newSite.smallImageUrl = this.toImageUrl(body.SiteSmallImage);
+            newSite.iconImageUrl = this.toImageUrl(body.SiteIconImage);
+          }
+          this.site = newSite;
+          this.subject.next(newSite);
+        },
+
+        (err: any) => {
+          this.site = createDefaultSite();
+          // Do not send an alert.
+          this.subject.next(this.site);
         }
-        this.site = newSite;
-        this.loaded = true;
-        return this.site;
-      })
-      .catch((err: any) => {
-        this.site = createDefaultSite();
-        // Do not send an alert.
-        return createObservableFor(this.site);
-      });
+      );
   }
 
   toImageUrl(img: string) {

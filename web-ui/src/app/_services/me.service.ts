@@ -23,6 +23,13 @@ export class MeService {
   ) {
     this.lowLoginAccount.getOnSimpleLoginLoaded()
       .subscribe(() => this.loadAboutMe());
+    this.api.onGlobalError()
+    .filter((r: Response) => r.status === 403 && !r.url.endsWith('/api/v1/users/about-me'))
+    .subscribe((r: Response) => {
+      // On forbidden errors, we refresh the account, to ensure
+      // that we're still allowed to access what we think we can access.
+      this.refresh();
+    });
   }
 
   getLoginAccountSync(): LoginAccount {
@@ -50,23 +57,17 @@ export class MeService {
   }
 
   private loadAboutMe() {
-    console.log(`DEBUG getting about-me`);
-    return this.api.get('/api/v1/users/about-me')
+    this.api.get('/api/v1/users/about-me')
     .subscribe(
       (response: Response) => {
-        console.log(`DEBUG found with about me data`);
-        return this.lowLoginAccount.withAboutMeData(response.json() || {});
+        this.lowLoginAccount.withAboutMeData(response.json() || { failed: true });
       },
       (err: Response | any) => {
-        console.log(`DEBUG get me data returned error ${err}`);
         if (err instanceof Response) {
           // This is actually okay.  It generally means that the user isn't
           // logged in.
         }
-        return this.lowLoginAccount.withAboutMeData({});
-      },
-      () => {
-        console.log(`DEBUG get me data completed`);
+        this.lowLoginAccount.withAboutMeData({ failed: true });
       });
   }
 }

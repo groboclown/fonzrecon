@@ -6,7 +6,7 @@
     <span class="user-container" *ngIf='isAuthenticated()'>
       <a [routerLink]="['/webui/header/me']">
       <span *ngIf="imageUrl()"><img src="{{ imageUrl() }}"></span>
-      <span class="me-auth" *ngIf='isAuthenticated()'>{{ loginAccount.username }}</span>
+      <span  class="me-auth" *ngIf='isAuthenticated() && !imageUrl()'>{{ loginAccount.username }}</span>
       </a>
     </span>
     <span class="me-login" *ngIf='!isAuthenticated()'><a [routerLink]="['/webui/login']">Login</a></span>

@@ -17,3 +17,7 @@
   position: absolute;
   right: 1em;
 }
+
+.portrait img {
+  height: 128px;
+}

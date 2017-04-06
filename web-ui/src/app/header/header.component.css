@@ -6,14 +6,20 @@
   background-color: #ff0080;
   color: #eeffff;
   position: relative;
+  height: 64px;
 }
 
 .header-line .left-side {
+  vertical-align: bottom;
 }
 .header-line .right-side {
   position: absolute;
   right: 0;
   cursor: pointer;
+}
+
+.header-line img {
+  height: 64px;
 }
 
 .header-line a {
