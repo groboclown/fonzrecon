@@ -25,8 +25,6 @@
       to update their account.
     * Allow for prize creation, editing, and expiring.
     * Allow for claimed prize pending state and corresponding interactions.
-    * Better utilize the "env" structure, rather than doing checks on the
-      envName variable.
     * Allow user to view and remove browser entries (not tokens themselves directly).
 * bot:
   * MS Teams:

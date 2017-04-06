@@ -60,9 +60,9 @@ const UserSchema = new Schema({
   },
 
   // Does the user have an image uploaded?
-  image: {
-    type: Boolean,
-    default: false
+  imageUri: {
+    type: String,
+    required: false
   },
 
   locale: String,

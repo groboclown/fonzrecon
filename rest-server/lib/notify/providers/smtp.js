@@ -15,7 +15,7 @@ function sendEmail(connectionSettings, args) {
   var text = args.text;
   var html = args.html;
   var from = args.from;
-  var auth = null; // default setting is to try all authentication types.
+  var auth = null; // Default setting is to try all authentication types.
   if (connectionSettings.authentication) {
     for (let k in emailjs.SMTP.authentication) {
       if (emailjs.SMTP.authentication.hasOwnProperty(k)

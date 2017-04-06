@@ -1,9 +1,14 @@
 'use strict';
 
 const settings = require('../settings');
+const env = require('../env');
 const access = require('../../controllers/access');
+const express = require('express');
 
 exports.setup = function(app, passport) {
+
+  // Serve static files that were uploaded
+  app.use('/static/uploads', express.static(env.staticFiles));
 
   // Require authorization for all '/api' URIs.
   app.all('/api/*', access.findAccount(passport));
@@ -42,21 +47,7 @@ exports.setup = function(app, passport) {
       return next();
     }
 
-    // TODO make this part of the environment object.
-    if (settings.envName === 'development') {
-      console.error(err.stack);
-      // Debug code
-      // } else if (settings.envName === 'test') {
-      //   if (err.details) { console.error(JSON.stringify(err.details)); }
-      //   console.error(err.stack);
-    } else if (settings.envName === 'test' && (!err.status || err.status === 500)) {
-      if (err.details) { console.error(JSON.stringify(err.details)); }
-      console.error(err.stack);
-    } else if (!err.status || err.status === 500) {
-      if (err.details) { console.error(JSON.stringify(err.details)); }
-      console.error(err.stack);
-    }
-
+    env.logError(err);
 
     var status = 500;
     // Only send stacktrace back if not in production mode.

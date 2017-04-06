@@ -18,7 +18,7 @@ import { AlertStatus } from '../widgets/index';
     styleUrls: ['./manage-prize-list.component.css']
 })
 export class ManagePrizeListComponent implements AfterViewInit {
-  filter: any = {};
+  filter: { all: boolean } = { all: false };
   prizeList: ManagePrizeList = new ManagePrizeList();
   private alertStatus = new AlertStatus();
 

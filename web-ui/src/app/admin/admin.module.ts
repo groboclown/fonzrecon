@@ -20,6 +20,7 @@ import { EditUserService } from './edit-user.service';
 import { ManagePrizeListComponent } from './manage-prize-list.component';
 import { ManagePrizeListService } from './manage-prize-list.service';
 import { CreatePrizeComponent } from './create-prize.component';
+import { EditPrizeComponent } from './edit-prize.component';
 import { PrizeService } from './prize.service';
 import { SiteSettingsComponent } from './site-settings.component';
 import { SiteSettingsService } from './site-settings.service';
@@ -48,6 +49,7 @@ import { SiteSettingKeyFormService } from './site-setting-key-form.service';
     EditUserComponent,
     ManagePrizeListComponent,
     CreatePrizeComponent,
+    EditPrizeComponent,
     SiteSettingsComponent,
     SiteSettingKeyFormComponent
   ],

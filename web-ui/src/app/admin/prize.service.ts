@@ -56,4 +56,10 @@ export class PrizeService {
         return { error: false, message: `Prize ${id} expired.` };
       });
   }
+
+
+  sendImageFile(id: string, file: File): Observable<string> {
+    return this.api.postFile('/api/v1/images/prize/' + id, file, 'image')
+      .map((response: Response) => response.json().imageUri);
+  }
 }

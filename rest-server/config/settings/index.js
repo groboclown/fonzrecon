@@ -5,5 +5,6 @@ module.exports = {
   database: require('./database'),
   port: require('./port'),
   envName: require('./env-name'),
-  ssl: require('./ssl')
+  ssl: require('./ssl'),
+  staticFiles: require('./static-files')
 };

@@ -53,21 +53,21 @@ const PrizeChoiceSchema = new Schema({
 });
 
 
-PrizeChoiceSchema.statics.findActive = function(condition) {
-  condition = condition || {};
-  condition.$and = condition.$and || [];
-  condition.$and.push({
-    $or: [
-      { expires: { $gt: new Date() } },
-      { expires: null }
-    ]
-  });
-  return this.find(condition);
-};
 
-
-PrizeChoiceSchema.statics.findAtMostPoints = function(points) {
-  return this.findActive({ purchasePoints: { $lte: points } });
+PrizeChoiceSchema.statics.findSimple = function(options) {
+  const conditionList = [];
+  if (options.maximumPoints) {
+    conditionList.push({ purchasePoints: { $lte: options.maximumPoints } });
+  }
+  if (!options.all) {
+    conditionList.push({
+      $or: [
+        { expires: { $gt: new Date() } },
+        { expires: null }
+      ]
+    });
+  }
+  return this.find({ $and: conditionList });
 };
 
 

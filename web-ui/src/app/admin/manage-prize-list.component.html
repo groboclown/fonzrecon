@@ -2,37 +2,42 @@
   <div><a [routerLink]="['/webui/admin/create-prize']">Create a new prize</a></div>
   <app-alert [status]='alertStatus'></app-alert>
   <div class="filter">
-    <input [(ngModel)]='filter.all' type="checkbox" name="show-expired" disabled>
+    <input [(ngModel)]='filter.all' type="checkbox" name="show-expired">
     <label for="show-expired">Show Expired Prizes</label>
   </div>
   <app-paged-list [pagingService]='prizeListService' [queryParams]='filter'>
-    <div class="manage-prize-list">
-      <div *ngFor="let prize of prizeList.results ; let i=index">
-        <div class="prize-item-header">
+    <table class="manage-prize-list">
+      <tr *ngFor="let prize of prizeList.results ; let i=index">
+        <td class="head">
+          <div class="prize-image">
+            <img *ngIf="prize.imageUri" [src]="toImageUrl(prize)">
+            <span *ngIf="!prize.imageUri">(no image)</span>
+          </div>
+          <div class="prize-name-area">
+            <span class="prize-name">{{ prize.name }}</span>
+            <span>(<a class="edit-prize clickable" [routerLink]="['/webui/admin/edit-prize', prize.id]">edit</a>)</span>
+          </div>
+        </td>
+        <td class="details">
           <!--
           <span class="expire-prize clickable" (click)='expirePrize($event, i, prize)'>expire</span>
           |
           -->
-          <a class="edit-prize clickable" [routerLink]="['/webui/admin/edit-prize', prize.id]">edit</a>
-          |
-          <span class="prize-name">{{ prize.name }}</span>
-        </div>
-        <div class="prize-item-description">
-          <span *ngIf="prize.expires">
-            Expires: {{ prize.expires }}
-          </span>
-          <span *ngIf="!prize.expires">
-            Expires: Never
-          </span>
-          <span *ngIf="prize.imageUri">
-            <img [src]="toImageUrl(prize)">
-          </span>
-          <span>Points: {{ prize.purchasePoints }}</span>
-          <span>
+          <div class="description">
             {{ prize.description }}
-          </span>
-        </div>
-      </div>
-    </div>
+          </div>
+          <div class="expires">
+            Expires:
+            <span *ngIf="prize.expires">
+            {{ prize.expires }}
+            </span>
+            <span *ngIf="!prize.expires">
+            Never
+            </span>
+          </div>
+          <div>Points: {{ prize.purchasePoints }}</div>
+        </td>
+      </tr>
+    </table>
   </app-paged-list>
 </div>

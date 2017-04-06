@@ -1,0 +1,48 @@
+<div>
+  <div class="back">
+    <span><a [routerLink]="['/webui/admin/prizes']">Back to Manage Prizes</a></span>
+  </div>
+  <div class="prize-box">
+    <div class="image-box">
+      <img *ngIf="imageUrl" [src]="imageUrl">
+      <div *ngIf="!imageUrl" class="empty-image">(No image)</div>
+      <input type="file" (change)="fileChange($event)" placeholder="Image" accept=".png,.jpg">
+      <app-load-button [loading]='loading'>
+        <button [disabled]="loading || !uploadFile" (click)='uploadImageFile()'>Upload Prize Image</button>
+      </app-load-button>
+    </div>
+    <form name="prizeForm" #prizeForm="ngForm" (ngSubmit)='submitEditPrize($event, prizeForm.value, prizeForm.valid)' novalidate>
+      <app-form-feedback
+        [formFeedbackStatus]="formFeedbackStatus"
+        [form]="prizeForm"></app-form-feedback>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" #nameControl="ngModel" name="name" [(ngModel)]="prize.name" required>
+        <app-form-error [model]="descControl"></app-form-error>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" #descControl="ngModel" name="description" [(ngModel)]="prize.description" required>
+        <app-form-error [model]="descControl"></app-form-error>
+      </div>
+      <div class="form-group">
+        <label for="referenceUrl">Reference URL</label>
+        <input type="text" class="form-control" #refUrlControl="ngModel" name="referenceUrl" [(ngModel)]="prize.referenceUrl" required>
+        <app-form-error [model]="refUrlControl"></app-form-error>
+      </div>
+      <div class="form-group">
+        <label for="purchasePoints">Points required to claim</label>
+        <input type="number" class="form-control" #purchasePointsControl="ngModel" name="purchasePoints" [(ngModel)]="prize.purchasePoints" required>
+        <div *ngIf="purchasePointsControl.errors?.server" class="form-error">
+          {{ purchasePointsControl.errors?.server }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <app-load-button [loading]='loading'>
+          <button [disabled]="loading || !prizeForm.valid" type="submit">Edit Prize</button>
+        </app-load-button>
+      </div>
+    </form>
+  </div>
+</div>

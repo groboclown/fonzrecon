@@ -1,7 +1,6 @@
 'use strict';
 
 const bodyParser = require('body-parser');
-const logger = require('morgan');
 const compression = require('compression');
 const cors = require('cors');
 const csrf = require('csurf');
@@ -10,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const fingerprint = require('express-fingerprint');
 const helmet = require('helmet');
 const settings = require('./settings');
+const env = require('./env');
 const fileUpload = require('express-fileupload');
 
 exports.setup = function(app, passport) {
@@ -47,22 +47,10 @@ exports.setup = function(app, passport) {
     }
   }));
 
-
   // Use passport session
   app.use(passport.initialize());
 
-  // TODO use env instead of envName
-  if (settings.envName !== 'test') {
-    app.use(logger('dev'));
-    // CSRF requires sessions and cookies, which we're not
-    // in any position to use.
-    // app.use(csrf());
-
-    // app.use(function (req, res, next) {
-    //   res.locals.csrf_token = req.csrfToken();
-    //   next();
-    // });
-  }
+  env.setupLogger(app);
 
   app.set('port', settings.port);
 };

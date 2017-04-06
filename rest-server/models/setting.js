@@ -28,7 +28,7 @@ const SettingSchema = new Schema({
     enum: ['string', 'int', 'email', 'url',
       'string?', 'int?', 'email?', 'url?',
       'string[]', 'int[]', 'email[]', 'url[]',
-      'dictionary',],
+      'dictionary'],
     default: 'string'
   }
 }, {

@@ -22,13 +22,6 @@
       <app-form-error [model]="refUrlControl"></app-form-error>
     </div>
     <div class="form-group">
-      <label for="imageUri">Image URI</label>
-      <input type="text" class="form-control" #imageUriControl="ngModel" name="imageUri" [(ngModel)]="prize.imageUri" required>
-      <div *ngIf="imageUriControl.errors?.server" class="form-error">
-        {{ imageUriControl.errors?.server }}
-      </div>
-    </div>
-    <div class="form-group">
       <label for="purchasePoints">Points required to claim</label>
       <input type="number" class="form-control" #purchasePointsControl="ngModel" name="purchasePoints" [(ngModel)]="prize.purchasePoints" required>
       <div *ngIf="purchasePointsControl.errors?.server" class="form-error">

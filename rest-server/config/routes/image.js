@@ -10,25 +10,30 @@ const controller = require('../../controllers/image');
 // This API allows posting images that are referenced in the various elements
 // in the database, and for system images.
 
-/* TODO need correct management of individual images, without needing a
-DB backing support.
-const IMAGE_GET = access.authorize(permissions.IMAGE_GET, authAffectedUsersNone);
-const AVATAR_UPDATE = access.authorize(permissions.AVATAR_UPDATE, authAffectedUsersNone);
-const IMAGE_CREATE = access.authorize(permissions.IMAGE_CREATE, authAffectedUsersNone);
-const IMAGE_UPDATE = access.authorize(permissions.IMAGE_UPDATE, authAffectedUsersNone);
-const IMAGE_DELETE = access.authorize(permissions.IMAGE_DELETE, authAffectedUsersNone);
+// At the moment, this is an adhoc system, relating 1-to-1 to the APIs that
+// contain images.
 
-router.get('/', IMAGE_GET, controller.getAll);
-router.get('/:id', PRIZE_VIEW, controller.getOne);
+const PRIZE_CREATE = access.authorize(permissions.PRIZE_CREATE, authAffectedUsersNone);
+const USER_DETAILS_EDIT = access.authorize(permissions.USER_DETAILS_EDIT, authAffectedUsersId);
+const SITE_SETTINGS = access.authorize(permissions.SITE_SETTINGS, authAffectedUsersNone);
 
-router.post('/', PRIZE_CREATE, controller.create);
-router.push('/:id', PRIZE_UPDATE, controller.update);
-*/
+// TODO create rest-api docs for these.
+router.post('/prize/:id', PRIZE_CREATE, controller.postPrize);
+router.post('/user/:id', USER_DETAILS_EDIT, controller.postUser);
+router.post('/setting/:id', SITE_SETTINGS, controller.postSetting);
+
 
 // ================================================================
 // Authentication functions
 
 function authAffectedUsersNone(req) {
+  return [];
+}
+
+function authAffectedUsersId(req) {
+  if (req.params.id) {
+    return [ req.params.id ];
+  }
   return [];
 }
 

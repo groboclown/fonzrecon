@@ -39,6 +39,9 @@ jspm_packages
 # User configuration
 config.sh
 
+# Uploaded static files to the rest server (default location)
+/rest-server/static/
+
 # Temporary files
 .tmp
 

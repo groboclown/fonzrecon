@@ -12,9 +12,13 @@ const roles = require('../config/access/roles');
 exports.getAll = function(req, res, next) {
   const pagination = paging(req);
 
-  // FIXME this isn't being recognized as optional.
-  // As a work-around, we'll put in a default value.
-  req.query.maximum = req.query.maximum || 10000000;
+  // The "optional" only works right if the parameter is
+  // undefined.  If it's passed in but null, then it's checked.
+  // But, as a number, this one acts weird.
+  if (!req.query.maximum) {
+    req.query['maximum'] = 10000000;
+  }
+  req.query.all = req.query.all === 'true' ? true : false;
 
   req.checkQuery({
     maximum: {
@@ -34,12 +38,10 @@ exports.getAll = function(req, res, next) {
         throw errors.validationProblems(results.array());
       }
 
-      if (req.query.maximum) {
-        return PrizeChoice.findAtMostPoints(req.query.maximum)
-          .lean()
-          .paginate(pagination);
-      }
-      return PrizeChoice.findActive()
+      return PrizeChoice.findSimple({
+          maximumPoints: req.query.maximum === undefined ? null : req.query.maximum,
+          all: req.query.all
+        })
         .lean()
         .paginate(pagination);
     })
@@ -81,7 +83,6 @@ exports.create = function(req, res, next) {
   if (req.body.expires === null) {
     delete req.body['expires'];
   }
-  console.log(`DEBUG create prize with body ${JSON.stringify(req.body)}`);
 
   req.checkBody({
     name: {
@@ -160,11 +161,13 @@ exports.create = function(req, res, next) {
 
 
 exports.update = function(req, res, next) {
+  // TODO implement
   next();
 };
 
 
 
 exports.expire = function(req, res, next) {
+  // TODO implement
   next();
-}
+};
