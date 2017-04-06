@@ -7,7 +7,7 @@ import { ApiService } from '../_services/index';
 import { User } from '../_models/index';
 
 @Injectable()
-export class EditUserService {
+export class UserService {
 
   constructor(
       private api: ApiService
@@ -32,6 +32,18 @@ export class EditUserService {
 
   updatePointsToAward(username: string | User, points: number): Observable<any> {
     return this.put(username, 'reset-points-to-award', { points: points });
+  }
+
+  createUser(user: {
+        username: string,
+        email: string,
+        names: string[],
+        pointsToAward: number,
+        organization: string,
+        locale: string
+      }): Observable<any> {
+    return this.api.post('/api/v1/users', { user: user })
+      .map((response: Response) => response.json());
   }
 
   private put(username: string | User, extra: string, data: any): Observable<any> {

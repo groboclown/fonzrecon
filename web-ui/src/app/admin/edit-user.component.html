@@ -7,7 +7,7 @@
     Unknown user {{ username }}
   </div>
   <div *ngIf='user'>
-    <form [formGroup]='userForm' (ngSubmit)='submit(userForm.value, userForm.valid)' novalidate>
+    <form [formGroup]='userForm' (ngSubmit)='submit($event, userForm.value, userForm.valid)' novalidate>
       <!-- read-only values, so not in form groups. -->
       <div class="form-group">
         <label for="username">Username</label>
@@ -35,15 +35,21 @@
         <input type="text" name="pointsToAward" formControlName="pointsToAward" />
         <app-param-error [status]='alertStatus' param='pointsToAward'></app-param-error>
       </div>
+      <!-- Currently disabled... no API to change it yet -->
       <div class="form-group">
         <label for="accountEmail">Email</label>
-        <input type="email" name="accountEmail" formControlName="accountEmail" />
+        <input type="email" name="accountEmail" formControlName="accountEmail" disabled />
         <app-param-error [status]='alertStatus' param='email'></app-param-error>
       </div>
       <div class="form-group">
         <label for="organization">Organization</label>
         <input type="text" name="organization" formControlName="organization" />
         <app-param-error [status]='alertStatus' param='organization'></app-param-error>
+      </div>
+      <div class="form-group">
+        <label for="locale">Locale</label>
+        <input type="text" name="locale" formControlName="locale" />
+        <app-param-error [status]='alertStatus' param='locale'></app-param-error>
       </div>
       <!-- TODO make a drop-down -->
       <div class="form-group">
@@ -55,7 +61,7 @@
 
       <div class="form-group">
         <app-load-button [loading]='loading'>
-          <button [disabled]="loading" type="submit">Update User</button>
+          <button [disabled]="loading">Update User</button>
         </app-load-button>
       </div>
     </form>

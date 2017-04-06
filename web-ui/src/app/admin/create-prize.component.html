@@ -9,7 +9,7 @@
     <div class="form-group">
       <label for="name">Name</label>
       <input type="text" class="form-control" #nameControl="ngModel" name="name" [(ngModel)]="prize.name" required>
-      <app-form-error [model]="descControl"></app-form-error>
+      <app-form-error [model]="nameControl"></app-form-error>
     </div>
     <div class="form-group">
       <label for="description">Description</label>
@@ -24,9 +24,7 @@
     <div class="form-group">
       <label for="purchasePoints">Points required to claim</label>
       <input type="number" class="form-control" #purchasePointsControl="ngModel" name="purchasePoints" [(ngModel)]="prize.purchasePoints" required>
-      <div *ngIf="purchasePointsControl.errors?.server" class="form-error">
-        {{ purchasePointsControl.errors?.server }}
-      </div>
+      <app-form-error [model]="purchasePointsControl"></app-form-error>
     </div>
 
     <div class="form-group">

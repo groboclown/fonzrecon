@@ -4,12 +4,15 @@ import {
   CheckboxRequiredValidator, PatternValidator
 } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
+
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/switchMap';
 
 import { User } from '../_models/user';
 import { UserDetailsService } from '../_services/index';
 import { AlertStatus } from '../widgets/index';
-import { EditUserService } from './edit-user.service';
+import { UserService } from './user.service';
 
 @Component({
     moduleId: module.id,
@@ -25,7 +28,7 @@ export class EditUserComponent implements OnInit {
   loading = false;
 
   constructor(
-      private editUserService: EditUserService,
+      private editUserService: UserService,
       private userDetailsService: UserDetailsService,
       private formBuilder: FormBuilder,
       private route: ActivatedRoute
@@ -72,52 +75,53 @@ export class EditUserComponent implements OnInit {
   private updateUser(user: User) {
     this.user = user;
     this.nameList = user.names.join('; ');
-    /*
-    const model = {
-      username: user.username || this.username || '',
-      receivedPointsToSpend: user.receivedPointsToSpend || 0,
-      active: !!user.active || false,
-      pointsToAward: user.pointsToAward || 0,
-      accountEmail: user.accountEmail || 'a@b.c',
-      organization: user.organization || '',
-      role: user.role || 'USER'
-    };
-    this.userForm.setValue(user, { onlySelf: true });
-    */
     this.userForm.controls['username'].setValue(user.username, { onlySelf: true });
     this.userForm.controls['receivedPointsToSpend'].setValue(+user.receivedPointsToSpend, { onlySelf: true });
     this.userForm.controls['active'].setValue(!!user.active, { onlySelf: true });
     this.userForm.controls['pointsToAward'].setValue(+user.pointsToAward, { onlySelf: true });
     this.userForm.controls['accountEmail'].setValue(user.accountEmail, { onlySelf: true });
     this.userForm.controls['organization'].setValue(user.organization, { onlySelf: true });
+    this.userForm.controls['locale'].setValue(user.locale, { onlySelf: true });
     this.userForm.controls['role'].setValue(user.role, { onlySelf: true });
   }
 
-  submit(fieldValues, valid: boolean) {
-    /*
-    this.loading = true;
-    const pub = (this.model.public === false) ? false : true;
-    this.editUserService.submit({
-      points: points,
-      to: us,
-      public: pub,
-      comment: this.model.comment,
-      tags: ts
-    })
-    .subscribe(
-      (aaay: Aaay) => {
-        this.alertStatus.success(`You just gave an Aaay!`);
-        if (this.onChangeEvent) {
-          this.onChangeEvent.next({ aaay: aaay });
+  submit(event: Event, fieldValues, valid: boolean) {
+    event.preventDefault();
+    const start = new Subject<any>();
+    let next = start.asObservable();
+    let hasChanges = false;
+    if (!this.userForm.controls['locale'].pristine ||
+        !this.userForm.controls['organization'].pristine) {
+      hasChanges = true;
+      next = next.switchMap(() =>
+        this.editUserService.updateDetails(
+          this.username, fieldValues.locale, fieldValues.organization));
+    }
+    if (!this.userForm.controls['role'].pristine) {
+      hasChanges = true;
+      next = next.switchMap(() =>
+        this.editUserService.updateUserRole(this.username, fieldValues.role));
+    }
+    if (!this.userForm.controls['pointsToAward'].pristine) {
+      hasChanges = true;
+      next = next.switchMap(() =>
+        this.editUserService.updatePointsToAward(this.username, +fieldValues.pointsToAward));
+    }
+
+    if (hasChanges) {
+      this.loading = true;
+      next.subscribe(
+        (u: any) => {
+          this.loading = false;
+          this.alertStatus.success('Updated');
+        },
+        (error: any) => {
+          this.loading = false;
+          this.alertStatus.error(error);
         }
-        this.loading = false;
-      },
-      (error: any) => {
-        this.loading = false;
-        this.alertStatus.error(error);
-      }
-    );
-    */
+      );
+      start.next({});
+    }
   }
 
 
@@ -132,6 +136,7 @@ export class EditUserComponent implements OnInit {
       pointsToAward: ['', <any>Validators.required],
       accountEmail: ['', <any>Validators.email],
       organization: ['', <any>Validators.required],
+      locale: ['', <any>Validators.required],
       role: ['', <any>Validators.required]
     });
   }

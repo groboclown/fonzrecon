@@ -1,0 +1,46 @@
+<div>
+  <div class="back">
+    <span><a [routerLink]="['/webui/admin/users']">Back to Manage Users</a></span>
+  </div>
+  <form name="userForm" #userForm="ngForm" (ngSubmit)='submitCreateUser($event, userForm.value, userForm.valid)' novalidate>
+    <app-form-feedback
+      [formFeedbackStatus]="formFeedbackStatus"
+      [form]="userForm"></app-form-feedback>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" class="form-control" #usernameControl="ngModel" name="username" [(ngModel)]="user.username" required>
+      <app-form-error [model]="usernameControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="email">Primary Email</label>
+      <input type="text" class="form-control" #emailControl="ngModel" name="email" [(ngModel)]="user.email" required>
+      <app-form-error [model]="emailControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="names">Friendly Name</label>
+      <input type="text" class="form-control" #namesControl="ngModel" name="names" [(ngModel)]="user.names" required>
+      <app-form-error [model]="namesControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="pointsToAward">Initial Pool of Points to Award</label>
+      <input type="number" class="form-control" #pointsToAwardControl="ngModel" name="pointsToAward" [(ngModel)]="user.pointsToAward" required>
+      <app-form-error [model]="pointsToAwardControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="organization">Organization</label>
+      <input type="text" class="form-control" #organizationControl="ngModel" name="organization" [(ngModel)]="user.organization" required>
+      <app-form-error [model]="organizationControl"></app-form-error>
+    </div>
+    <div class="form-group">
+      <label for="locale">Locale</label>
+      <input type="text" class="form-control" #localeControl="ngModel" name="locale" [(ngModel)]="user.locale" required>
+      <app-form-error [model]="localeControl"></app-form-error>
+    </div>
+
+    <div class="form-group">
+      <app-load-button [loading]='loading'>
+        <button [disabled]="loading || !userForm.valid" type="submit">Create User</button>
+      </app-load-button>
+    </div>
+  </form>
+</div>

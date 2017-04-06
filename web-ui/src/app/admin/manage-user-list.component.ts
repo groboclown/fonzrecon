@@ -46,5 +46,6 @@ export class ManageUserListComponent implements AfterViewInit {
 
   reactivateUser(event, index, user) {
     // TODO add
+    this.alertStatus.error('Not implemented');
   }
 }

@@ -15,8 +15,9 @@ import { ImportUsersComponent } from './import-users.component';
 import { ImportUsersService } from './import-users.service';
 import { SetGivingPointsComponent } from './set-giving-points.component';
 import { SetGivingPointsService } from './set-giving-points.service';
+import { CreateUserComponent } from './create-user.component';
 import { EditUserComponent } from './edit-user.component';
-import { EditUserService } from './edit-user.service';
+import { UserService } from './user.service';
 import { ManagePrizeListComponent } from './manage-prize-list.component';
 import { ManagePrizeListService } from './manage-prize-list.service';
 import { CreatePrizeComponent } from './create-prize.component';
@@ -46,6 +47,7 @@ import { SiteSettingKeyFormService } from './site-setting-key-form.service';
     ManageUserListComponent,
     ImportUsersComponent,
     SetGivingPointsComponent,
+    CreateUserComponent,
     EditUserComponent,
     ManagePrizeListComponent,
     CreatePrizeComponent,
@@ -70,7 +72,7 @@ export class AdminModule {
         ManageUserListService,
         AdminGuard,
         SetGivingPointsService,
-        EditUserService,
+        UserService,
         ManagePrizeListService,
         SiteSettingsService,
         SiteSettingKeyFormService,
