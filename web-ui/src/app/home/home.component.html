@@ -1,6 +1,6 @@
 <div>
-  <h2>Give an "Aaay!"</h2>
-  <app-create-aaay [onChangeEvent]='listChangeSubject'></app-create-aaay>
+  <div (click)="toggleCreateAaay()" class="create-aaay-header"><span class="create-aaay-button">Give an "Aaay!"</span></div>
+  <app-create-aaay *ngIf="showCreateAaay" [onChangeEvent]='listChangeSubject'></app-create-aaay>
 
   <h2>Look Who's Talking</h2>
   <app-aaay-list [refreshEvent]='listChangeSubject.asObservable()'></app-aaay-list>

@@ -1,0 +1,54 @@
+.aaay {
+  width: 100%;
+  height: auto;
+  margin: 0.2em;
+  border: 1px solid black;
+}
+
+.to-header {
+  font-size: 70%;
+  font-style: italic;
+  position: relative;
+}
+
+.to-header .when {
+  position: absolute;
+  right: 0;
+}
+
+.to-user-container {
+  width: 90%;
+  display:inline-block;
+}
+
+.to-user {
+  height: 3em;
+  width: 30em;
+  float: left;
+}
+
+.to-user div {
+  float: none;
+}
+
+.to-user img {
+  height: 2em;
+}
+
+.to-user .name {
+  font-size: 90%;
+}
+
+.comment {
+  font-size: 110%;
+  background: #ffd0d0;
+}
+
+.from {
+  font-size: 80%;
+  height: 2em;
+}
+
+.from img {
+  height: 2em;
+}

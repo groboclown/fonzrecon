@@ -1,7 +1,7 @@
 <div class="create-aaay">
   <app-alert [status]='alertStatus'></app-alert>
   <!-- TODO add validation -->
-  <form name="form" (ngSubmit)="f.form.valid && submit()" #f="ngForm" novalidate>
+  <form name="form" (ngSubmit)="submitAaay($event, f.value, f.valid)" #f="ngForm" novalidate>
     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !comment.valid }">
       <label for="comment">Comment</label>
       <input type="text" class="form-control" name="comment" [(ngModel)]="model.comment" #comment="ngModel" required />
@@ -12,20 +12,22 @@
       <input type="text" class="form-control" name="points" [(ngModel)]="model.points" #points="ngModel" required />
       <app-param-error [status]='alertStatus' param='points'></app-param-error>
     </div>
-    <!-- TODO make this a searchable field that loads on-the-fly from the
-    user list.  Also, make it better support multiple people. -->
     <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !toUsers.valid }">
-      <label for="toUsers">Send To:</label>
-      <input type="text" class="form-control" name="toUsers" [(ngModel)]="model.toUsers" #toUsers="ngModel" required />
-      <span>(separate individuals with a '<code>;</code>')</span>
+      <!--<label for="toUsers">Send To:</label>-->
+      <tag-input [(ngModel)]="model.toUsers" [ngModelOptions]="{standalone: true}"
+          item-content
+          name="toUsers"
+          #toUsers="ngModel"
+          [placeholder]="'Additional user'"
+          [secondaryPlaceholder]="'Send to user'"
+          [onlyFromAutocomplete]="true">
+        <tag-input-dropdown [autocompleteObservable]="requestUserNames">
+          <ng-template let-item="item" let-index="index">
+            @{{ item.display }}
+          </ng-template>
+        </tag-input-dropdown>
+      </tag-input>
       <app-param-error [status]='alertStatus' param='to'></app-param-error>
-      <!-- Testing a type-ahead funtionality...
-      <input type="text" class="form-control" [formControl]="userLookaheadForm" name="toUsers" required />
-      <app-param-error [status]='alertStatus' param='to'></app-param-error>
-      <ul>
-        <li *ngFor="let item of items | async">{{item}}</li>
-      </ul>
-      -->
     </div>
     <!-- TODO make this an optional list.
     TODO make it so it better supports a list of multiples. -->
@@ -37,7 +39,7 @@
     </div>
     <div class="form-group">
       <app-load-button [loading]='loading'>
-        <button [disabled]="loading" class="btn btn-primary">Send!</button>
+        <button [disabled]="loading">Send!</button>
       </app-load-button>
     </div>
   </form>

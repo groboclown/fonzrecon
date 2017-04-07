@@ -46,7 +46,7 @@ export class PagingService<T> {
     return this.errorSubject.asObservable();
   }
 
-  setPerPage(count: number) {
+  setPerPage(count: number): void {
     if (count < 5) {
       count = 5;
     }
@@ -56,31 +56,41 @@ export class PagingService<T> {
     this.paged.perPage = count;
   }
 
-  loadNextPage(queryParams: any) {
+  setCurrentPage(page: number): void {
+    if (page <= 0) {
+      page = 1;
+    }
+    if (this.paged.lastPage && this.paged.lastPage > 0 && page > this.paged.lastPage) {
+      page = this.paged.lastPage;
+    }
+    this.paged.page = page;
+  }
+
+  loadNextPage(queryParams: any): void {
     if (this.paged.nextPage) {
       this.paged.page = this.paged.nextPage;
       this.refresh(queryParams);
     }
   }
 
-  loadPrevPage(queryParams: any) {
+  loadPrevPage(queryParams: any): void {
     if (this.paged.prevPage) {
       this.paged.page = this.paged.prevPage;
       this.refresh(queryParams);
     }
   }
 
-  loadFirstPage(queryParams: any) {
+  loadFirstPage(queryParams: any): void {
     this.loadPage(1, queryParams);
   }
 
-  loadLastPage(queryParams: any) {
+  loadLastPage(queryParams: any): void {
     if (this.paged.lastPage) {
       this.loadPage(this.paged.lastPage, queryParams);
     }
   }
 
-  loadPage(page: number, queryParams: any) {
+  loadPage(page: number, queryParams: any): void {
     if (!this.paged.lastPage) {
       page = 1;
     } else if (page > this.paged.lastPage) {
@@ -92,7 +102,38 @@ export class PagingService<T> {
     }
   }
 
-  refresh(queryParams: any) {
+  refresh(queryParams: any): void {
+    this.singleRequest(queryParams)
+    .subscribe(
+      (response: Response) => {
+        this.paged.updateFromJson(response.json());
+        this.refreshSubject.next(this.paged);
+      },
+      (err: Response | any) => {
+        this.errorSubject.next(err);
+      }
+    );
+  }
+
+  /**
+   * This is only for operations that use a single request, and not the
+   * whole paging component, such as tag type-ahead components.
+   */
+  getRefresh(queryParams: any): Observable<PagedData<T>> {
+    return this.singleRequest(queryParams)
+    .map((response: Response) => {
+      this.paged.updateFromJson(response.json());
+      this.refreshSubject.next(this.paged);
+      return this.paged;
+    })
+    .catch((err: Response | any) => {
+      this.errorSubject.next(err);
+      throw err;
+    });
+  }
+
+
+  private singleRequest(queryParams: any): Observable<Response> {
     const params = {
       page: this.paged.page,
       perPage: this.paged.perPage,
@@ -100,17 +141,6 @@ export class PagingService<T> {
       delta: this.paged.deltaPageCount
     };
     this._filterParameters(queryParams, params);
-
-    this.api.get(this.uri, params)
-      .subscribe(
-        (response: Response) => {
-          this.paged.updateFromJson(response.json());
-          this.refreshSubject.next(this.paged);
-        },
-        (err: Response | any) => {
-          this.errorSubject.next(err);
-        }
-      );
+    return this.api.get(this.uri, params);
   }
-
 }

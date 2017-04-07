@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TagInputModule } from 'ng2-tag-input';
 import { PagingModule } from '../paging/index';
 import { WidgetsModule } from '../widgets/index';
 
@@ -20,6 +21,7 @@ import { CreateAaayComponent } from './create-aaay.component';
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
+    TagInputModule,
     PagingModule,
     WidgetsModule,
     AaaysRoutingModule

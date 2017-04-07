@@ -1,0 +1,45 @@
+<div>
+  <app-alert [status]='alertStatus'></app-alert>
+  <app-paged-list [pagingService]='prizeListService' [queryParams]='filter'>
+    <table class="prize-list">
+      <tr *ngFor="let prize of prizeList.results ; let i=index">
+        <td class="head">
+          <div class="prize-image">
+            <img *ngIf="prize.imageUri" [src]="toImageUrl(prize)">
+            <span *ngIf="!prize.imageUri">(no image)</span>
+          </div>
+          <div class="prize-name-area">
+            <span class="prize-name">{{ prize.name }}</span>
+          </div>
+        </td>
+        <td class="details">
+          <div class="description">
+            {{ prize.description }}
+          </div>
+          <div class="expires" *ngIf="prize.expires">
+            Expires:
+            <span *ngIf="prize.expires">
+            {{ prize.expires }}
+            </span>
+          </div>
+          <div>Points: {{ prize.purchasePoints }}</div>
+          <div>
+            <app-load-button [loading]='loading'>
+              <button
+                [disabled]="loading || !hasSufficientPoints(prize)"
+                (click)="purchase(prize, i)"
+                >Buy</button>
+            </app-load-button>
+            <span *ngIf="purchaseStats[prize.id] === 'ok'" class="purchase-verify">
+              Nabbed it!
+            </span>
+            <span *ngIf="purchaseStats[prize.id] && purchaseStats[prize.id] !== 'ok'" class="purchase-error">
+              {{ purchaseStats[prize.id] }}<br>
+              Huh.  That's not supposed to happen.
+            </span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </app-paged-list>
+</div>

@@ -146,8 +146,8 @@ function conditionForVisibleToUser(userObj) {
 AcknowledgementSchema.statics.findOneDetails = function(id) {
   var objId = new mongoose.Types.ObjectId(id);
   return this.findOne({ _id: objId })
-    .populate('givenByUser', 'username names organization')
-    .populate('awardedToUsers', 'username names organization')
+    .populate('givenByUser', 'username names organization imageUri')
+    .populate('awardedToUsers', 'username names organization imageUri')
     .populate('thumbsUps', 'givenByUser createdAt comment pointsToEachUser')
     .populate('thumbsUps.givenByUser', 'username names organization')
     .lean();
@@ -162,10 +162,10 @@ AcknowledgementSchema.statics.findOneDetailsForUser = function(userObj, id) {
 
 AcknowledgementSchema.statics.findDetails = function(conditions) {
   return this.find(conditions)
-    .populate('givenByUser', 'username names organization')
-    .populate('awardedToUsers', 'username names organization')
+    .populate('givenByUser', 'username names organization imageUri')
+    .populate('awardedToUsers', 'username names organization imageUri')
     .populate('thumbsUps', 'givenByUser createdAt comment pointsToEachUser')
-    .populate('thumbsUps.givenByUser', 'username names organization')
+    .populate('thumbsUps.givenByUser', 'username names organization imageUri')
     .lean();
 };
 

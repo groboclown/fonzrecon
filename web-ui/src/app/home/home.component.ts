@@ -8,4 +8,9 @@ import { Subject } from 'rxjs/Subject';
 })
 export class HomeComponent {
   listChangeSubject = new Subject<any>();
+  showCreateAaay = false;
+
+  toggleCreateAaay() {
+    this.showCreateAaay = !this.showCreateAaay;
+  }
 }

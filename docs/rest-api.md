@@ -1119,10 +1119,17 @@ All requests return the json body
 Sets the `imageUri` value of the prize with the given id,
 and uploads the image.
 
+**Access:** Administrators only
 
 ## POST `/api/v1/images/user/:id`
 
 Sets the `imageUrl` value of the user with the given username.
 
+**Access:** The logged in user with the given username, or an administrator.
 
 ## POST `/api/v1/images/setting/:id`
+
+Sets a uri value for any `url` setting.  You should take care to only update
+image settings, as the API is unaware of which one is for images.
+
+**Access:** Administrators only

@@ -1,13 +1,35 @@
-<div>
-  <div><span>To
-    <span *ngFor="let u of aaay.awardedTo">
-      {{ u && u.primaryName || '(unknown user)' }}
+<div class="aaay">
+  <div class="to-header">
+    <span class="static">
+      Sent to:
     </span>
-  </span><span>at {{ aaay.createdAt }}</span></div>
-  <div>{{ aaay.comment }}</div>
-  <div><span>From
-    {{ aaay.givenBy && aaay.givenBy.primaryName || '(unknown given-by user)'
-    }}</span></div>
+    <span class="when">
+      at {{ aaay.createdAt }}
+    </span>
+  </div>
+  <div class="to-user-container">
+    <div *ngFor="let u of aaay.awardedTo" class="to-user">
+      <div *ngIf="u" class="image">
+        <img [src]="userImageUrl(u)" *ngIf="u.imageUri">
+      </div>
+      <div *ngIf="u" class="name">
+        {{ u.primaryName }}
+      </div>
+
+      <div *ngIf="!u">
+        (unknown user)
+      </div>
+    </div>
+  </div>
+  <div class="comment">{{ aaay.comment }}</div>
+  <div class="from">
+    <span *ngIf="!aaay.givenBy">
+      (given by an anonymous user)
+    </span>
+    <span *ngIf="aaay.givenBy">
+      From <img [src]="userImageUrl(aaay.givenBy)" *ngIf="aaay.givenBy.imageUri"> {{ aaay.givenBy.primaryName }}
+    </span>
+  </div>
   <div *ngIf="hasThumbsUp()" class="thumbs-up-container">
     <span *ngFor="let t of aaay.thumbsUps">{{ t.givenBy.primaryName }}</span>
     gave a thumbs up!

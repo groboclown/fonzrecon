@@ -1,9 +1,9 @@
 <div>
   <app-paged-list [pagingService]="aaayListService">
-    <ul class="aaay-list">
-      <li *ngFor="let aaay of aaayList.results">
+    <div class="aaay-list">
+      <div *ngFor="let aaay of aaayList.results">
         <app-aaay [aaay]="aaay"></app-aaay>
-      </li>
-    </ul>
+      </div>
+    </div>
   </app-paged-list>
 </div>

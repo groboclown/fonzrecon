@@ -126,7 +126,7 @@ UserSchema.statics.findOneByUsername = function(username) {
 };
 
 
-const BRIEF_SELECTION = 'username names organization active';
+const BRIEF_SELECTION = 'username names organization active imageUri';
 
 
 UserSchema.statics.findOneBrief = function(condition, includeInactive) {

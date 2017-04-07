@@ -19,6 +19,7 @@ import { HeaderModule } from './header/index';
 import { LoginModule } from './login/index';
 import { AdminModule } from './admin/index';
 import { AaaysModule } from './aaays/index';
+import { PrizeModule } from './prizes/index';
 import { PagingModule } from './paging/index';
 import { HomeModule } from './home/index';
 
@@ -39,6 +40,7 @@ import { HomeModule } from './home/index';
     LoginModule.forRoot(),
     AdminModule.forRoot(),
     AaaysModule.forRoot(),
+    PrizeModule.forRoot(),
     HomeModule.forRoot()
   ],
   providers: [

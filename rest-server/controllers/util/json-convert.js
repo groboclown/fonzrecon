@@ -17,6 +17,7 @@ exports.briefUser = function(user) {
       type: 'UserBriefRef'
     };
   }
+  console.log(`DEBUG using image uri ${user.imageUri}`);
   return {
     username: user.username,
     organization: user.organization,

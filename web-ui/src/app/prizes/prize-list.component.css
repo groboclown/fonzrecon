@@ -1,0 +1,55 @@
+.clickable {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.prize-item {
+  margin-top: 0.2em;
+  margin-bottom: 0;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+  background: #eea;
+  width: 100%;
+}
+
+table {
+  border:1pt solid black;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  border-bottom:1pt solid black;
+}
+
+.prize-item .head {
+  width: 40%;
+  padding: 0.2em;
+}
+
+.prize-item .details {
+  width: 60%;
+  padding: 0.2em;
+}
+
+.description {
+  font-style: italic;
+}
+
+.prize-name-area {
+  text-align: center;
+}
+
+.prize-name {
+  font-size: 180%;
+}
+
+.prize-image {
+  text-align: center;
+}
+
+.expires {
+  font-weight: bold;
+}
