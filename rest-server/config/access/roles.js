@@ -40,6 +40,8 @@ module.exports = {
     // Doesn't really have admin access
     hasAdminAccess: false,
 
+    canValidateClaims: false,
+
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ON_BEHALF_OF,
@@ -70,6 +72,7 @@ module.exports = {
     name: 'USER',
     canRunOnBehalfOf: false,
     hasAdminAccess: false,
+    canValidateClaims: false,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
@@ -98,6 +101,7 @@ module.exports = {
     name: 'PRIZE_ADMIN',
     canRunOnBehalfOf: false,
     hasAdminAccess: false,
+    canValidateClaims: true,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_SELF,
@@ -128,6 +132,7 @@ module.exports = {
     name: 'ADMIN',
     canRunOnBehalfOf: false,
     hasAdminAccess: true,
+    canValidateClaims: true,
     permissions: {
       USER_BRIEF_VIEW: ALLOW_ANY,
       USER_DETAILS_VIEW: ALLOW_ANY,

@@ -15,6 +15,7 @@
 <div id="nav" class="header-nav" *ngIf="isAuthenticated()">
   <span><a [routerLink]="['/']">[-]</a></span>
   <span><a [routerLink]="['/webui/prizes']">Prizes</a></span>
+  <span><a [routerLink]="['/webui/claimed-prizes']">Claimed Prizes</a></span>
   <span *ngIf="isAdmin()"><a [routerLink]="['/webui/admin']">Admin</a></span>
   <span><a [routerLink]="['/webui/login']">Logout</a></span>
 </div>

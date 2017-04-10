@@ -1,0 +1,47 @@
+<div>
+  <app-alert [status]='alertStatus'></app-alert>
+  <!-- TODO add the filter controls -->
+  <app-paged-list [pagingService]='claimedPrizeListService' [queryParams]='filter'>
+    <table class="prize-list">
+      <tr *ngFor="let cprize of prizeList.results ; let i=index">
+        <td class="head">
+          <div class="prize-image">
+            <img *ngIf="cprize.prize.imageUri" [src]="toImageUrl(cprize)">
+            <span *ngIf="!cprize.prize.imageUri">(no image)</span>
+          </div>
+          <div class="prize-name-area">
+            <span class="prize-name">{{ cprize.prize.name }}</span>
+          </div>
+        </td>
+        <td class="details">
+          <div class="description">
+            {{ cprize.prize.description }}
+          </div>
+          <div class="validated" *ngIf="!cprize.pendingValidation">
+            <div *ngIf="cprize.claimAllowed === true">
+              Validated at {{ cprize.validatedTime }}
+            </div>
+            <div *ngIf="cprize.claimAllowed === false">
+              Claim refused:
+              {{ cprize.claimRefusalReason }}
+            </div>
+            <div *ngIf="cprize.claimAllowed === null">
+              (TODO:
+              need to load up the details to find out if the claim was allowed
+              or not)
+            </div>
+          </div>
+          <div class="not-validated" *ngIf="cprize.pendingValidation">
+            Pending validation
+            <div *ngIf="canValidateClaims()">
+              <button (click)="allowClaim(cprize)">Allow Claim</button>
+
+              <button (click)="refuseClaim(cprize)">Refuse Claim</button>
+              (TODO need an input field to describe reason for refusal)
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </app-paged-list>
+</div>

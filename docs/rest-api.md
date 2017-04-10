@@ -328,6 +328,31 @@ Aaay.  It does not have a URI to reference it.*
 
 
 
+### `ClaimedPrizeBrief`
+
+```json
+{
+  "id": "68b5cbd4e2d144141823beef",
+  "claimedByUser": { (UserBrief) },
+  "prize": { (Prize) },
+  "createdAt": "2016-02-28T18:50:34.115Z",
+  "uri": "/api/v1/claimed-prize/68b5cbd4e2d144141823beef",
+  "pendingValidation": true,
+  "type": "ClaimedPrizeBrief"
+}
+```
+
+* `id` - identifier for the redemtion.
+* `claimedByUser` - a [UserBrief](#userbrief) for the person who redeemed
+  points for the prize.
+* `prize` - the [Prize](#prize) that was claimed.
+* `createdAt` - when the redemtion occurred.
+* `pendingValidation` - `true` if the prize hasn't been validated by an
+  admin, or `false` if it has been validated.
+* `type` - static "ClaimedPrizeBrief" string.
+
+
+
 ### `ClaimedPrize`
 
 ```json
@@ -337,6 +362,11 @@ Aaay.  It does not have a URI to reference it.*
   "prize": { (Prize) },
   "createdAt": "2016-02-28T18:50:34.115Z",
   "uri": "/api/v1/claimed-prize/68b5cbd4e2d144141823beef",
+  "pendingValidation": true,
+  "validatedByUser": { "type": "UserBrief" },
+  "validatedTime": "2016-02-28T18:50:34.115Z",
+  "claimAllowed": true,
+  "claimRefusalReason": "A reason",
   "type": "ClaimedPrize"
 }
 ```
@@ -346,8 +376,16 @@ Aaay.  It does not have a URI to reference it.*
   points for the prize.
 * `prize` - the [Prize](#prize) that was claimed.
 * `createdAt` - when the redemtion occurred.
+* `pendingValidation` - `true` if the prize hasn't been validated by an
+  admin, or `false` if it has been validated.
+* `validatedByUser` - the `UserBrief` object for the user who validated the
+  claimed prize, or `null` if it hasn't been validated.
+* `validatedTime` - time when the user validated the claim, or `null` if it
+  hasn't been validated.
+* `claimAllowed` - true if the claim was allowed, or false if it wasn't, or
+  null if the claim hasn't been validated.
+* `claimRefusalReason` - a text comment indicating why the claim wasn't allowed.
 * `type` - static "ClaimedPrize" string.
-
 
 
 
@@ -967,11 +1005,14 @@ Retrieve all the prizes claimed by users.
 * Paging:
   * Accepts the standard [paging](#paging) parameters.
 * **`user`** - user name to search for claimed prizes.
+* **`validated`** - `true` to only show validated claimed prizes,
+  `false` to show non-claimed prizes, and anything else to ignore the
+  state.
 
 **Returns:**
 
 The returned value conforms to the [paging](#paging) results.  The type
-returned is [ClaimedPrize](#claimedprize) objects.
+returned is [ClaimedPrizeBrief](#claimedprizebrief) objects.
 
 
 
@@ -1018,6 +1059,35 @@ Claims a prize for the requesting user.
 * `id` - the identifier of the claimed prize.
 * `uri` - a pointer to the location of the claimed prize.
 * `type` - the static "ClaimedPrizeRef" string.
+
+
+
+## PUT `/api/v1/claimed-prizes/:id/validate`
+
+Validate a claimed prize.  Should only be called when the prize has been
+"ordered".
+
+**Access:** Users with the `PRIZE_ADMIN` or `ADMIN` roles.
+
+**Request Body:**
+
+```json
+{
+  "refused": true,
+  "refusalMessage": "You just aren't cool enough."
+}
+```
+
+* `refused` - `true` if the claim was refused.  Refused claims must include
+  a non-empty `refusalMessage`.
+* `refusalMessage` - either `null`, not given, or a string that describes
+  why the claim was refused.  If the claim is refused, then this must be
+  a non-empty string.  If the claim was not refused, then this string is
+  ignored.
+
+**Returns:**
+
+The updated [ClaimedPrize](#claimedprize) object.
 
 
 
@@ -1114,6 +1184,8 @@ All requests return the json body
 }
 ```
 
+
+
 ## POST `/api/v1/images/prize/:id`
 
 Sets the `imageUri` value of the prize with the given id,
@@ -1121,11 +1193,15 @@ and uploads the image.
 
 **Access:** Administrators only
 
+
+
 ## POST `/api/v1/images/user/:id`
 
 Sets the `imageUrl` value of the user with the given username.
 
 **Access:** The logged in user with the given username, or an administrator.
+
+
 
 ## POST `/api/v1/images/setting/:id`
 

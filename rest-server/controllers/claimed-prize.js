@@ -41,6 +41,11 @@ exports.getAll = function(req, res, next) {
       if (!condition) {
         return util.emptyResults(pagination);
       }
+      if (req.query.validated === 'true') {
+        condition.pendingValidation = true;
+      } else if (req.query.validated === 'false') {
+        condition.pendingValidation = false;
+      }
       return ClaimedPrize
         .findBrief(condition)
         .lean()
@@ -195,6 +200,8 @@ exports.validatePrize = function(req, res, next) {
     next(errors.forbidden());
   }
 
+  req.body.refusalMessage = req.body.refusalMessage || undefined;
+
   req.checkBody({
     refused: {
       isBoolean: {},
@@ -202,7 +209,12 @@ exports.validatePrize = function(req, res, next) {
       errorMessage: 'must be a boolean'
     },
     refusalMessage: {
-      isString: {},
+      isLength: {
+        options: {
+          min: 0,
+          max: 4000
+        },
+      },
       optional: true,
       errorMessage: 'must be null or a string'
     }
@@ -236,7 +248,4 @@ exports.validatePrize = function(req, res, next) {
     .catch((err) => {
       next(err);
     });
-
-
-  next();
 };

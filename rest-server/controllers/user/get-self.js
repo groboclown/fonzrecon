@@ -21,6 +21,7 @@ module.exports = function(req, res, next) {
     let ret = {
       User: jsonConvert.user(req.userAccount.user),
       isAdmin: role ? role.hasAdminAccess : false,
+      canValidateClaims: role ? role.canValidateClaims : false,
       hasPendingVerification: req.userAccount.account.resetAuthenticationExpires
         ? req.userAccount.account.resetAuthenticationExpires > new Date()
         : false

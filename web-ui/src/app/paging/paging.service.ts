@@ -46,6 +46,22 @@ export class PagingService<T> {
     return this.errorSubject.asObservable();
   }
 
+  updateInstance(t: T, matchingFieldName: string): boolean {
+    if (!t) {
+      return false;
+    }
+    const matcher = t[matchingFieldName];
+    if (this.paged && this.paged.results) {
+      for (let i = 0; i < this.paged.results.length; i++) {
+        if (matcher === this.paged.results[i][matchingFieldName]) {
+          this.paged.results[i] = t;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   setPerPage(count: number): void {
     if (count < 5) {
       count = 5;

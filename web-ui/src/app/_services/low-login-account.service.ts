@@ -70,6 +70,7 @@ export class LowLoginAccountService {
       this.onLogout();
     } else {
       this.loginAccount.isAdmin = aboutMeData.isAdmin || false;
+      this.loginAccount.canValidateClaims = aboutMeData.canValidateClaims || false;
       this.loginAccount.hasPendingVerification = aboutMeData.hasPendingVerification || false;
       if (aboutMeData.User) {
         this.loginAccount.user = User.parseFromJson(aboutMeData.User);

@@ -52,6 +52,14 @@ export class MeService {
     return account.isAuthenticated() && account.isAdmin;
   }
 
+  canValidateClaims(): boolean {
+    const account = this.lowLoginAccount.getLoginAccountSync();
+    if (!account) {
+      return false;
+    }
+    return account.isAuthenticated() && account.canValidateClaims;
+  }
+
   refresh() {
     this.loadAboutMe();
   }

@@ -50,6 +50,13 @@ td {
   text-align: center;
 }
 
+.prize-image img {
+  max-width: 128px;
+  max-height: 128px;
+  width: auto;
+  height: auto;
+}
+
 .expires {
   font-weight: bold;
 }

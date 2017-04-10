@@ -17,7 +17,6 @@ exports.briefUser = function(user) {
       type: 'UserBriefRef'
     };
   }
-  console.log(`DEBUG using image uri ${user.imageUri}`);
   return {
     username: user.username,
     organization: user.organization,
@@ -183,7 +182,7 @@ exports.claimedPrize = function(claimed) {
     createdAt: claimed.createdAt,
     pendingValidation: claimed.pendingValidation,
     validatedByUser: claimed.validatedByUser
-      ? claimed.validatedByUser.username
+      ? exports.briefUser(claimed.validatedByUser)
       : null,
     validatedTime: claimed.validatedTime,
     claimAllowed: claimed.claimAllowed,

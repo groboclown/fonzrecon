@@ -11,9 +11,9 @@ import { PrizeListComponent } from './prize-list.component';
 import { ViewPrizeComponent } from './view-prize.component';
 import { PrizeService } from './prize.service';
 import { PrizeListService } from './prize-list.service';
+import { ClaimedPrizeListComponent } from './claimed-prize-list.component';
+import { ClaimedPrizeListService } from './claimed-prize-list.service';
 
-// TODO make this lazy loaded, as only administrators will ever see this
-// module.
 
 @NgModule({
   imports: [
@@ -28,7 +28,8 @@ import { PrizeListService } from './prize-list.service';
   ],
   declarations: [
     PrizeListComponent,
-    ViewPrizeComponent
+    ViewPrizeComponent,
+    ClaimedPrizeListComponent
   ],
   exports: []
 })
@@ -40,7 +41,8 @@ export class PrizeModule {
       // If private services are added, then inject them here:
       providers: [
         PrizeListService,
-        PrizeService
+        PrizeService,
+        ClaimedPrizeListService
       ]
     };
   }

@@ -6,6 +6,7 @@ export class LoginAccount {
   username: string;
   token: string;
   isAdmin: boolean;
+  canValidateClaims: boolean;
   hasPendingVerification: boolean;
   user: User = new User();
 
@@ -30,6 +31,7 @@ export class LoginAccount {
     this.token = null;
     this.user = new User();
     this.isAdmin = false;
+    this.canValidateClaims = false;
     this.hasPendingVerification = false;
   }
 }
