@@ -1,0 +1,1 @@
+[{{ siteSettings.SiteName }}] A Prize is Pending Your Authorization

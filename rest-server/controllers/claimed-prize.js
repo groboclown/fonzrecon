@@ -176,6 +176,7 @@ exports.create = function(req, res, next) {
       // user.
       notify.send('prize-pending', fromUser, {
         username: fromUser.username,
+        bestName: fromUser.bestName(),
         claimedPrizeId: claimedPrize._id,
         prize: claimedPrize.prize
       });
@@ -183,7 +184,7 @@ exports.create = function(req, res, next) {
       // Tell the admins that this prize is pending the claim.
       notify.sendAdminNotification('prize-pending-admin', {
         username: fromUser.username,
-        names: fromUser.names,
+        name: fromUser.bestName(),
         claimedPrizeId: claimedPrize._id,
         prize: claimedPrize.prize
       });

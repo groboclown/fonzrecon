@@ -213,6 +213,7 @@ exports.requestPasswordChange = function(req, res, next) {
       if (!account) {
         // Just report an OK.  Otherwise, this is a method
         // for discovering registered user names.
+        console.log(`DEBUG could not find account for ${JSON.stringify(condition)}`);
         return null;
       }
       // This does the save for us.
@@ -231,6 +232,7 @@ exports.requestPasswordChange = function(req, res, next) {
       // Only send an email if we have a user to send, and we have
       // reset values to send.
       if (!!toUser && !!resetValues) {
+        console.log(`DEBUG sending reset password`);
         return notify.send('reset-password', toUser, {
           username: req.body.username,
           name: toUser.bestName ? toUser.bestName() : req.body.username,
@@ -239,6 +241,7 @@ exports.requestPasswordChange = function(req, res, next) {
             resetAuthenticationExpires: resetValues.resetAuthenticationExpires
           }
         });
+      } else { console.log(`DEBUG could not find user (${!!toUser}), or did not reset auth (${!!resetValues})`);
       }
     })
     .then(() => {

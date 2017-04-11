@@ -219,7 +219,12 @@ exports.create = function(req, res, next) {
       res.status(201).json(jsonConvert.acknowledgement(ack._id, false));
 
       notify.send('new-aaay', toUsers, {
-        aaay: ack
+        aaayId: ack._id,
+        givenByUsername: fromUser.username,
+        givenByName: fromUser.bestName(),
+        points: req.body.points,
+        comment: req.body.comment,
+        otherUserCount: toUsers.length - 1
       });
     })
     .catch((err) => {

@@ -1,3 +1,4 @@
+<html><body>
 <h3>The FonzRecon site {{ siteSettings.SiteName }} ({{ siteSettings.SiteUrl }})</h3>
 <p>
 User {{ setBy.username }} changed the following site settings:
@@ -5,7 +6,14 @@ User {{ setBy.username }} changed the following site settings:
 <ul>
   {% for key, val in results %}
   <li>
-    <b>{{ key }}</b> - <code>{{ JSON.stringify(val) }}</code>
+    <b>{{ key }}</b> -
+      {% if key == 'EmailProviderConnection' %}
+      (Email provider connection settings.  These are potentially sensitive
+      values, so they don't appear in this email.)
+      {% else %}
+      <code>{{ JSON.stringify(val) }}</code>
+      {% endif %}
   </li>
   {% endfor %}
 </ul>
+</body></html>

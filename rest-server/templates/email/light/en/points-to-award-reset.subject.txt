@@ -1,0 +1,1 @@
+[{{ siteSettings.SiteName }}] Your Points To Award Was Reset

@@ -168,7 +168,8 @@ exports.resetAllPointsToAward = function(req, res, next) {
     })
     .then((users) => {
       return notify.sendAdminNotification('points-to-award-reset', {
-        updateCount: users.length
+        updateCount: users.length,
+        points: req.body.points
       })
       .then(() => { return users; });
     })

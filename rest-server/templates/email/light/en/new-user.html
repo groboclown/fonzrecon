@@ -1,0 +1,23 @@
+<html><body>
+<h2>{{ name }}, Your Account Name is {{ username }}</h2>
+<p>
+  <img src="{{ siteSettings.SiteUrl }}/{{ SiteBannerImage }}" alt="{{ siteSettings.SiteName }}">
+</p>
+<p>
+  Please visit this link to setup your password:
+</p>
+<blockquote>
+  <a href="{{ siteSettings.SiteUrl }}/webui/login/change?verification={{ reset.resetAuthenticationToken }}">{{ siteSettings.SiteUrl }}/webui/login/change?verification={{ reset.resetAuthenticationToken }}</a>
+</blockquote>
+<p>
+  <i>This link will expire on {{ '' + reset.resetAuthenticationExpires }}.
+  If you missed the window, use this link to send another one of these
+  emails:
+  <a href="{{ siteSettings.SiteUrl }}/webui/login/forgot">{{ siteSettings.SiteUrl }}/webui/login/forgot</a>
+  </i>
+</p>
+<p style="font-size: 80%">
+  If you think you received this email in error, please contact
+  <a href="email:{{ siteSettings.SitePublicAdminEmail }}">{{ siteSettings.SitePublicAdminEmail }}</a>.
+</p>
+</body></html>

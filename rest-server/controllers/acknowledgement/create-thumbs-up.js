@@ -171,7 +171,10 @@ exports.createThumbsUp = function(req, res, next) {
       res.sendStatus(201);
 
       notify.send('thumbs-up', args[1], {
-        aaay: args[0]
+        aaay: args[0],
+        givenByUsername: fromUser.username,
+        givenByName: fromUser.bestName(),
+        points: req.body.points
       });
     })
     .catch((err) => {

@@ -1,0 +1,1 @@
+[{{ siteSettings.SiteName }}] Your Prize is Pending Approval

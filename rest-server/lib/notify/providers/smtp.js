@@ -48,7 +48,7 @@ function sendEmail(connectionSettings, args) {
     to: to,
     subject: subject,
     attachment: [
-      { data: html }
+      { data: html, alternative: true }
     ]
   };
   console.log(`DEBUG sending message ${JSON.stringify(message)}`);
