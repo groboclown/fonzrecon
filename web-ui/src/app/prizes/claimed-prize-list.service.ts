@@ -3,7 +3,9 @@ import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
+import 'rxjs/add/observable/of';
 
 import { ApiService, MeService } from '../_services/index';
 import { PagedData, PagingService } from '../paging/index';
@@ -34,14 +36,17 @@ export class ClaimedPrizeListService extends PagingService<ClaimedPrize>
     return false;
   }
 
-  canValidateClaims(): boolean {
-    return this._me.canValidateClaims();
+  canValidateClaim(claimedPrize: ClaimedPrize): boolean {
+    return claimedPrize
+      && this._me.canValidateClaims()
+      && claimedPrize.pendingValidation
+      && !this.isOwnedByMe(claimedPrize);
   }
 
   loadClaimedPrizeDetails(claimed: ClaimedPrize): Observable<ClaimedPrize> {
-    if (!claimed || claimed.pendingValidation || !this.isOwnedByMe(claimed)) {
+    if (!this.canValidateClaim(claimed)) {
       // No additional information to find
-      return Observable.create(claimed);
+      return Observable.of(claimed);
     }
     return this._api.get('/api/v1/claimed-prizes/' + claimed.id)
     .map((response: Response) => {
@@ -50,7 +55,7 @@ export class ClaimedPrizeListService extends PagingService<ClaimedPrize>
   }
 
   allowClaim(claimed: ClaimedPrize): Observable<ClaimedPrize> {
-    if (!claimed || !claimed.pendingValidation || !this.canValidateClaims()) {
+    if (!this.canValidateClaim(claimed)) {
       // Cannot be validated.
       return Observable.create(claimed);
     }
@@ -63,7 +68,7 @@ export class ClaimedPrizeListService extends PagingService<ClaimedPrize>
   }
 
   refuseClaim(claimed: ClaimedPrize, reason: string): Observable<ClaimedPrize> {
-    if (!claimed || !claimed.pendingValidation || !this.canValidateClaims() || !reason) {
+    if (!this.canValidateClaim(claimed) || !reason) {
       // Cannot be validated.
       return Observable.create(claimed);
     }

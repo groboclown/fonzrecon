@@ -17,6 +17,9 @@
           <div class="description">
             {{ cprize.prize.description }}
           </div>
+          <div class="who">
+            Claimed by {{ cprize.claimedByUser.primaryName }}.
+          </div>
           <div class="validated" *ngIf="!cprize.pendingValidation">
             <div *ngIf="cprize.claimAllowed === true">
               Validated at {{ cprize.validatedTime }}
@@ -26,19 +29,26 @@
               {{ cprize.claimRefusalReason }}
             </div>
             <div *ngIf="cprize.claimAllowed === null">
-              (TODO:
-              need to load up the details to find out if the claim was allowed
-              or not)
+              <app-load-button [loading]='detailsLoading[cprize.id]'>
+              </app-load-button>
             </div>
           </div>
           <div class="not-validated" *ngIf="cprize.pendingValidation">
             Pending validation
-            <div *ngIf="canValidateClaims()">
-              <button (click)="allowClaim(cprize)">Allow Claim</button>
+            <app-load-button [loading]='validateLoading[cprize.id]'>
+              <div *ngIf="canValidateClaim(cprize)">
+                <button (click)="allowClaim(cprize)">Allow Claim</button>
 
-              <button (click)="refuseClaim(cprize)">Refuse Claim</button>
-              (TODO need an input field to describe reason for refusal)
-            </div>
+                <span *ngIf="refuseFieldShown !== cprize.id">
+                <button (click)="showRefuseForm(cprize)">Refuse Claim &gt;&gt;</button>
+                </span>
+                <span *ngIf="refuseFieldShown === cprize.id">
+                  <label [for]="'refuseField_' + cprize.id">Reason</label>
+                  <input [name]="'refuseField_' + cprize.id" type="text">
+                  <button (click)="refuseClaim(cprize)">Submit Refuse Claim</button>
+                </span>
+              </div>
+            </app-load-button>
           </div>
         </td>
       </tr>
